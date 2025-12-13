@@ -1,7 +1,9 @@
 <Solution>
   <Configurations>
+    <Platform Name="Any CPU" />
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
+  <Project Path="Snap.Hutao.Remastered.Native.Packaging/Snap.Hutao.Remastered.Native.Packaging.csproj" />
   <Project Path="Snap.Hutao.Remastered.Native/Snap.Hutao.Remastered.Native.vcxproj" Id="cc6cdca8-cf03-4eec-ba1a-cebaf368b252" />
 </Solution>
