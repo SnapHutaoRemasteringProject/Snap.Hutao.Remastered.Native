@@ -1,0 +1,43 @@
+<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>netstandard2.0</TargetFramework>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<IncludeBuildOutput>false</IncludeBuildOutput>
+		<NoPackageAnalysis>true</NoPackageAnalysis>
+
+		<PackageId>Snap.Hutao.Remastered.Native</PackageId>
+		<Version>1.0.0</Version>
+		<Authors>SnapHutaoRemasteringProject</Authors>
+		<Description>Native x64 libraries for Snap.Hutao.Remastered</Description>
+		<PackageTags>native;snap;hutao</PackageTags>
+
+		<SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
+		<DevelopmentDependency>true</DevelopmentDependency>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Snap.Hutao.Remastered.Native\Snap.Hutao.Remastered.Native.vcxproj">
+			<ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+			<SkipGetTargetFrameworkProperties>true</SkipGetTargetFrameworkProperties>
+		</ProjectReference>
+	</ItemGroup>
+
+	<Target Name="CollectNativeOutputs" AfterTargets="Build">
+		<MSBuild Projects="..\Snap.Hutao.Remastered.Native\Snap.Hutao.Remastered.Native.vcxproj" Targets="GetTargetPath" SkipNonexistentTargets="true" ContinueOnError="true">
+			<Output TaskParameter="TargetOutputs" ItemName="NativeTargetOutputs" />
+		</MSBuild>
+		<ItemGroup>
+			<NativeOutputFiles Include="..\Snap.Hutao.Remastered.Native\x64\**\*.dll" />
+			<NativeOutputFiles Include="..\Snap.Hutao.Remastered.Native\obj\x64\**\*.dll" />
+			<NativeOutputFiles Include="..\x64\**\*.dll" />
+		</ItemGroup>
+
+		<Copy SourceFiles="@(NativeOutputFiles)" DestinationFolder="$(OutputPath)\runtimes\win-x64\native\" SkipUnchangedFiles="true" />
+
+		<Message Text="Collected native outputs: @(NativeOutputFiles)" Importance="high" />
+	</Target>
+
+	<ItemGroup>
+		<Content Include="$(OutputPath)\runtimes\win-x64\native\**\*" PackagePath="runtimes\win-x64\native" />
+	</ItemGroup>
+</Project>
