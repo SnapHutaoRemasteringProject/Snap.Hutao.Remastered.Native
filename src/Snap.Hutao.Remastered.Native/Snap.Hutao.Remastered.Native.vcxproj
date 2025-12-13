@@ -140,12 +140,24 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="DllInjection.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="FrameworkTheming.cpp" />
+    <ClCompile Include="HookUtils.cpp" />
+    <ClCompile Include="MemoryUtils.cpp" />
+    <ClCompile Include="PrivilegeUtils.cpp" />
+    <ClCompile Include="ProcessUtils.cpp" />
+    <ClCompile Include="StringUtils.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DllInjection.h" />
     <ClInclude Include="dllmain.h" />
     <ClInclude Include="FrameworkTheming.h" />
+    <ClInclude Include="HookUtils.h" />
+    <ClInclude Include="MemoryUtils.h" />
+    <ClInclude Include="PrivilegeUtils.h" />
+    <ClInclude Include="ProcessUtils.h" />
+    <ClInclude Include="StringUtils.h" />
     <ClInclude Include="Theme.h" />
     <ClInclude Include="types.h" />
   </ItemGroup>
