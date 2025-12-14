@@ -1,6 +1,6 @@
 #pragma once
 
-#include"types.h"
+#include"Types.h"
 enum Theme : byte
 {
     BaseMask = 0x03,

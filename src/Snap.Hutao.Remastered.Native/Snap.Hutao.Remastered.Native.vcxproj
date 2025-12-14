@@ -74,7 +74,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;SNAPHUTAOREMASTEREDNATIVE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WINRT_IMPL_NO_RO_ORIGINATE_LANGUAGE_EXCEPTION;WIN32;_DEBUG;SNAPHUTAOREMASTEREDNATIVE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <PrecompiledHeader>Use</PrecompiledHeader>
@@ -108,7 +108,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;SNAPHUTAOREMASTEREDNATIVE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;SNAPHUTAOREMASTEREDNATIVE_EXPORTS;_WINDOWS;_USRDLL;WINRT_IMPL_NO_RO_ORIGINATE_LANGUAGE_EXCEPTION;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
@@ -142,8 +142,15 @@
   <ItemGroup>
     <ClCompile Include="DllInjection.cpp" />
     <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="FirewallRuleManager.cpp" />
     <ClCompile Include="FrameworkTheming.cpp" />
     <ClCompile Include="HookUtils.cpp" />
+    <ClCompile Include="HutaoNativeExports.cpp" />
+    <ClCompile Include="HutaoNativeLoopbackSupport.cpp" />
+    <ClCompile Include="HutaoString.cpp" />
+    <ClCompile Include="IHutaoNative.cpp" />
+    <ClCompile Include="IHutaoNativeLoopbackSupport.cpp" />
+    <ClCompile Include="IHutaoString.cpp" />
     <ClCompile Include="MemoryUtils.cpp" />
     <ClCompile Include="PrivilegeUtils.cpp" />
     <ClCompile Include="ProcessUtils.cpp" />
@@ -152,14 +159,30 @@
   <ItemGroup>
     <ClInclude Include="DllInjection.h" />
     <ClInclude Include="dllmain.h" />
+    <ClInclude Include="FailureInfo.h" />
+    <ClInclude Include="FirewallRuleManager.h" />
     <ClInclude Include="FrameworkTheming.h" />
     <ClInclude Include="HookUtils.h" />
+    <ClInclude Include="HutaoNativeExports.h" />
+    <ClInclude Include="HutaoNativeGuidHelper.h" />
+    <ClInclude Include="HutaoNativeGuids.h" />
+    <ClInclude Include="HutaoNativeLoopbackSupport.h" />
+    <ClInclude Include="HutaoString.h" />
+    <ClInclude Include="IHutaoNative.h" />
+    <ClInclude Include="IHutaoNativeLoopbackSupport.h" />
+    <ClInclude Include="IHutaoString.h" />
     <ClInclude Include="MemoryUtils.h" />
     <ClInclude Include="PrivilegeUtils.h" />
     <ClInclude Include="ProcessUtils.h" />
     <ClInclude Include="StringUtils.h" />
     <ClInclude Include="Theme.h" />
-    <ClInclude Include="types.h" />
+    <ClInclude Include="Types.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Midl Include="IHutaoNative.idl" />
+    <Midl Include="IHutaoNativeLoopbackSupport.idl" />
+    <Midl Include="IHutaoNativeLoopbackSupport2.idl" />
+    <Midl Include="IHutaoString.idl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,4 +1,11 @@
+#pragma once
+
 #include "DllInjection.h"
+#include "ProcessUtils.h"
+#include "PrivilegeUtils.h"
+#include "HookUtils.h"
+#include "MemoryUtils.h"
+#include <Windows.h>
 
 // Windows钩子注入方法1（使用WH_GETMESSAGE钩子）
 HRESULT DllInjectionUtilitiesInjectUsingWindowsHook(

@@ -25,12 +25,33 @@
     <Filter Include="源文件\core">
       <UniqueIdentifier>{9ec1b036-47fc-4bb0-bafd-66255e237ddd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="头文件\core\interfaces">
+      <UniqueIdentifier>{8225765c-fac6-4598-bc89-8b8b6705bab5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\core\interfaces">
+      <UniqueIdentifier>{bcfde3b2-5f03-4b9b-b881-379a618160d5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\core\impl">
+      <UniqueIdentifier>{d3fa2edd-02cd-45d5-ba85-24e025125884}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\core\impl">
+      <UniqueIdentifier>{1d149eb9-e8f3-49d6-9d40-fad9acf071b7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\core\internal">
+      <UniqueIdentifier>{90884fb1-ebb8-4b85-8d93-0a0e1d86a5f9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\core\internal">
+      <UniqueIdentifier>{4159fb15-a6c7-412f-aa46-8c9aaf9c9d62}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="头文件\core\export">
+      <UniqueIdentifier>{4ace4a56-af10-49c7-ac26-e27de8200126}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\core\interfaces\idl">
+      <UniqueIdentifier>{fe556673-b249-4b0c-9439-6195529caf3d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="FrameworkTheming.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="DllInjection.cpp">
@@ -51,6 +72,30 @@
     <ClCompile Include="StringUtils.cpp">
       <Filter>源文件\utils</Filter>
     </ClCompile>
+    <ClCompile Include="IHutaoNative.cpp">
+      <Filter>源文件\core\interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="HutaoNativeExports.cpp">
+      <Filter>源文件\core</Filter>
+    </ClCompile>
+    <ClCompile Include="IHutaoString.cpp">
+      <Filter>源文件\core\impl</Filter>
+    </ClCompile>
+    <ClCompile Include="HutaoString.cpp">
+      <Filter>源文件\core\impl</Filter>
+    </ClCompile>
+    <ClCompile Include="FrameworkTheming.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="FirewallRuleManager.cpp">
+      <Filter>源文件\core\internal</Filter>
+    </ClCompile>
+    <ClCompile Include="IHutaoNativeLoopbackSupport.cpp">
+      <Filter>源文件\core\interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="HutaoNativeLoopbackSupport.cpp">
+      <Filter>源文件\core\impl</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Theme.h">
@@ -62,7 +107,7 @@
     <ClInclude Include="FrameworkTheming.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="types.h">
+    <ClInclude Include="Types.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="DllInjection.h">
@@ -83,5 +128,49 @@
     <ClInclude Include="StringUtils.h">
       <Filter>头文件\utils</Filter>
     </ClInclude>
+    <ClInclude Include="IHutaoNative.h">
+      <Filter>头文件\core\interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="HutaoNativeGuidHelper.h">
+      <Filter>头文件\core</Filter>
+    </ClInclude>
+    <ClInclude Include="HutaoNativeGuids.h">
+      <Filter>头文件\core</Filter>
+    </ClInclude>
+    <ClInclude Include="FailureInfo.h">
+      <Filter>头文件\core</Filter>
+    </ClInclude>
+    <ClInclude Include="IHutaoNativeLoopbackSupport.h">
+      <Filter>头文件\core\interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="IHutaoString.h">
+      <Filter>头文件\core\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="HutaoString.h">
+      <Filter>头文件\core\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="FirewallRuleManager.h">
+      <Filter>头文件\core\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="HutaoNativeLoopbackSupport.h">
+      <Filter>头文件\core\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="HutaoNativeExports.h">
+      <Filter>头文件\core\export</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Midl Include="IHutaoString.idl">
+      <Filter>源文件\core\interfaces\idl</Filter>
+    </Midl>
+    <Midl Include="IHutaoNativeLoopbackSupport.idl">
+      <Filter>源文件\core\interfaces\idl</Filter>
+    </Midl>
+    <Midl Include="IHutaoNativeLoopbackSupport2.idl">
+      <Filter>源文件\core\interfaces\idl</Filter>
+    </Midl>
+    <Midl Include="IHutaoNative.idl">
+      <Filter>源文件\core\interfaces\idl</Filter>
+    </Midl>
   </ItemGroup>
 </Project>

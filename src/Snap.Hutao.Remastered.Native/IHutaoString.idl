@@ -1,0 +1,9 @@
+import "oaidl.idl";
+import "ocidl.idl";
+import "inspectable.idl";
+
+[uuid(F1F44E9E-858D-4746-B44E-213A1DDA4510)]
+interface IHutaoString : IInspectable
+{
+	HRESULT GetBuffer([out, retval] LPCWSTR* buffer);
+}
