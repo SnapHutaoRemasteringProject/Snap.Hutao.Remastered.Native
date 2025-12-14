@@ -1,5 +1,10 @@
-// ProcessUtils.cpp
+#pragma once
+
 #include "ProcessUtils.h"
+#include <TlHelp32.h>
+#include <Windows.h>
+#include <wchar.h>
+#include <string.h>
 
 // 获取进程的主线程ID（创建时间最早的线程）
 DWORD GetMainThreadId(DWORD processId)

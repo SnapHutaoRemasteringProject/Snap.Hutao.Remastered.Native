@@ -1,6 +1,6 @@
 #pragma once
 
-#include "dllmain.h"
+#include <Windows.h>
 
 BOOL EnableDebugPrivilege();
 BOOL EnablePrivilege(LPCWSTR privilegeName);

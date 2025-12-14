@@ -1,4 +1,6 @@
 #include "StringUtils.h"
+#include <malloc.h>
+#include <Windows.h>
 
 // ½«¿í×Ö·û×Ö·û´®×ª»»ÎªANSI×Ö·û´®
 LPSTR WideCharToAnsi(LPCWSTR wideStr)

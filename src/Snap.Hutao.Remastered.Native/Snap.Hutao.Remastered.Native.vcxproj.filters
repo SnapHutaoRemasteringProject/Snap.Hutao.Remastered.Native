@@ -19,6 +19,12 @@
     <Filter Include="源文件\utils">
       <UniqueIdentifier>{bdf7127f-5266-42ba-a411-7f70dfa1ae2a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="头文件\core">
+      <UniqueIdentifier>{cc18ae81-2a19-4f1f-b3ee-09182532e8b1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\core">
+      <UniqueIdentifier>{9ec1b036-47fc-4bb0-bafd-66255e237ddd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
