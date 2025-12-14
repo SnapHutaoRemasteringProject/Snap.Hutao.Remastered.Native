@@ -1,30 +1,29 @@
+#pragma once
+
 #include "HookUtils.h"
+#include "StringUtils.h"
+#include <Windows.h>
 
 // 使用Windows钩子注入DLL
 HRESULT InjectUsingHook(LPCWSTR dllPath, LPCWSTR functionName, DWORD threadId, int hookType)
 {
-    // 参数验证
     if (!dllPath || !functionName) {
         return E_INVALIDARG;
     }
 
-    // 加载钩子DLL到当前进程（为了获取钩子过程地址）
     HMODULE hHookDll = LoadLibraryW(dllPath);
     if (!hHookDll) {
         return HRESULT_FROM_WIN32(GetLastError());
     }
 
-    // 获取ANSI函数名
     LPCSTR ansiFunctionName = GetAnsiFunctionName(functionName);
     if (!ansiFunctionName) {
         FreeLibrary(hHookDll);
         return HRESULT_FROM_WIN32(ERROR_INVALID_PARAMETER);
     }
 
-    // 获取钩子过程的地址
     HOOKPROC hookProc = NULL;
 
-    // 检查是否是序号（通过指针值判断）
     if ((DWORD_PTR)ansiFunctionName <= 0xFFFF) {
         // 是序号
         hookProc = (HOOKPROC)GetProcAddress(hHookDll, ansiFunctionName);

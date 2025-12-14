@@ -1,7 +1,6 @@
 #pragma once
 
-#include "dllmain.h"
-#include <TlHelp32.h>
+#include <Windows.h>
 
 DWORD GetMainThreadId(DWORD processId);
 DWORD FindAnyThreadId(DWORD processId);

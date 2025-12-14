@@ -1,7 +1,7 @@
 #pragma once
 
 #include "dllmain.h"
-#include "StringUtils.h"
+#include <Windows.h>
 
 HRESULT InjectUsingHook(LPCWSTR dllPath, LPCWSTR functionName, DWORD threadId, int hookType);
 BOOL IsHookAvailable(int hookType);

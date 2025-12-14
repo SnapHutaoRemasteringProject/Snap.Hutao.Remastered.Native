@@ -1,6 +1,7 @@
 #pragma once
 
 #include "dllmain.h"
+#include <Windows.h>
 
 // ×Ö·û´®×ª»»º¯Êý
 LPSTR WideCharToAnsi(LPCWSTR wideStr);

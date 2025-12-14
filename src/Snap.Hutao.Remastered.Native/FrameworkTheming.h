@@ -1,6 +1,11 @@
 #pragma once
+
 #include"dllmain.h"
 #include"Theme.h"
+#include <Windows.h>
+#include <cstdint>
+#include <atomic>
+
 INIT_ONCE InitOnce = INIT_ONCE{ FALSE };
 BOOL fPending = false;
 

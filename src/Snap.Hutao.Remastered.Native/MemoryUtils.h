@@ -1,6 +1,6 @@
 #pragma once
 
-#include "dllmain.h"
+#include <Windows.h>
 
 typedef struct _INJECTION_DATA {
     WCHAR dllPath[MAX_PATH];
