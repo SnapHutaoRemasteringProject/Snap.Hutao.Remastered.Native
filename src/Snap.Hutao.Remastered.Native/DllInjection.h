@@ -1,28 +1,24 @@
 #pragma once
 
 #include "dllmain.h"
-#include "types.h"
-#include "ProcessUtils.h"
-#include "MemoryUtils.h"
-#include "PrivilegeUtils.h"
-#include "HookUtils.h"
+#include <Windows.h>
 
     // 主导出函数
-DLL_EXPORT HRESULT DllInjectionUtilitiesInjectUsingWindowsHook(
+DLL_EXPORT HRESULT WINAPI DllInjectionUtilitiesInjectUsingWindowsHook(
         LPCWSTR dllPath,
         LPCWSTR functionName,
         int processId);
 
-DLL_EXPORT HRESULT DllInjectionUtilitiesInjectUsingWindowsHook2(
+DLL_EXPORT HRESULT WINAPI DllInjectionUtilitiesInjectUsingWindowsHook2(
         LPCWSTR dllPath,
         LPCWSTR functionName,
         int processId);
 
-DLL_EXPORT HRESULT DllInjectionUtilitiesInjectUsingRemoteThread(
+DLL_EXPORT HRESULT WINAPI DllInjectionUtilitiesInjectUsingRemoteThread(
         LPCWSTR dllPath,
         int processId);
 
-DLL_EXPORT HRESULT DllInjectionUtilitiesInjectUsingRemoteThreadWithFunction(
+DLL_EXPORT HRESULT WINAPI DllInjectionUtilitiesInjectUsingRemoteThreadWithFunction(
         LPCWSTR dllPath,
         LPCWSTR functionName,
         int processId);

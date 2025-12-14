@@ -1,0 +1,20 @@
+import "oaidl.idl";
+import "ocidl.idl";
+import "inspectable.idl";
+import "IHutaoString.idl";
+import "IHutaoNativeLoopbackSupport.idl";
+
+//MIDL_INTERFACE("D00F73FF-A1C7-4091-8CB6-D90991DD40CB")
+//IHutaoNative : public winrt::Windows::Foundation::IInspectable
+//{
+//    virtual HRESULT WINAPI MakeLoopbackSupport(IHutaoNativeLoopbackSupport * ppv) = 0;
+//    virtual HRESULT WINAPI MakeRegistryNotification(PCWSTR keyPath, IHutaoNativeRegistryNotificationVtbl** ppv) = 0;
+//    virtual HRESULT WINAPI MakeWindowSubclass(HWND hWnd, HutaoNativeWindowSubclassCallbackFunc callback, GCHandle userData, IHutaoNativeWindowSubclassVtbl** ppv) = 0;
+//    virtual HRESULT WINAPI MakeWindowNonRude(HWND hWnd, IHutaoNativeWindowNonRudeVtbl** ppv) = 0;
+//};
+
+[uuid(D00F73FF-A1C7-4091-8CB6-D90991DD40CB)]
+interface IHutaoNative : IInspectable
+{
+	HRESULT MakeLoopbackSupport([in] IHutaoNativeLoopbackSupport* ppv);
+}
