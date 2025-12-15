@@ -41,8 +41,7 @@ public:
 	operator LPWSTR() const;
 
 private:
-	std::wstring m_buffer;
-	size_t m_capacity;
+	winrt::hstring m_buffer;
 
 	void EnsureCapacity(size_t newCapacity);
 	void UpdateInternalBuffer();
