@@ -14,21 +14,16 @@ namespace winrt
 	using namespace Windows::Foundation;
 }
 
-HutaoString::HutaoString() : m_capacity(0)
+HutaoString::HutaoString() : m_buffer(L"")
 {
-	m_buffer.clear();
 }
 
-HutaoString::HutaoString(PCWSTR initialValue) : m_capacity(0)
+HutaoString::HutaoString(PCWSTR initialValue) : m_buffer(winrt::hstring(initialValue))
 {
-	if (initialValue != nullptr)
-	{
-		m_buffer = initialValue;
-	}
 }
 
 HutaoString::HutaoString(const std::wstring& initialValue)
-	: m_buffer(initialValue), m_capacity(0)
+	: m_buffer(winrt::hstring(initialValue))
 {
 }
 
@@ -59,7 +54,7 @@ HRESULT WINAPI HutaoString::GetBufferSize(uint32_t* size) noexcept
 
 	try
 	{
-		*size = static_cast<uint32_t>(m_buffer.capacity());
+		*size = static_cast<uint32_t>(m_buffer.size());
 		return S_OK;
 	}
 	catch (...)
@@ -79,17 +74,17 @@ HRESULT WINAPI HutaoString::SetBuffer(PCWSTR value, uint32_t length) noexcept
 	{
 		if (value == nullptr)
 		{
-			m_buffer.clear();
+			m_buffer = winrt::hstring();
 		}
 		else
 		{
 			if (length == static_cast<uint32_t>(-1))
 			{
-				m_buffer = value;
+				m_buffer = winrt::hstring(value);
 			}
 			else
 			{
-				m_buffer.assign(value, length);
+				m_buffer = winrt::hstring(value, length);
 			}
 		}
 
@@ -110,7 +105,7 @@ HRESULT WINAPI HutaoString::GetLength(uint32_t* length) noexcept
 
 	try
 	{
-		*length = static_cast<uint32_t>(m_buffer.length());
+		*length = static_cast<uint32_t>(m_buffer.size());
 		return S_OK;
 	}
 	catch (...)
@@ -123,9 +118,7 @@ HRESULT WINAPI HutaoString::Clear() noexcept
 {
 	try
 	{
-		m_buffer.clear();
-		m_buffer.shrink_to_fit();
-		m_capacity = 0;
+		m_buffer = winrt::hstring();
 		return S_OK;
 	}
 	catch (...)
@@ -143,7 +136,7 @@ HRESULT WINAPI HutaoString::Append(PCWSTR value) noexcept
 
 	try
 	{
-		m_buffer += value;
+		m_buffer = m_buffer + winrt::hstring(value);
 		return S_OK;
 	}
 	catch (...)
@@ -174,7 +167,7 @@ HRESULT WINAPI HutaoString::CompareTo(IHutaoString* other, int32_t* result) noex
 			return S_OK;
 		}
 
-		int comparison = m_buffer.compare(otherBuffer);
+		int comparison = std::wcscmp(m_buffer.c_str(), otherBuffer);
 		if (comparison < 0)
 		{
 			*result = -1;
@@ -200,8 +193,10 @@ HRESULT WINAPI HutaoString::ToUpper() noexcept
 {
 	try
 	{
-		std::transform(m_buffer.begin(), m_buffer.end(), m_buffer.begin(),
+		std::wstring temp(m_buffer.c_str());
+		std::transform(temp.begin(), temp.end(), temp.begin(),
 			[](wchar_t c) { return std::towupper(c); });
+		m_buffer = winrt::hstring(temp);
 		return S_OK;
 	}
 	catch (...)
@@ -214,8 +209,10 @@ HRESULT WINAPI HutaoString::ToLower() noexcept
 {
 	try
 	{
-		std::transform(m_buffer.begin(), m_buffer.end(), m_buffer.begin(),
+		std::wstring temp(m_buffer.c_str());
+		std::transform(temp.begin(), temp.end(), temp.begin(),
 			[](wchar_t c) { return std::towlower(c); });
+		m_buffer = winrt::hstring(temp);
 		return S_OK;
 	}
 	catch (...)
@@ -235,18 +232,19 @@ HRESULT WINAPI HutaoString::Substring(uint32_t start, uint32_t length, IHutaoStr
 
 	try
 	{
-		if (start >= m_buffer.length())
+		std::wstring source(m_buffer.c_str());
+		if (start >= source.length())
 		{
 			return E_BOUNDS;
 		}
 
 		size_t actualLength = length;
-		if (length == static_cast<uint32_t>(-1) || start + length > m_buffer.length())
+		if (length == static_cast<uint32_t>(-1) || start + length > source.length())
 		{
-			actualLength = m_buffer.length() - start;
+			actualLength = source.length() - start;
 		}
 
-		std::wstring substring = m_buffer.substr(start, actualLength);
+		std::wstring substring = source.substr(start, actualLength);
 		winrt::com_ptr<IHutaoString> hutaoSubstring = winrt::make_self<HutaoString>(substring);
 		*result = winrt::detach_abi(hutaoSubstring);
 
@@ -260,17 +258,17 @@ HRESULT WINAPI HutaoString::Substring(uint32_t start, uint32_t length, IHutaoStr
 
 std::wstring HutaoString::ToStdWString() const
 {
-	return m_buffer;
+	return std::wstring(m_buffer.c_str());
 }
 
 LPWSTR HutaoString::ToCStr() const
 {
-	return ((LPWSTR)m_buffer.c_str());
+	return const_cast<LPWSTR>(m_buffer.c_str());
 }
 
 uint32_t HutaoString::GetLength() const
 {
-	return m_buffer.length();
+	return static_cast<uint32_t>(m_buffer.size());
 }
 
 bool HutaoString::IsEmpty() const
@@ -290,7 +288,7 @@ size_t HutaoString::Size() const
 
 HutaoString& HutaoString::operator=(const std::wstring& other)
 {
-	m_buffer = other;
+	m_buffer = winrt::hstring(other);
 	return *this;
 }
 
@@ -298,48 +296,42 @@ HutaoString& HutaoString::operator=(PCWSTR other)
 {
 	if (other != nullptr)
 	{
-		m_buffer = other;
+		m_buffer = winrt::hstring(other);
 	}
 	else
 	{
-		m_buffer.clear();
+		m_buffer = winrt::hstring();
 	}
 	return *this;
 }
 
 bool HutaoString::operator==(const HutaoString& other) const
 {
-	return m_buffer == other.m_buffer;
+	return std::wcscmp(m_buffer.c_str(), other.m_buffer.c_str()) == 0;
 }
 
 bool HutaoString::operator!=(const HutaoString& other) const
 {
-	return m_buffer != other.m_buffer;
+	return !(*this == other);
 }
 
 HutaoString::operator std::wstring() const
 {
-	return m_buffer;
+	return std::wstring(m_buffer.c_str());
 }
 
 HutaoString::operator LPWSTR() const
 {
-	return ((LPWSTR)m_buffer.c_str());
+	return const_cast<LPWSTR>(m_buffer.c_str());
 }
 
 void HutaoString::EnsureCapacity(size_t newCapacity)
 {
-	if (newCapacity > m_buffer.capacity())
-	{
-		m_buffer.reserve(newCapacity);
-	}
+	// hstring manages its own capacity; no-op
+	(void)newCapacity;
 }
 
 void HutaoString::UpdateInternalBuffer()
 {
-	// 如果需要，可以在这里添加额外的缓冲管理逻辑
-	if (m_buffer.capacity() > m_capacity)
-	{
-		m_capacity = m_buffer.capacity();
-	}
+	// hstring manages its own capacity; no-op
 }

@@ -1,5 +1,5 @@
 // Provide a minimal stub for WINRT_IMPL_RoOriginateLanguageException to satisfy linker
-// Do not include <winrt/base.h> here to avoid conflicting declarations.
+// This file intentionally does not include <winrt/base.h> to avoid duplicate implementations.
 extern "C" void WINRT_IMPL_RoOriginateLanguageException(...)
 {
     // no-op
