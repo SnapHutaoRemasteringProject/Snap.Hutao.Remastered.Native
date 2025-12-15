@@ -155,6 +155,7 @@
     <ClCompile Include="PrivilegeUtils.cpp" />
     <ClCompile Include="ProcessUtils.cpp" />
     <ClCompile Include="StringUtils.cpp" />
+    <ClCompile Include="WinRTImpl.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DllInjection.h" />
