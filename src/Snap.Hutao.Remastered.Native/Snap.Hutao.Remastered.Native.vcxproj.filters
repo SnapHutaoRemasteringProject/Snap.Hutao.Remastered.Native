@@ -96,6 +96,9 @@
     <ClCompile Include="HutaoNativeLoopbackSupport.cpp">
       <Filter>源文件\core\impl</Filter>
     </ClCompile>
+    <ClCompile Include="WinRTImpl.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Theme.h">

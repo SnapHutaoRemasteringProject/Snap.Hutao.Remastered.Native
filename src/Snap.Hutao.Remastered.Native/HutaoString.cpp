@@ -1,12 +1,12 @@
 #pragma once
 
 #include "HutaoString.h"
+#include "IHutaoString_h.h"
 #include <algorithm>
 #include <winrt/base.h>
 #include <Windows.h>
 #include <cstdint>
 #include <string>
-#include "IHutaoString_h.h"
 #include <cwctype>
 
 namespace winrt
