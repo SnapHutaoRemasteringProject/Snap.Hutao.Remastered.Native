@@ -4,3 +4,6 @@ extern "C" void WINRT_IMPL_RoOriginateLanguageException(...)
 {
     // no-op
 }
+
+// Ensure runtimeobject is linked for WindowsGetStringRawBuffer
+#pragma comment(lib, "runtimeobject.lib")

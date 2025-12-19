@@ -1,9 +1,0 @@
-import "oaidl.idl";
-import "ocidl.idl";
-import "inspectable.idl";
-
-[uuid(A5D67980-F495-4F52-BEF0-27D047E20174)]
-interface IHutaoNativeLoopbackSupport2 : IInspectable
-{
-	HRESULT IsPublicFirewallEnabled([out, retval] boolean* enabled);
-}

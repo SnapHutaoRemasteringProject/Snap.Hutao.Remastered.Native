@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<TargetFramework>netstandard2.0</TargetFramework>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -6,7 +6,7 @@
 		<NoPackageAnalysis>true</NoPackageAnalysis>
 
 		<PackageId>Snap.Hutao.Remastered.Native</PackageId>
-		<Version>1.0.1</Version>
+		<Version>1.1.2</Version>
 		<Authors>SnapHutaoRemasteringProject</Authors>
 		<Description>Native x64 libraries for Snap.Hutao.Remastered</Description>
 		<PackageTags>native;snap;hutao</PackageTags>

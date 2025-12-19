@@ -1,7 +1,6 @@
 #pragma once
 
 #include "IHutaoNativeLoopbackSupport_h.h"
-#include "IHutaoNativeLoopbackSupport2_h.h"
 #include "FirewallRuleManager.h"
 #include <Windows.h>
 #include <winrt/base.h>
@@ -16,14 +15,13 @@ public:
 	HutaoNativeLoopbackSupport();
 	~HutaoNativeLoopbackSupport();
 
-	virtual HRESULT WINAPI IsEnabled(PCWSTR familyName, PCWSTR sid, BOOL* enabled);
-	virtual HRESULT WINAPI Enable(PCWSTR familyName, PCWSTR sid);
+	virtual HRESULT STDMETHODCALLTYPE IsEnabled(HSTRING familyName, IHutaoString* sid, boolean* enabled) override;
+	virtual HRESULT STDMETHODCALLTYPE Enable(HSTRING familyName, IHutaoString* sid) override;
 
 private:
 	class FirewallRuleManager* m_firewallManager;
 };
 
-// IHutaoNativeLoopbackSupport2  µœ÷¿‡
 class HutaoNativeLoopbackSupport2 :
 	public winrt::implements<
 	HutaoNativeLoopbackSupport2,
@@ -34,7 +32,7 @@ public:
 	HutaoNativeLoopbackSupport2();
 	~HutaoNativeLoopbackSupport2();
 
-	virtual HRESULT WINAPI IsPublicFirewallEnabled(BOOL* enabled);
+	virtual HRESULT STDMETHODCALLTYPE IsPublicFirewallEnabled(boolean* enabled) override;
 
 private:
 	class FirewallRuleManager* m_firewallManager;

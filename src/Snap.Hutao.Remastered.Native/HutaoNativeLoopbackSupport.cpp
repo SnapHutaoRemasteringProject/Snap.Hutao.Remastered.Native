@@ -3,7 +3,12 @@
 #include "HutaoNativeLoopbackSupport.h"
 #include "FirewallRuleManager.h"
 #include <Windows.h>
+#include <winstring.h>
 #include <string>
+#include <winrt/base.h>
+
+using namespace winrt;
+using namespace winrt::Windows::Foundation;
 
 HutaoNativeLoopbackSupport::HutaoNativeLoopbackSupport()
     : m_firewallManager(new FirewallRuleManager())
@@ -19,30 +24,76 @@ HutaoNativeLoopbackSupport::~HutaoNativeLoopbackSupport()
     }
 }
 
-HRESULT WINAPI HutaoNativeLoopbackSupport::IsEnabled(PCWSTR familyName, PCWSTR sid, BOOL* enabled)
+HRESULT STDMETHODCALLTYPE HutaoNativeLoopbackSupport::IsEnabled(HSTRING familyName, IHutaoString* sid, boolean* enabled)
 {
-    if (!familyName || !enabled)
+    if (enabled == nullptr)
+    {
+        return E_POINTER;
+    }
+
+    if (familyName == nullptr)
+    {
         return E_INVALIDARG;
+    }
 
     if (!m_firewallManager)
+    {
         return E_FAIL;
+    }
 
-    std::wstring familyNameStr = familyName;
-    std::wstring sidStr = sid ? sid : L"";
+    // Convert HSTRING to PCWSTR using WindowsGetStringRawBuffer
+    PCWSTR familyNameRaw = WindowsGetStringRawBuffer(familyName, nullptr);
 
-    return m_firewallManager->IsLoopbackExempt(familyNameStr, sidStr, enabled);
+    LPCWSTR sidBuffer = nullptr;
+    if (sid)
+    {
+        HRESULT hr = sid->GetBuffer(&sidBuffer);
+        if (FAILED(hr))
+        {
+            return hr;
+        }
+    }
+
+    std::wstring familyNameStr = familyNameRaw ? familyNameRaw : L"";
+    std::wstring sidStr = sidBuffer ? sidBuffer : L"";
+
+    BOOL nativeEnabled = FALSE;
+    HRESULT hr = m_firewallManager->IsLoopbackExempt(familyNameStr, sidStr, &nativeEnabled);
+    if (FAILED(hr))
+    {
+        return hr;
+    }
+
+    *enabled = nativeEnabled ? true : false;
+    return S_OK;
 }
 
-HRESULT WINAPI HutaoNativeLoopbackSupport::Enable(PCWSTR familyName, PCWSTR sid)
+HRESULT STDMETHODCALLTYPE HutaoNativeLoopbackSupport::Enable(HSTRING familyName, IHutaoString* sid)
 {
-    if (!familyName)
+    if (familyName == nullptr)
+    {
         return E_INVALIDARG;
+    }
 
     if (!m_firewallManager)
+    {
         return E_FAIL;
+    }
 
-    std::wstring familyNameStr = familyName;
-    std::wstring sidStr = sid ? sid : L"";
+    PCWSTR familyNameRaw = WindowsGetStringRawBuffer(familyName, nullptr);
+
+    LPCWSTR sidBuffer = nullptr;
+    if (sid)
+    {
+        HRESULT hr = sid->GetBuffer(&sidBuffer);
+        if (FAILED(hr))
+        {
+            return hr;
+        }
+    }
+
+    std::wstring familyNameStr = familyNameRaw ? familyNameRaw : L"";
+    std::wstring sidStr = sidBuffer ? sidBuffer : L"";
 
     return m_firewallManager->AddLoopbackExempt(familyNameStr, sidStr);
 }
@@ -61,13 +112,25 @@ HutaoNativeLoopbackSupport2::~HutaoNativeLoopbackSupport2()
     }
 }
 
-HRESULT WINAPI HutaoNativeLoopbackSupport2::IsPublicFirewallEnabled(BOOL* enabled)
+HRESULT STDMETHODCALLTYPE HutaoNativeLoopbackSupport2::IsPublicFirewallEnabled(boolean* enabled)
 {
-    if (!enabled)
+    if (enabled == nullptr)
+    {
         return E_POINTER;
+    }
 
     if (!m_firewallManager)
+    {
         return E_FAIL;
+    }
 
-    return m_firewallManager->IsPublicFirewallEnabled(enabled);
+    BOOL nativeEnabled = FALSE;
+    HRESULT hr = m_firewallManager->IsPublicFirewallEnabled(&nativeEnabled);
+    if (FAILED(hr))
+    {
+        return hr;
+    }
+
+    *enabled = nativeEnabled ? true : false;
+    return S_OK;
 }

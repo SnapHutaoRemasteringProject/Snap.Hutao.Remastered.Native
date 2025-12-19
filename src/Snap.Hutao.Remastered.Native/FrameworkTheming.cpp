@@ -1,6 +1,6 @@
 #include"FrameworkTheming.h"
 
-DLL_EXPORT HRESULT WINAPI FrameworkThemingSetTheme(Theme theme) {
+DLL_EXPORT HRESULT __stdcall FrameworkThemingSetTheme(Theme theme) {
     // 验证输入参数 (匹配C#的Theme枚举)
     if ((theme & 0x03) > 0x02) {  // BaseMask检查
         return E_INVALIDARG;

@@ -9,3 +9,9 @@ interface IHutaoNativeLoopbackSupport : IInspectable
 	HRESULT IsEnabled([in] HSTRING familyName, [in] IHutaoString* sid, [out, retval] boolean* enabled);
 	HRESULT Enable([in] HSTRING familyName, [in] IHutaoString* sid);
 }
+
+[uuid(A5D67980-F495-4F52-BEF0-27D047E20174)]
+interface IHutaoNativeLoopbackSupport2 : IInspectable
+{
+	HRESULT IsPublicFirewallEnabled([out, retval] boolean* enabled);
+}

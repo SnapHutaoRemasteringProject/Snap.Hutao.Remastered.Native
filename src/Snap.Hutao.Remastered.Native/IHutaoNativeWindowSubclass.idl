@@ -1,0 +1,17 @@
+import "oaidl.idl";
+import "ocidl.idl";
+import "inspectable.idl";
+
+[uuid(9631921E-A6CA-4150-9939-99B5467B2FD6)]
+interface IHutaoNativeWindowSubclass : IInspectable
+{
+    HRESULT Attach();
+    HRESULT Detach();
+};
+
+[uuid(D3D8B1C9-C83D-472B-AE9C-B65618B0F3AE)]
+interface IHutaoNativeWindowSubclass2 : IInspectable
+{
+    HRESULT InitializeTaskbarProgress();
+    HRESULT SetTaskbarProgress([in] UINT32 flags, [in] ULONGLONG value, [in] ULONGLONG maximum);
+};
