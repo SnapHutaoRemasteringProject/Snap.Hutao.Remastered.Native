@@ -18,7 +18,7 @@ static HRESULT InitializeXamlFunctions();
 static HRESULT InitializeXamlFunctions_Exact(HMODULE xamlModule);
 static void* FindPattern(void* start, size_t size, const void* pattern, size_t patternSize);
 
-DLL_EXPORT HRESULT WINAPI FrameworkThemingSetTheme(Theme theme);
+DLL_EXPORT HRESULT __stdcall FrameworkThemingSetTheme(Theme theme);
 
 #pragma pack(push, 1)
 struct GetValuePattern {

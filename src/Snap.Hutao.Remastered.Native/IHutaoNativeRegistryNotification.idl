@@ -1,0 +1,9 @@
+import "oaidl.idl";
+import "ocidl.idl";
+import "inspectable.idl";
+
+[uuid(EF118E91-8AD9-4C27-997D-DAF8910B34BE)]
+interface IHutaoNativeRegistryNotification : IInspectable
+{
+    HRESULT Start([in] unsigned long callback, [in] INT64 userData);
+};

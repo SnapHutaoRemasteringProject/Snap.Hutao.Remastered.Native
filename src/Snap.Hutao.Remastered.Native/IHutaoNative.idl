@@ -3,18 +3,34 @@ import "ocidl.idl";
 import "inspectable.idl";
 import "IHutaoString.idl";
 import "IHutaoNativeLoopbackSupport.idl";
-
-//MIDL_INTERFACE("D00F73FF-A1C7-4091-8CB6-D90991DD40CB")
-//IHutaoNative : public winrt::Windows::Foundation::IInspectable
-//{
-//    virtual HRESULT WINAPI MakeLoopbackSupport(IHutaoNativeLoopbackSupport * ppv) = 0;
-//    virtual HRESULT WINAPI MakeRegistryNotification(PCWSTR keyPath, IHutaoNativeRegistryNotificationVtbl** ppv) = 0;
-//    virtual HRESULT WINAPI MakeWindowSubclass(HWND hWnd, HutaoNativeWindowSubclassCallbackFunc callback, GCHandle userData, IHutaoNativeWindowSubclassVtbl** ppv) = 0;
-//    virtual HRESULT WINAPI MakeWindowNonRude(HWND hWnd, IHutaoNativeWindowNonRudeVtbl** ppv) = 0;
-//};
+import "IHutaoNativeRegistryNotification.idl";
+import "IHutaoNativeWindowSubclass.idl";
+import "IHutaoNativeWindowNonRude.idl";
+import "IHutaoNativeDeviceCapabilities.idl";
+import "IHutaoNativePhysicalDrive.idl";
+import "IHutaoNativeLogicalDrive.idl";
 
 [uuid(D00F73FF-A1C7-4091-8CB6-D90991DD40CB)]
 interface IHutaoNative : IInspectable
 {
-	HRESULT MakeLoopbackSupport([in] IHutaoNativeLoopbackSupport* ppv);
-}
+	// Return the created IHutaoNativeLoopbackSupport via out parameter
+	HRESULT MakeLoopbackSupport([out] IHutaoNativeLoopbackSupport** ppv);
+
+	// Create a registry notification watcher for the given key path
+	HRESULT MakeRegistryNotification([in] HSTRING keyPath, [out] IHutaoNativeRegistryNotification** ppv);
+
+	// Create a window subclass for the given HWND. Use INT64 for hwnd and userData; callback is IInspectable*
+	// HWND hWnd, HutaoNativeWindowSubclassCallback callback, GCHandle<XamlWindowSubclass> userData
+	HRESULT MakeWindowSubclass([in] INT64 hWnd, [in] unsigned long callback, [in] INT64 userData, [out] IHutaoNativeWindowSubclass** ppv);
+
+	// Create a helper that makes the window non-rude
+	HRESULT MakeWindowNonRude([in] INT64 hWnd, [out] IHutaoNativeWindowNonRude** ppv);
+};
+
+[uuid(338487EE-9592-4171-89DD-1E6B9EDB2C8E)]
+interface IHutaoNative2 : IInspectable
+{
+	HRESULT MakeDeviceCapabilities([out] IHutaoNativeDeviceCapabilities** ppv);
+	HRESULT MakePhysicalDrive([out] IHutaoNativePhysicalDrive** ppv);
+	HRESULT MakeLogicalDrive([out] IHutaoNativeLogicalDrive** ppv);
+};

@@ -49,6 +49,12 @@
     <Filter Include="源文件\core\interfaces\idl">
       <UniqueIdentifier>{fe556673-b249-4b0c-9439-6195529caf3d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="头文件\core\struct">
+      <UniqueIdentifier>{48ba24c5-b40b-4288-8b86-7e4043b0fc29}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\core\export">
+      <UniqueIdentifier>{b2511ec2-fc7d-4758-8723-4c0b70e1796b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -75,12 +81,6 @@
     <ClCompile Include="IHutaoNative.cpp">
       <Filter>源文件\core\interfaces</Filter>
     </ClCompile>
-    <ClCompile Include="HutaoNativeExports.cpp">
-      <Filter>源文件\core</Filter>
-    </ClCompile>
-    <ClCompile Include="IHutaoString.cpp">
-      <Filter>源文件\core\impl</Filter>
-    </ClCompile>
     <ClCompile Include="HutaoString.cpp">
       <Filter>源文件\core\impl</Filter>
     </ClCompile>
@@ -98,6 +98,21 @@
     </ClCompile>
     <ClCompile Include="WinRTImpl.cpp">
       <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="IHutaoString.cpp">
+      <Filter>源文件\core\interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="HutaoNative.cpp">
+      <Filter>源文件\core\impl</Filter>
+    </ClCompile>
+    <ClCompile Include="HutaoNativeRegistryNotification.cpp">
+      <Filter>源文件\core\impl</Filter>
+    </ClCompile>
+    <ClCompile Include="HutaoNativeExports.cpp">
+      <Filter>源文件\core\export</Filter>
+    </ClCompile>
+    <ClCompile Include="WilCallbacksManager.cpp">
+      <Filter>源文件\core\internal</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -146,9 +161,6 @@
     <ClInclude Include="IHutaoNativeLoopbackSupport.h">
       <Filter>头文件\core\interfaces</Filter>
     </ClInclude>
-    <ClInclude Include="IHutaoString.h">
-      <Filter>头文件\core\impl</Filter>
-    </ClInclude>
     <ClInclude Include="HutaoString.h">
       <Filter>头文件\core\impl</Filter>
     </ClInclude>
@@ -161,6 +173,51 @@
     <ClInclude Include="HutaoNativeExports.h">
       <Filter>头文件\core\export</Filter>
     </ClInclude>
+    <ClInclude Include="HutaoNativeWindowSubclassCallback.h">
+      <Filter>头文件\core\struct</Filter>
+    </ClInclude>
+    <ClInclude Include="IHutaoNativeWindowSubclass.h">
+      <Filter>头文件\core\interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="IHutaoNativeWindowNonRude.h">
+      <Filter>头文件\core\interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="IHutaoNativeRegistryNotification.h">
+      <Filter>头文件\core\interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="IHutaoNativePhysicalDrive.h">
+      <Filter>头文件\core\interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="HutaoNativePhysicalDrive.h">
+      <Filter>头文件\core\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="IHutaoString.h">
+      <Filter>头文件\core\interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="HutaoNativeDeviceCapabilities.h">
+      <Filter>头文件\core\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="HutaoNative.h">
+      <Filter>头文件\core\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="HutaoNativeRegistryNotification.h">
+      <Filter>头文件\core\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="IHutaoNativeDeviceCapabilities.h">
+      <Filter>头文件\core\interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="IHutaoNativeLogicalDrive.h">
+      <Filter>头文件\core\interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="HutaoNativeLoggingCallback.h">
+      <Filter>头文件\core\struct</Filter>
+    </ClInclude>
+    <ClInclude Include="HutaoNativeMessageCallback.h">
+      <Filter>头文件\core\struct</Filter>
+    </ClInclude>
+    <ClInclude Include="WilCallbacksManager.h">
+      <Filter>头文件\core\internal</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Midl Include="IHutaoString.idl">
@@ -169,10 +226,25 @@
     <Midl Include="IHutaoNativeLoopbackSupport.idl">
       <Filter>源文件\core\interfaces\idl</Filter>
     </Midl>
-    <Midl Include="IHutaoNativeLoopbackSupport2.idl">
+    <Midl Include="IHutaoNative.idl">
       <Filter>源文件\core\interfaces\idl</Filter>
     </Midl>
-    <Midl Include="IHutaoNative.idl">
+    <Midl Include="IHutaoNativeDeviceCapabilities.idl">
+      <Filter>源文件\core\interfaces\idl</Filter>
+    </Midl>
+    <Midl Include="IHutaoNativeLogicalDrive.idl">
+      <Filter>源文件\core\interfaces\idl</Filter>
+    </Midl>
+    <Midl Include="IHutaoNativePhysicalDrive.idl">
+      <Filter>源文件\core\interfaces\idl</Filter>
+    </Midl>
+    <Midl Include="IHutaoNativeRegistryNotification.idl">
+      <Filter>源文件\core\interfaces\idl</Filter>
+    </Midl>
+    <Midl Include="IHutaoNativeWindowNonRude.idl">
+      <Filter>源文件\core\interfaces\idl</Filter>
+    </Midl>
+    <Midl Include="IHutaoNativeWindowSubclass.idl">
       <Filter>源文件\core\interfaces\idl</Filter>
     </Midl>
   </ItemGroup>

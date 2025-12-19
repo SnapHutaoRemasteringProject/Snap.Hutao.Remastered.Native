@@ -145,8 +145,10 @@
     <ClCompile Include="FirewallRuleManager.cpp" />
     <ClCompile Include="FrameworkTheming.cpp" />
     <ClCompile Include="HookUtils.cpp" />
+    <ClCompile Include="HutaoNative.cpp" />
     <ClCompile Include="HutaoNativeExports.cpp" />
     <ClCompile Include="HutaoNativeLoopbackSupport.cpp" />
+    <ClCompile Include="HutaoNativeRegistryNotification.cpp" />
     <ClCompile Include="HutaoString.cpp" />
     <ClCompile Include="IHutaoNative.cpp" />
     <ClCompile Include="IHutaoNativeLoopbackSupport.cpp" />
@@ -155,6 +157,7 @@
     <ClCompile Include="PrivilegeUtils.cpp" />
     <ClCompile Include="ProcessUtils.cpp" />
     <ClCompile Include="StringUtils.cpp" />
+    <ClCompile Include="WilCallbacksManager.cpp" />
     <ClCompile Include="WinRTImpl.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -164,13 +167,26 @@
     <ClInclude Include="FirewallRuleManager.h" />
     <ClInclude Include="FrameworkTheming.h" />
     <ClInclude Include="HookUtils.h" />
+    <ClInclude Include="HutaoNative.h" />
+    <ClInclude Include="HutaoNativeDeviceCapabilities.h" />
     <ClInclude Include="HutaoNativeExports.h" />
     <ClInclude Include="HutaoNativeGuidHelper.h" />
     <ClInclude Include="HutaoNativeGuids.h" />
+    <ClInclude Include="HutaoNativeLoggingCallback.h" />
     <ClInclude Include="HutaoNativeLoopbackSupport.h" />
+    <ClInclude Include="HutaoNativeMessageCallback.h" />
+    <ClInclude Include="HutaoNativePhysicalDrive.h" />
+    <ClInclude Include="IHutaoNativeDeviceCapabilities.h" />
+    <ClInclude Include="IHutaoNativeLogicalDrive.h" />
+    <ClInclude Include="IHutaoNativePhysicalDrive.h" />
+    <ClInclude Include="HutaoNativeRegistryNotification.h" />
+    <ClInclude Include="HutaoNativeWindowSubclassCallback.h" />
     <ClInclude Include="HutaoString.h" />
     <ClInclude Include="IHutaoNative.h" />
     <ClInclude Include="IHutaoNativeLoopbackSupport.h" />
+    <ClInclude Include="IHutaoNativeRegistryNotification.h" />
+    <ClInclude Include="IHutaoNativeWindowNonRude.h" />
+    <ClInclude Include="IHutaoNativeWindowSubclass.h" />
     <ClInclude Include="IHutaoString.h" />
     <ClInclude Include="MemoryUtils.h" />
     <ClInclude Include="PrivilegeUtils.h" />
@@ -178,11 +194,17 @@
     <ClInclude Include="StringUtils.h" />
     <ClInclude Include="Theme.h" />
     <ClInclude Include="Types.h" />
+    <ClInclude Include="WilCallbacksManager.h" />
   </ItemGroup>
   <ItemGroup>
     <Midl Include="IHutaoNative.idl" />
+    <Midl Include="IHutaoNativeDeviceCapabilities.idl" />
+    <Midl Include="IHutaoNativeLogicalDrive.idl" />
     <Midl Include="IHutaoNativeLoopbackSupport.idl" />
-    <Midl Include="IHutaoNativeLoopbackSupport2.idl" />
+    <Midl Include="IHutaoNativePhysicalDrive.idl" />
+    <Midl Include="IHutaoNativeRegistryNotification.idl" />
+    <Midl Include="IHutaoNativeWindowNonRude.idl" />
+    <Midl Include="IHutaoNativeWindowSubclass.idl" />
     <Midl Include="IHutaoString.idl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

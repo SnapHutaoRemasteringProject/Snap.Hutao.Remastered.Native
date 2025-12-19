@@ -27,7 +27,7 @@ HutaoString::HutaoString(const std::wstring& initialValue)
 {
 }
 
-HRESULT WINAPI HutaoString::GetBuffer(PCWSTR* buffer) noexcept
+HRESULT __stdcall HutaoString::GetBuffer(PCWSTR* buffer) noexcept
 {
 	if (buffer == nullptr)
 	{
@@ -45,7 +45,7 @@ HRESULT WINAPI HutaoString::GetBuffer(PCWSTR* buffer) noexcept
 	}
 }
 
-HRESULT WINAPI HutaoString::GetBufferSize(uint32_t* size) noexcept
+HRESULT __stdcall HutaoString::GetBufferSize(uint32_t* size) noexcept
 {
 	if (size == nullptr)
 	{
@@ -63,7 +63,7 @@ HRESULT WINAPI HutaoString::GetBufferSize(uint32_t* size) noexcept
 	}
 }
 
-HRESULT WINAPI HutaoString::SetBuffer(PCWSTR value, uint32_t length) noexcept
+HRESULT __stdcall HutaoString::SetBuffer(PCWSTR value, uint32_t length) noexcept
 {
 	if (value == nullptr && length > 0)
 	{
@@ -96,7 +96,7 @@ HRESULT WINAPI HutaoString::SetBuffer(PCWSTR value, uint32_t length) noexcept
 	}
 }
 
-HRESULT WINAPI HutaoString::GetLength(uint32_t* length) noexcept
+HRESULT __stdcall HutaoString::GetLength(uint32_t* length) noexcept
 {
 	if (length == nullptr)
 	{
@@ -114,7 +114,7 @@ HRESULT WINAPI HutaoString::GetLength(uint32_t* length) noexcept
 	}
 }
 
-HRESULT WINAPI HutaoString::Clear() noexcept
+HRESULT __stdcall HutaoString::Clear() noexcept
 {
 	try
 	{
@@ -127,7 +127,7 @@ HRESULT WINAPI HutaoString::Clear() noexcept
 	}
 }
 
-HRESULT WINAPI HutaoString::Append(PCWSTR value) noexcept
+HRESULT __stdcall HutaoString::Append(PCWSTR value) noexcept
 {
 	if (value == nullptr)
 	{
@@ -145,7 +145,7 @@ HRESULT WINAPI HutaoString::Append(PCWSTR value) noexcept
 	}
 }
 
-HRESULT WINAPI HutaoString::CompareTo(IHutaoString* other, int32_t* result) noexcept
+HRESULT __stdcall HutaoString::CompareTo(IHutaoString* other, int32_t* result) noexcept
 {
 	if (other == nullptr || result == nullptr)
 	{
@@ -189,7 +189,7 @@ HRESULT WINAPI HutaoString::CompareTo(IHutaoString* other, int32_t* result) noex
 	}
 }
 
-HRESULT WINAPI HutaoString::ToUpper() noexcept
+HRESULT __stdcall HutaoString::ToUpper() noexcept
 {
 	try
 	{
@@ -205,7 +205,7 @@ HRESULT WINAPI HutaoString::ToUpper() noexcept
 	}
 }
 
-HRESULT WINAPI HutaoString::ToLower() noexcept
+HRESULT __stdcall HutaoString::ToLower() noexcept
 {
 	try
 	{
@@ -221,7 +221,7 @@ HRESULT WINAPI HutaoString::ToLower() noexcept
 	}
 }
 
-HRESULT WINAPI HutaoString::Substring(uint32_t start, uint32_t length, IHutaoString** result) noexcept
+HRESULT __stdcall HutaoString::Substring(uint32_t start, uint32_t length, IHutaoString** result) noexcept
 {
 	if (result == nullptr)
 	{
