@@ -10,6 +10,25 @@ import "IHutaoNativeWindowNonRude.idl";
 import "IHutaoNativeDeviceCapabilities.idl";
 import "IHutaoNativePhysicalDrive.idl";
 import "IHutaoNativeLogicalDrive.idl";
+import "IHutaoNativeInputLowLevelKeyboardSource.idl";
+import "IHutaoNativeFileSystem.idl";
+import "IHutaoNativeNotifyIcon.idl";
+import "IHutaoNativeHotKeyAction.idl";
+import "IHutaoNativeProcess.idl";
+
+[uuid(1A6980D9-EB36-4E3E-86E7-3665C57C6E8D)]
+interface IHutaoNativePrivate : IInspectable
+{
+	HRESULT IsCurrentWindowsVersionSupported([out] BOOL* isSupported);
+	HRESULT GetWindowsVersion([out] HutaoPrivateWindowsVersion* pv);
+	HRESULT ShowErrorMessage([in] PCWSTR title, [in] PCWSTR message);
+};
+
+[uuid(4E5D37CF-5F38-4FF2-9059-DF39CA696365)]
+interface IHutaoPrivate2 : IInspectable
+{
+	HRESULT ExchangeGameUidForIdentifier1820([in] PCWSTR gameUid, [out] byte* identifier);
+};
 
 [uuid(D00F73FF-A1C7-4091-8CB6-D90991DD40CB)]
 interface IHutaoNative : IInspectable
@@ -26,4 +45,34 @@ interface IHutaoNative2 : IInspectable
 	HRESULT MakeDeviceCapabilities([out] IHutaoNativeDeviceCapabilities** ppv);
 	HRESULT MakePhysicalDrive([out] IHutaoNativePhysicalDrive** ppv);
 	HRESULT MakeLogicalDrive([out] IHutaoNativeLogicalDrive** ppv);
+};
+
+[uuid(135FACE1-3184-4D12-B4D0-21FFB6A88D25)]
+interface IHutaoNative3 : IInspectable
+{
+	HRESULT MakeInputLowLevelKeyboardSource([out] IHutaoNativeInputLowLevelKeyboardSource** ppv);
+};
+
+[uuid(27942FBE-322F-4157-9B8C-A38FDB827B05)]
+interface IHutaoNative4 : IInspectable
+{
+	HRESULT MakeFileSystem([out] IHutaoNativeFileSystem** ppv);
+};
+
+[uuid(7B4D20F1-4DAD-492E-8485-B4701A2ED19B)]
+interface IHutaoNative5 : IInspectable
+{
+	HRESULT MakeNotifyIcon([in] PCWSTR iconPath, [in] GUID* id, [out] IHutaoNativeNotifyIcon** ppv);
+};
+
+[uuid(B68CABFA-C55A-49FA-8C51-21615C594E2B)]
+interface IHutaoNative6 : IInspectable
+{
+	HRESULT MakeHotKeyAction([in] HutaoNativeHotKeyActionKind kind, [in] nint callback, [in] nint userData, [out] IHutaoNativeHotKeyAction** ppv);
+};
+
+[uuid(B7A49A20-D9E2-43FD-9637-E80190443ABE)]
+interface IHutaoNative7 : IInspectable
+{
+	HRESULT MakeProcess([in] HutaoNativeProcessStartInfo info, [out] IHutaoNativeProcess** ppv);
 };

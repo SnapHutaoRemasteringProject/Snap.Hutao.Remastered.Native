@@ -6,7 +6,7 @@
 #include <bcrypt.h>
 
 
-enum FailureType
+enum class FailureType
 {
     // THROW_...
     Exception,
@@ -21,7 +21,7 @@ enum FailureType
     FailFast,
 };
 
-enum FailureFlags
+enum class FailureFlags
 {
     None = 0x00,
     RequestFailFast = 0x01,

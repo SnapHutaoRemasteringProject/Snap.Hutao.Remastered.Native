@@ -1,1 +1,33 @@
+import "oaidl.idl";
+import "ocidl.idl";
+import "inspectable.idl";
+
 typedef long long nint;
+typedef unsigned long uint;
+
+typedef [string] const wchar_t* LPCWSTR;
+typedef LPCWSTR PCWSTR;
+
+typedef struct HutaoPrivateWindowsVersion
+{
+    UINT major;
+    UINT minor;
+    UINT build;
+    UINT revision;
+} HutaoPrivateWindowsVersion;
+
+typedef enum HutaoNativeHotKeyActionKind
+{
+    None = 0,
+    MouseClickRepeatForever = 1,
+    KeyPressRepeatForever = 2
+} HutaoNativeHotKeyActionKind;
+
+typedef struct HutaoNativeProcessStartInfo
+{
+    PCWSTR ApplicationName;
+    PCWSTR CommandLine;
+    BOOL InheritHandles;
+    long CreationFlags; // PROCESS_CREATION_FLAGS
+    PCWSTR CurrentDirectory;
+} HutaoNativeProcessStartInfo;

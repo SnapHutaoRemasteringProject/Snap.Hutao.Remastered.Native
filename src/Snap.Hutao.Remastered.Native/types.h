@@ -1,8 +1,11 @@
 #pragma once
 
+#include "Types_h.h"
+
 typedef unsigned char byte;
 typedef unsigned int WIN32_ERROR;
-typedef void* nint;
+typedef long long nint;
+typedef unsigned long uint;
 
 typedef nint GCHandle;
 

@@ -1,9 +1,10 @@
 import "oaidl.idl";
 import "ocidl.idl";
 import "inspectable.idl";
+import "Types.idl";
 
 [uuid(D8E6C944-C964-4909-8BFF-901C40670DFF)]
 interface IHutaoNativeLogicalDrive : IInspectable
 {
-    // placeholder
+    HRESULT GetDiskFreeSpace([in] PCWSTR path, [out] long* bytes);
 };

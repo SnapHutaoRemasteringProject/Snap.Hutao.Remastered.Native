@@ -146,6 +146,13 @@
     <ClCompile Include="FrameworkTheming.cpp" />
     <ClCompile Include="HookUtils.cpp" />
     <ClCompile Include="HutaoNative.cpp" />
+    <ClCompile Include="HutaoNativeDeviceCapabilities.cpp" />
+    <ClCompile Include="HutaoNativeFileSystem.cpp" />
+    <ClCompile Include="HutaoNativeNotifyIcon.cpp" />
+    <ClCompile Include="HutaoNativeHotKeyAction.cpp" />
+    <ClCompile Include="HutaoNativeProcess.cpp" />
+    <ClCompile Include="HutaoNativePhysicalDrive.cpp" />
+    <ClCompile Include="HutaoNativeLogicalDrive.cpp" />
     <ClCompile Include="HutaoNativeExports.cpp" />
     <ClCompile Include="HutaoNativeLoopbackSupport.cpp" />
     <ClCompile Include="HutaoNativeRegistryNotification.cpp" />
@@ -159,6 +166,7 @@
     <ClCompile Include="StringUtils.cpp" />
     <ClCompile Include="WilCallbacksManager.cpp" />
     <ClCompile Include="WinRTImpl.cpp" />
+    <ClCompile Include="HutaoNativeInputLowLevelKeyboardSource.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DllInjection.h" />
@@ -170,20 +178,30 @@
     <ClInclude Include="HutaoNative.h" />
     <ClInclude Include="HutaoNativeDeviceCapabilities.h" />
     <ClInclude Include="HutaoNativeExports.h" />
+    <ClInclude Include="HutaoNativeFileSystem.h" />
+    <ClInclude Include="HutaoNativeNotifyIcon.h" />
+    <ClInclude Include="HutaoNativeHotKeyAction.h" />
+    <ClInclude Include="HutaoNativeProcess.h" />
     <ClInclude Include="HutaoNativeGuidHelper.h" />
     <ClInclude Include="HutaoNativeGuids.h" />
     <ClInclude Include="HutaoNativeLoggingCallback.h" />
     <ClInclude Include="HutaoNativeLoopbackSupport.h" />
     <ClInclude Include="HutaoNativeMessageCallback.h" />
     <ClInclude Include="HutaoNativePhysicalDrive.h" />
+    <ClInclude Include="HutaoPrivateWindowsVersion.h" />
     <ClInclude Include="IHutaoNativeDeviceCapabilities.h" />
+    <ClInclude Include="IHutaoNativeFileSystem.h" />
+    <ClInclude Include="IHutaoNativeHotKeyAction.h" />
+    <ClInclude Include="IHutaoNativeInputLowLevelKeyboardSource.h" />
     <ClInclude Include="IHutaoNativeLogicalDrive.h" />
+    <ClInclude Include="IHutaoNativeNotifyIcon.h" />
     <ClInclude Include="IHutaoNativePhysicalDrive.h" />
     <ClInclude Include="HutaoNativeRegistryNotification.h" />
     <ClInclude Include="HutaoNativeWindowSubclassCallback.h" />
     <ClInclude Include="HutaoString.h" />
     <ClInclude Include="IHutaoNative.h" />
     <ClInclude Include="IHutaoNativeLoopbackSupport.h" />
+    <ClInclude Include="IHutaoNativeProcess.h" />
     <ClInclude Include="IHutaoNativeRegistryNotification.h" />
     <ClInclude Include="IHutaoNativeWindowNonRude.h" />
     <ClInclude Include="IHutaoNativeWindowSubclass.h" />
@@ -195,10 +213,14 @@
     <ClInclude Include="Theme.h" />
     <ClInclude Include="Types.h" />
     <ClInclude Include="WilCallbacksManager.h" />
+    <ClInclude Include="HutaoNativeInputLowLevelKeyboardSource.h" />
   </ItemGroup>
   <ItemGroup>
     <Midl Include="IHutaoNative.idl" />
     <Midl Include="IHutaoNativeDeviceCapabilities.idl" />
+    <Midl Include="IHutaoNativeFileSystem2.idl" />
+    <Midl Include="IHutaoNativeFileSystem3.idl" />
+    <Midl Include="IHutaoNativeFileSystem4.idl" />
     <Midl Include="IHutaoNativeLogicalDrive.idl" />
     <Midl Include="IHutaoNativeLoopbackSupport.idl" />
     <Midl Include="IHutaoNativePhysicalDrive.idl" />
@@ -207,6 +229,11 @@
     <Midl Include="IHutaoNativeWindowSubclass.idl" />
     <Midl Include="IHutaoString.idl" />
     <Midl Include="Types.idl" />
+    <Midl Include="IHutaoNativeInputLowLevelKeyboardSource.idl" />
+    <Midl Include="IHutaoNativeFileSystem.idl" />
+    <Midl Include="IHutaoNativeNotifyIcon.idl" />
+    <Midl Include="IHutaoNativeHotKeyAction.idl" />
+    <Midl Include="IHutaoNativeProcess.idl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

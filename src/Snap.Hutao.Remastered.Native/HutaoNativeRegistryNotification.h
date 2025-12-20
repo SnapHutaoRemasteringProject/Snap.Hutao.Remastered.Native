@@ -4,6 +4,8 @@
 #include "types.h"
 #include <winrt/base.h>
 #include <Windows.h>
+#include <thread>
+#include <atomic>
 
 class HutaoNativeRegistryNotification : public winrt::implements<HutaoNativeRegistryNotification, IHutaoNativeRegistryNotification, winrt::non_agile>
 {
@@ -15,5 +17,12 @@ public:
     virtual HRESULT STDMETHODCALLTYPE Start(nint callback, INT64 userData) override;
 
 private:
+    static DWORD WINAPI NotificationThreadProc(LPVOID lpParameter);
+    void NotificationThread();
+
+    std::thread notificationThread_;
+    std::atomic<bool> stopRequested_{false};
+    nint callback_ = 0;
     INT64 userData_ = 0;
+    HKEY hKey_ = nullptr;
 };

@@ -1,0 +1,15 @@
+import "Types.idl";
+import "IHutaoString.idl";
+
+[uuid(13A2B1A2-03CB-46E1-AED5-6AFEA2DFFB39)]
+interface IHutaoNativeProcess : IInspectable
+{
+    HRESULT Start();
+    HRESULT ResumeMainThread();
+    HRESULT WaitForExit();
+    HRESULT Kill();
+    HRESULT GetId([out] uint* id);
+    HRESULT GetProcessHandle([out] long long* hProcess);
+    HRESULT GetMainWindowHandle([out] long long* hWnd);
+    HRESULT GetExitCodeProcess([out] BOOL* isRunning, [out] uint* exitCode);
+}

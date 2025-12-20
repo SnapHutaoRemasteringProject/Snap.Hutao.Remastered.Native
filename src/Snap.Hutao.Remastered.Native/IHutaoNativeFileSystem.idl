@@ -1,0 +1,22 @@
+import "oaidl.idl";
+import "ocidl.idl";
+import "inspectable.idl";
+import "types.idl";
+import "IHutaoString.idl";
+
+[uuid(FDD58117-0C7F-44D8-A7A2-8B1766474A93)]
+interface IHutaoNativeFileSystem : IInspectable
+{
+	HRESULT RenameItem([in] PCWSTR filePath, [in] PCWSTR newName);
+	HRESULT RenameItemWithOptions([in] PCWSTR filePath, [in] PCWSTR newName, [in] long flags);
+	HRESULT MoveItem([in] PCWSTR oldPath, [in] PCWSTR newFolder);
+	HRESULT MoveItemWithOptions([in] PCWSTR oldPath, [in] PCWSTR newFolder, [in] long flags);
+	HRESULT MoveItemWithName([in] PCWSTR oldPath, [in] PCWSTR newFolder, [in] PCWSTR name);
+	HRESULT MoveItemWithNameAndOptions([in] PCWSTR oldPath, [in] PCWSTR newFolder, [in] PCWSTR name, [in] long flags);
+	HRESULT CopyItem([in] PCWSTR oldPath, [in] PCWSTR newFolder);
+	HRESULT CopyItemWithOptions([in] PCWSTR oldPath, [in] PCWSTR newFolder, [in] long flags);
+	HRESULT CopyItemWithName([in] PCWSTR oldPath, [in] PCWSTR newFolder, [in] PCWSTR name);
+	HRESULT CopyItemWithNameAndOptions([in] PCWSTR oldPath, [in] PCWSTR newFolder, [in] PCWSTR name, [in] long flags);
+	HRESULT DeleteItem([in] PCWSTR filePath);
+	HRESULT DeleteItemWithOptions([in] PCWSTR filePath, [in] long flags);
+}

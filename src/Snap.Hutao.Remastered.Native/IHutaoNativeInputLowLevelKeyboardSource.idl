@@ -1,0 +1,9 @@
+import "Types.idl";
+import "IHutaoString.idl";
+
+[uuid(8628902F-835C-4293-8580-794EC9BCCB98)]
+interface IHutaoNativeInputLowLevelKeyboardSource : IInspectable
+{
+    HRESULT Attach([in] nint callback);
+    HRESULT Detach([in] nint callback);
+}

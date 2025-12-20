@@ -1,8 +1,15 @@
 #include"FrameworkTheming.h"
+#include "types.h"
+#include "dllmain.h"
+#include "Theme.h"
+#include <Windows.h>
+#include <cstdarg>
+#include <cstdint>
+#include <string.h>
 
 DLL_EXPORT HRESULT __stdcall FrameworkThemingSetTheme(Theme theme) {
     // 验证输入参数 (匹配C#的Theme枚举)
-    if ((theme & 0x03) > 0x02) {  // BaseMask检查
+    if ((((byte)theme) & 0x03) > 0x02) {  // BaseMask检查
         return E_INVALIDARG;
     }
 
@@ -52,7 +59,7 @@ DLL_EXPORT HRESULT __stdcall FrameworkThemingSetTheme(Theme theme) {
 
         // 设置主题值
         uint8_t* themeValue = reinterpret_cast<uint8_t*>(*ptr2 + 80);
-        *themeValue = theme;
+        *themeValue = (byte)theme;
 
         // 调用 OnThemeChanged 函数
         auto onThemeChangedFunc = reinterpret_cast<HRESULT(__stdcall*)(int64_t, uint8_t)>(g_pOnThemeChangedFunction);

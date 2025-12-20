@@ -8,4 +8,6 @@ class HutaoNativePhysicalDrive : public winrt::implements<HutaoNativePhysicalDri
 public:
     HutaoNativePhysicalDrive() = default;
     ~HutaoNativePhysicalDrive() = default;
+
+    HRESULT STDMETHODCALLTYPE IsPathOnSolidStateDrive(PCWSTR root, BOOL* isSSD) noexcept;
 };
