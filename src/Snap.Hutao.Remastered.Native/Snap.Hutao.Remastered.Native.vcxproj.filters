@@ -114,6 +114,30 @@
     <ClCompile Include="WilCallbacksManager.cpp">
       <Filter>源文件\core\internal</Filter>
     </ClCompile>
+    <ClCompile Include="HutaoNativeProcess.cpp">
+      <Filter>源文件\core\impl</Filter>
+    </ClCompile>
+    <ClCompile Include="HutaoNativeDeviceCapabilities.cpp">
+      <Filter>源文件\core\impl</Filter>
+    </ClCompile>
+    <ClCompile Include="HutaoNativeFileSystem.cpp">
+      <Filter>源文件\core\impl</Filter>
+    </ClCompile>
+    <ClCompile Include="HutaoNativeHotKeyAction.cpp">
+      <Filter>源文件\core\impl</Filter>
+    </ClCompile>
+    <ClCompile Include="HutaoNativeInputLowLevelKeyboardSource.cpp">
+      <Filter>源文件\core\impl</Filter>
+    </ClCompile>
+    <ClCompile Include="HutaoNativeLogicalDrive.cpp">
+      <Filter>源文件\core\impl</Filter>
+    </ClCompile>
+    <ClCompile Include="HutaoNativeNotifyIcon.cpp">
+      <Filter>源文件\core\impl</Filter>
+    </ClCompile>
+    <ClCompile Include="HutaoNativePhysicalDrive.cpp">
+      <Filter>源文件\core\impl</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Theme.h">
@@ -218,6 +242,39 @@
     <ClInclude Include="FailureInfo.h">
       <Filter>头文件\core\struct</Filter>
     </ClInclude>
+    <ClInclude Include="HutaoPrivateWindowsVersion.h">
+      <Filter>头文件\core\struct</Filter>
+    </ClInclude>
+    <ClInclude Include="IHutaoNativeFileSystem.h">
+      <Filter>头文件\core\interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="IHutaoNativeNotifyIcon.h">
+      <Filter>头文件\core\interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="IHutaoNativeHotKeyAction.h">
+      <Filter>头文件\core\interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="IHutaoNativeProcess.h">
+      <Filter>头文件\core\interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="HutaoNativeNotifyIcon.h">
+      <Filter>头文件\core\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="HutaoNativeProcess.h">
+      <Filter>头文件\core\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="HutaoNativeHotKeyAction.h">
+      <Filter>头文件\core\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="HutaoNativeFileSystem.h">
+      <Filter>头文件\core\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="IHutaoNativeInputLowLevelKeyboardSource.h">
+      <Filter>头文件\core\interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="HutaoNativeInputLowLevelKeyboardSource.h">
+      <Filter>头文件\core\interfaces</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Midl Include="IHutaoString.idl">
@@ -249,6 +306,30 @@
     </Midl>
     <Midl Include="Types.idl">
       <Filter>源文件</Filter>
+    </Midl>
+    <Midl Include="IHutaoNativeProcess.idl">
+      <Filter>源文件\core\interfaces\idl</Filter>
+    </Midl>
+    <Midl Include="IHutaoNativeNotifyIcon.idl">
+      <Filter>源文件\core\interfaces\idl</Filter>
+    </Midl>
+    <Midl Include="IHutaoNativeInputLowLevelKeyboardSource.idl">
+      <Filter>源文件\core\interfaces\idl</Filter>
+    </Midl>
+    <Midl Include="IHutaoNativeFileSystem.idl">
+      <Filter>源文件\core\interfaces\idl</Filter>
+    </Midl>
+    <Midl Include="IHutaoNativeHotKeyAction.idl">
+      <Filter>源文件\core\interfaces\idl</Filter>
+    </Midl>
+    <Midl Include="IHutaoNativeFileSystem2.idl">
+      <Filter>源文件\core\interfaces\idl</Filter>
+    </Midl>
+    <Midl Include="IHutaoNativeFileSystem3.idl">
+      <Filter>源文件\core\interfaces\idl</Filter>
+    </Midl>
+    <Midl Include="IHutaoNativeFileSystem4.idl">
+      <Filter>源文件\core\interfaces\idl</Filter>
     </Midl>
   </ItemGroup>
 </Project>

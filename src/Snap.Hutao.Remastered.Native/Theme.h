@@ -1,7 +1,8 @@
 #pragma once
 
-#include"Types.h"
-enum Theme : byte
+#include <Windows.h>
+
+enum class Theme : byte
 {
     BaseMask = 0x03,
     None = 0x00,
