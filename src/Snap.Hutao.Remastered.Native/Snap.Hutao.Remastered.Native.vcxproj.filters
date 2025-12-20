@@ -247,5 +247,8 @@
     <Midl Include="IHutaoNativeWindowSubclass.idl">
       <Filter>源文件\core\interfaces\idl</Filter>
     </Midl>
+    <Midl Include="Types.idl">
+      <Filter>源文件</Filter>
+    </Midl>
   </ItemGroup>
 </Project>

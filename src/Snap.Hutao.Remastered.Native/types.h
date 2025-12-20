@@ -2,7 +2,7 @@
 
 typedef unsigned char byte;
 typedef unsigned int WIN32_ERROR;
-typedef unsigned long nint;
+typedef void* nint;
 
 typedef nint GCHandle;
 
