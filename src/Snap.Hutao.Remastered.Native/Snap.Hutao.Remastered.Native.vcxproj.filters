@@ -155,9 +155,6 @@
     <ClInclude Include="HutaoNativeGuids.h">
       <Filter>头文件\core</Filter>
     </ClInclude>
-    <ClInclude Include="FailureInfo.h">
-      <Filter>头文件\core</Filter>
-    </ClInclude>
     <ClInclude Include="IHutaoNativeLoopbackSupport.h">
       <Filter>头文件\core\interfaces</Filter>
     </ClInclude>
@@ -217,6 +214,9 @@
     </ClInclude>
     <ClInclude Include="WilCallbacksManager.h">
       <Filter>头文件\core\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="FailureInfo.h">
+      <Filter>头文件\core\struct</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

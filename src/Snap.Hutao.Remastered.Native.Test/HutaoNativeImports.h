@@ -4,6 +4,8 @@
 #include "../Snap.Hutao.Remastered.Native/IHutaoNative_h.h"
 #include "../Snap.Hutao.Remastered.Native/IHutaoNativeRegistryNotification_h.h"
 #include "../Snap.Hutao.Remastered.Native/IHutaoString_h.h"
+#include "../Snap.Hutao.Remastered.Native/HutaoNativeLoggingCallback.h"
+#include "../Snap.Hutao.Remastered.Native/HutaoNativeMessageCallback.h"
 
 #define DLL_IMPORT __declspec(dllimport) extern "C"
 
@@ -13,3 +15,5 @@ DLL_IMPORT HRESULT __stdcall HutaoStringCreateInstance(
     IHutaoString** ppInstance);
 DLL_IMPORT HRESULT __stdcall HutaoNativeRegistryNotificationCreateInstance(
     IHutaoNativeRegistryNotification** ppInstance);
+DLL_IMPORT HRESULT HutaoInitializeWilCallbacks(HutaoNativeLoggingCallback loggingCallback, HutaoNativeMessageCallback messageCallback);
+DLL_IMPORT void HutaoTestWilCallbacks();

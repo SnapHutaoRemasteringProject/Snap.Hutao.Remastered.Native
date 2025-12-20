@@ -15,4 +15,5 @@ DLL_EXPORT HRESULT __stdcall HutaoStringCreateInstance(
 DLL_EXPORT HRESULT __stdcall HutaoNativeRegistryNotificationCreateInstance(
     IHutaoNativeRegistryNotification** ppInstance);
 DLL_EXPORT HRESULT HutaoInitializeWilCallbacks(HutaoNativeLoggingCallback loggingCallback, HutaoNativeMessageCallback messageCallback);
+DLL_EXPORT void HutaoTestWilCallbacks();
 DLL_EXPORT BOOL HutaoHResultIsWin32(HRESULT hr, WIN32_ERROR  error);

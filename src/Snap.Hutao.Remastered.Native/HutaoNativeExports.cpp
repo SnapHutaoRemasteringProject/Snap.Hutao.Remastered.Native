@@ -62,6 +62,12 @@ DLL_EXPORT HRESULT HutaoInitializeWilCallbacks(HutaoNativeLoggingCallback loggin
     return S_OK;
 }
 
+DLL_EXPORT void HutaoTestWilCallbacks()
+{
+	LogInfo(L"HutaoTestWilCallbacks invoked.");
+	LogMsg(L"This is a test message from HutaoTestWilCallbacks.");
+}
+
 DLL_EXPORT BOOL HutaoHResultIsWin32(HRESULT hr, WIN32_ERROR error)
 {
     // Compare HRESULT with HRESULT_FROM_WIN32(error)

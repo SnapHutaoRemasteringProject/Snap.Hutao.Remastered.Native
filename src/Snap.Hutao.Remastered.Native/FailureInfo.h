@@ -3,6 +3,7 @@
 #include "Types.h"
 #include <Windows.h>
 #include <cstdint>
+#include <bcrypt.h>
 
 
 enum FailureType
