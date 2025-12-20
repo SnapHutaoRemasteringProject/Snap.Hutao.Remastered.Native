@@ -1,6 +1,7 @@
 import "oaidl.idl";
 import "ocidl.idl";
 import "inspectable.idl";
+import "types.idl";
 import "IHutaoString.idl";
 import "IHutaoNativeLoopbackSupport.idl";
 import "IHutaoNativeRegistryNotification.idl";
@@ -13,17 +14,9 @@ import "IHutaoNativeLogicalDrive.idl";
 [uuid(D00F73FF-A1C7-4091-8CB6-D90991DD40CB)]
 interface IHutaoNative : IInspectable
 {
-	// Return the created IHutaoNativeLoopbackSupport via out parameter
 	HRESULT MakeLoopbackSupport([out] IHutaoNativeLoopbackSupport** ppv);
-
-	// Create a registry notification watcher for the given key path
 	HRESULT MakeRegistryNotification([in] HSTRING keyPath, [out] IHutaoNativeRegistryNotification** ppv);
-
-	// Create a window subclass for the given HWND. Use INT64 for hwnd and userData; callback is IInspectable*
-	// HWND hWnd, HutaoNativeWindowSubclassCallback callback, GCHandle<XamlWindowSubclass> userData
-	HRESULT MakeWindowSubclass([in] INT64 hWnd, [in] unsigned long callback, [in] INT64 userData, [out] IHutaoNativeWindowSubclass** ppv);
-
-	// Create a helper that makes the window non-rude
+	HRESULT MakeWindowSubclass([in] INT64 hWnd, [in] nint callback, [in] INT64 userData, [out] IHutaoNativeWindowSubclass** ppv);
 	HRESULT MakeWindowNonRude([in] INT64 hWnd, [out] IHutaoNativeWindowNonRude** ppv);
 };
 

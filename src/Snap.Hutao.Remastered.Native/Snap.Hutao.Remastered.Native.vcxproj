@@ -206,6 +206,7 @@
     <Midl Include="IHutaoNativeWindowNonRude.idl" />
     <Midl Include="IHutaoNativeWindowSubclass.idl" />
     <Midl Include="IHutaoString.idl" />
+    <Midl Include="Types.idl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
