@@ -25,17 +25,10 @@ DLL_EXPORT HRESULT __stdcall HutaoCreateInstance(
         return E_POINTER;
     }
 
-    try
-    {
-        winrt::init_apartment();
-        com_ptr<IHutaoNative> instance = make_self<HutaoNative>();
-        *ppInstance = detach_abi(instance);
-        return S_OK;
-    }
-    catch (...)
-    {
-        return winrt::to_hresult();
-    }
+    com_ptr<IHutaoNative> instance = make_self<HutaoNative>();
+    *ppInstance = detach_abi(instance);
+
+    return S_OK;
 }
 
 DLL_EXPORT HRESULT __stdcall HutaoStringCreateInstance(
@@ -45,17 +38,10 @@ DLL_EXPORT HRESULT __stdcall HutaoStringCreateInstance(
         return E_POINTER;
     }
 
-    try
-    {
-        winrt::init_apartment();
-        com_ptr<IHutaoString> instance = make_self<HutaoString>();
-        *ppInstance = detach_abi(instance);
-        return S_OK;
-    }
-    catch (...)
-    {
-        return winrt::to_hresult();
-    }
+    com_ptr<IHutaoString> instance = make_self<HutaoString>();
+    *ppInstance = detach_abi(instance);
+
+    return S_OK;
 }
 
 DLL_EXPORT HRESULT __stdcall HutaoNativeRegistryNotificationCreateInstance(IHutaoNativeRegistryNotification** ppInstance)
@@ -64,17 +50,10 @@ DLL_EXPORT HRESULT __stdcall HutaoNativeRegistryNotificationCreateInstance(IHuta
         return E_POINTER;
     }
 
-    try
-    {
-        winrt::init_apartment();
-        com_ptr<IHutaoNativeRegistryNotification> instance = make_self<HutaoNativeRegistryNotification>();
-        *ppInstance = detach_abi(instance);
-        return S_OK;
-    }
-    catch (...)
-    {
-        return winrt::to_hresult();
-    }
+    com_ptr<IHutaoNativeRegistryNotification> instance = make_self<HutaoNativeRegistryNotification>();
+    *ppInstance = detach_abi(instance);
+
+    return S_OK;
 }
 
 DLL_EXPORT HRESULT HutaoInitializeWilCallbacks(HutaoNativeLoggingCallback loggingCallback, HutaoNativeMessageCallback messageCallback)
