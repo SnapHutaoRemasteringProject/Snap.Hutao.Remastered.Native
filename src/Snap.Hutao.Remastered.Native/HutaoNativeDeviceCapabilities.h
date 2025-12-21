@@ -1,10 +1,10 @@
 #pragma once
 
 #include "IHutaoNativeDeviceCapabilities_h.h"
-#include <winrt/base.h>
+#include "CustomImplements.h"
 #include <Windows.h>
 
-class HutaoNativeDeviceCapabilities : public winrt::implements<HutaoNativeDeviceCapabilities, IHutaoNativeDeviceCapabilities, winrt::non_agile>
+class HutaoNativeDeviceCapabilities : public hutao::CustomImplements<HutaoNativeDeviceCapabilities, IHutaoNativeDeviceCapabilities>
 {
 public:
     HutaoNativeDeviceCapabilities() = default;

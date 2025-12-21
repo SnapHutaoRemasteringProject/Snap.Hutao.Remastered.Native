@@ -15,11 +15,11 @@
 #include "IHutaoNativeProcess_h.h"
 #include "HutaoNativeWindowSubclassCallback.h"
 #include "Types.h"
-#include <winrt/base.h>
+#include "CustomImplements.h"
 #include <hstring.h>
 #include <Windows.h>
 
-class HutaoNative : public winrt::implements<
+class HutaoNative : public hutao::CustomImplements<
     HutaoNative, 
     IHutaoNative,
     IHutaoNativePrivate,
@@ -29,8 +29,7 @@ class HutaoNative : public winrt::implements<
     IHutaoNative4,
     IHutaoNative5,
     IHutaoNative6,
-    IHutaoNative7,
-    winrt::non_agile>
+    IHutaoNative7>
 {
 public:
     HutaoNative() = default;
@@ -38,7 +37,7 @@ public:
 
     // IHutaoNative methods
     virtual HRESULT STDMETHODCALLTYPE MakeLoopbackSupport(IHutaoNativeLoopbackSupport** ppv) override;
-    virtual HRESULT STDMETHODCALLTYPE MakeRegistryNotification(HSTRING keyPath, IHutaoNativeRegistryNotification** ppv) override;
+    virtual HRESULT STDMETHODCALLTYPE MakeRegistryNotification(PCWSTR keyPath, IHutaoNativeRegistryNotification** ppv) override;
     virtual HRESULT STDMETHODCALLTYPE MakeWindowSubclass(INT64 hWnd, nint callback, INT64 userData, IHutaoNativeWindowSubclass** ppv) override;
     virtual HRESULT STDMETHODCALLTYPE MakeWindowNonRude(INT64 hWnd, IHutaoNativeWindowNonRude** ppv) override;
     

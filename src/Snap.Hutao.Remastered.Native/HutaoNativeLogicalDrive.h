@@ -1,10 +1,10 @@
 #pragma once
 
 #include "IHutaoNativeLogicalDrive_h.h"
-#include <winrt/base.h>
+#include "CustomImplements.h"
 #include <Windows.h>
 
-class HutaoNativeLogicalDrive : public winrt::implements<HutaoNativeLogicalDrive, IHutaoNativeLogicalDrive, winrt::non_agile>
+class HutaoNativeLogicalDrive : public hutao::CustomImplements<HutaoNativeLogicalDrive, IHutaoNativeLogicalDrive>
 {
 public:
     HutaoNativeLogicalDrive() = default;

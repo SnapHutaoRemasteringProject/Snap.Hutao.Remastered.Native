@@ -1,10 +1,9 @@
 import "oaidl.idl";
 import "ocidl.idl";
-import "inspectable.idl";
 import "types.idl";
 
 [uuid(EF118E91-8AD9-4C27-997D-DAF8910B34BE)]
-interface IHutaoNativeRegistryNotification : IInspectable
+interface IHutaoNativeRegistryNotification : IUnknown
 {
     HRESULT Start([in] nint callback, [in] INT64 userData);
 };

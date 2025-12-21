@@ -4,18 +4,17 @@
 #include "IHutaoNativeFileSystem3_h.h"
 #include "IHutaoNativeFileSystem4_h.h"
 #include "IHutaoString_h.h"
-#include <winrt/base.h>
+#include "CustomImplements.h"
 #include <Windows.h>
 #include <ShlObj.h>
 #include <shellapi.h>
 #include <string>
 
-class HutaoNativeFileSystem : public winrt::implements<HutaoNativeFileSystem, 
+class HutaoNativeFileSystem : public hutao::CustomImplements<HutaoNativeFileSystem, 
     IHutaoNativeFileSystem, 
     IHutaoNativeFileSystem2, 
     IHutaoNativeFileSystem3, 
-    IHutaoNativeFileSystem4, 
-    winrt::non_agile>
+    IHutaoNativeFileSystem4>
 {
 public:
     HutaoNativeFileSystem() = default;

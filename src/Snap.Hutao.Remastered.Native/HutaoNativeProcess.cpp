@@ -3,8 +3,6 @@
 #include <string>
 #include <vector>
 
-using namespace winrt;
-
 HutaoNativeProcess::HutaoNativeProcess()
     : m_started(false)
     , m_exited(false)

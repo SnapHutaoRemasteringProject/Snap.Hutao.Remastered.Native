@@ -2,31 +2,29 @@
 
 #include "IHutaoNativeLoopbackSupport_h.h"
 #include "FirewallRuleManager.h"
+#include "CustomImplements.h"
 #include <Windows.h>
-#include <winrt/base.h>
 
 class HutaoNativeLoopbackSupport :
-	public winrt::implements<
+	public hutao::CustomImplements<
 	HutaoNativeLoopbackSupport,
-	IHutaoNativeLoopbackSupport,
-	winrt::non_agile>
+	IHutaoNativeLoopbackSupport>
 {
 public:
 	HutaoNativeLoopbackSupport();
 	~HutaoNativeLoopbackSupport();
 
-	virtual HRESULT STDMETHODCALLTYPE IsEnabled(HSTRING familyName, IHutaoString* sid, boolean* enabled) override;
-	virtual HRESULT STDMETHODCALLTYPE Enable(HSTRING familyName, IHutaoString* sid) override;
+	virtual HRESULT STDMETHODCALLTYPE IsEnabled(PCWSTR familyName, IHutaoString* sid, boolean* enabled) override;
+	virtual HRESULT STDMETHODCALLTYPE Enable(PCWSTR familyName, IHutaoString* sid) override;
 
 private:
 	class FirewallRuleManager* m_firewallManager;
 };
 
 class HutaoNativeLoopbackSupport2 :
-	public winrt::implements<
+	public hutao::CustomImplements<
 	HutaoNativeLoopbackSupport2,
-	IHutaoNativeLoopbackSupport2,
-	winrt::non_agile>
+	IHutaoNativeLoopbackSupport2>
 {
 public:
 	HutaoNativeLoopbackSupport2();

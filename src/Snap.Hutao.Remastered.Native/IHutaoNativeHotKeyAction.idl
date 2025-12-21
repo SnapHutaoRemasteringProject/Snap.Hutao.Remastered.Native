@@ -1,12 +1,11 @@
 import "oaidl.idl";
 import "ocidl.idl";
-import "inspectable.idl";
 
 import "Types.idl";
 import "IHutaoString.idl";
 
 [uuid(8C776674-9910-4721-A764-97BDB791F719)]
-interface IHutaoNativeHotKeyAction : IInspectable
+interface IHutaoNativeHotKeyAction : IUnknown
 {
     HRESULT Update([in] int modifiers, [in] uint vk);
     HRESULT GetIsEnabled([out] BOOL* isEnabled);

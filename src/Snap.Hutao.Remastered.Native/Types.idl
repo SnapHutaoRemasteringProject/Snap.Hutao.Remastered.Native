@@ -1,6 +1,5 @@
 import "oaidl.idl";
 import "ocidl.idl";
-import "inspectable.idl";
 
 typedef long long nint;
 typedef unsigned long uint;

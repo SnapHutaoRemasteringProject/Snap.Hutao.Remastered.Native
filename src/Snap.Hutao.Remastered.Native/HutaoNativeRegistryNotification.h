@@ -2,12 +2,12 @@
 
 #include "IHutaoNativeRegistryNotification_h.h"
 #include "types.h"
-#include <winrt/base.h>
+#include "CustomImplements.h"
 #include <Windows.h>
 #include <thread>
 #include <atomic>
 
-class HutaoNativeRegistryNotification : public winrt::implements<HutaoNativeRegistryNotification, IHutaoNativeRegistryNotification, winrt::non_agile>
+class HutaoNativeRegistryNotification : public hutao::CustomImplements<HutaoNativeRegistryNotification, IHutaoNativeRegistryNotification>
 {
 public:
     HutaoNativeRegistryNotification();

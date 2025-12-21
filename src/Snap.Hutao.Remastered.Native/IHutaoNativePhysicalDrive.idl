@@ -1,10 +1,9 @@
 import "oaidl.idl";
 import "ocidl.idl";
-import "inspectable.idl";
 import "Types.idl";
 
 [uuid(F90535D7-AFF6-4008-BA8C-15C47FC9660D)]
-interface IHutaoNativePhysicalDrive : IInspectable
+interface IHutaoNativePhysicalDrive : IUnknown
 {
     HRESULT IsPathOnSolidStateDrive([in] PCWSTR root, [out] BOOL* isSSD);
 };

@@ -1,19 +1,19 @@
 #pragma once
 
 #include "IHutaoString.h"
-#include <winrt/base.h>
+#include "CustomImplements.h"
 #include <Windows.h>
 #include <cstdint>
 #include <string>
 
-class HutaoString : public winrt::implements<HutaoString, IHutaoString, winrt::non_agile>
+class HutaoString : public hutao::CustomImplements<HutaoString, IHutaoString>
 {
 public:
 	HutaoString();
 	HutaoString(PCWSTR initialValue);
 	HutaoString(const std::wstring& initialValue);
 
-	// IHutaoString 接口实现
+	// IHutaoString 鎺ュ彛瀹炵幇
 	virtual HRESULT __stdcall GetBuffer(PCWSTR* buffer) noexcept;
 	HRESULT __stdcall GetBufferSize(uint32_t* size) noexcept;
 	HRESULT __stdcall SetBuffer(PCWSTR value, uint32_t length) noexcept;
@@ -41,9 +41,8 @@ public:
 	operator LPWSTR() const;
 
 private:
-	winrt::hstring m_buffer;
+	std::wstring m_buffer;
 
 	void EnsureCapacity(size_t newCapacity);
 	void UpdateInternalBuffer();
 };
-

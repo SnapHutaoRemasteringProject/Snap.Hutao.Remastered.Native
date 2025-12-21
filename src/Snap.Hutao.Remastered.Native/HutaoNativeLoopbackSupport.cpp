@@ -3,12 +3,7 @@
 #include "HutaoNativeLoopbackSupport.h"
 #include "FirewallRuleManager.h"
 #include <Windows.h>
-#include <winstring.h>
 #include <string>
-#include <winrt/base.h>
-
-using namespace winrt;
-using namespace winrt::Windows::Foundation;
 
 HutaoNativeLoopbackSupport::HutaoNativeLoopbackSupport()
     : m_firewallManager(new FirewallRuleManager())
@@ -24,7 +19,7 @@ HutaoNativeLoopbackSupport::~HutaoNativeLoopbackSupport()
     }
 }
 
-HRESULT STDMETHODCALLTYPE HutaoNativeLoopbackSupport::IsEnabled(HSTRING familyName, IHutaoString* sid, boolean* enabled)
+HRESULT STDMETHODCALLTYPE HutaoNativeLoopbackSupport::IsEnabled(PCWSTR familyName, IHutaoString* sid, boolean* enabled)
 {
     if (enabled == nullptr)
     {
@@ -41,9 +36,6 @@ HRESULT STDMETHODCALLTYPE HutaoNativeLoopbackSupport::IsEnabled(HSTRING familyNa
         return E_FAIL;
     }
 
-    // Convert HSTRING to PCWSTR using WindowsGetStringRawBuffer
-    PCWSTR familyNameRaw = WindowsGetStringRawBuffer(familyName, nullptr);
-
     LPCWSTR sidBuffer = nullptr;
     if (sid)
     {
@@ -54,7 +46,7 @@ HRESULT STDMETHODCALLTYPE HutaoNativeLoopbackSupport::IsEnabled(HSTRING familyNa
         }
     }
 
-    std::wstring familyNameStr = familyNameRaw ? familyNameRaw : L"";
+    std::wstring familyNameStr = familyName;
     std::wstring sidStr = sidBuffer ? sidBuffer : L"";
 
     BOOL nativeEnabled = FALSE;
@@ -68,7 +60,7 @@ HRESULT STDMETHODCALLTYPE HutaoNativeLoopbackSupport::IsEnabled(HSTRING familyNa
     return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE HutaoNativeLoopbackSupport::Enable(HSTRING familyName, IHutaoString* sid)
+HRESULT STDMETHODCALLTYPE HutaoNativeLoopbackSupport::Enable(PCWSTR familyName, IHutaoString* sid)
 {
     if (familyName == nullptr)
     {
@@ -80,8 +72,6 @@ HRESULT STDMETHODCALLTYPE HutaoNativeLoopbackSupport::Enable(HSTRING familyName,
         return E_FAIL;
     }
 
-    PCWSTR familyNameRaw = WindowsGetStringRawBuffer(familyName, nullptr);
-
     LPCWSTR sidBuffer = nullptr;
     if (sid)
     {
@@ -92,7 +82,7 @@ HRESULT STDMETHODCALLTYPE HutaoNativeLoopbackSupport::Enable(HSTRING familyName,
         }
     }
 
-    std::wstring familyNameStr = familyNameRaw ? familyNameRaw : L"";
+    std::wstring familyNameStr = familyName;
     std::wstring sidStr = sidBuffer ? sidBuffer : L"";
 
     return m_firewallManager->AddLoopbackExempt(familyNameStr, sidStr);

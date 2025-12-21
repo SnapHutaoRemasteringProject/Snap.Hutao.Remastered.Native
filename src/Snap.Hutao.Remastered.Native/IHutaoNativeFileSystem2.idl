@@ -2,7 +2,7 @@ import "Types.idl";
 import "IHutaoString.idl";
 
 [uuid(62616943-38E6-4BBB-84D1-DAB847CB2145)]
-interface IHutaoNativeFileSystem2 : IInspectable
+interface IHutaoNativeFileSystem2 : IUnknown
 {
     HRESULT CreateLink([in] PCWSTR fileLocation, [in] PCWSTR arguments, [in] PCWSTR iconLocation, [in] PCWSTR fileName);
 }

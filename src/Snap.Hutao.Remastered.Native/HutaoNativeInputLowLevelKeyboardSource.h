@@ -1,10 +1,10 @@
 #pragma once
 
 #include "IHutaoNativeInputLowLevelKeyboardSource_h.h"
-#include <winrt/base.h>
+#include "CustomImplements.h"
 #include <Windows.h>
 
-class HutaoNativeInputLowLevelKeyboardSource : public winrt::implements<HutaoNativeInputLowLevelKeyboardSource, IHutaoNativeInputLowLevelKeyboardSource, winrt::non_agile>
+class HutaoNativeInputLowLevelKeyboardSource : public hutao::CustomImplements<HutaoNativeInputLowLevelKeyboardSource, IHutaoNativeInputLowLevelKeyboardSource>
 {
 public:
     HutaoNativeInputLowLevelKeyboardSource() = default;

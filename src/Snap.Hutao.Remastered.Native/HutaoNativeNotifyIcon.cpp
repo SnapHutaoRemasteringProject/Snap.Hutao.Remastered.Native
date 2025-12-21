@@ -3,8 +3,6 @@
 #include <shellapi.h>
 #include <string>
 
-using namespace winrt;
-
 namespace
 {
     const wchar_t* WINDOW_CLASS_NAME = L"HutaoNativeNotifyIconWindowClass";

@@ -1,7 +1,6 @@
 #include "HutaoNativeWindowSubclass.h"
 #include <Windows.h>
 #include <CommCtrl.h>
-#include <winrt/base.h>
 
 #pragma comment(lib, "Comctl32.lib")
 

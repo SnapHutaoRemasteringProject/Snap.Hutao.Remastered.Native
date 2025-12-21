@@ -2,13 +2,12 @@
 
 #include "IHutaoNativeHotKeyAction_h.h"
 #include "Types_h.h"
-#include <winrt/base.h>
+#include "CustomImplements.h"
 #include <Windows.h>
 
-class HutaoNativeHotKeyAction : public winrt::implements<
+class HutaoNativeHotKeyAction : public hutao::CustomImplements<
     HutaoNativeHotKeyAction,
-    IHutaoNativeHotKeyAction,
-    winrt::non_agile>
+    IHutaoNativeHotKeyAction>
 {
 public:
     HutaoNativeHotKeyAction();

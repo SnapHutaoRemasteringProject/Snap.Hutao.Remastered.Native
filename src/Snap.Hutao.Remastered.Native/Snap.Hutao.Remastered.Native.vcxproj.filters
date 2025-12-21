@@ -281,6 +281,9 @@
     <ClInclude Include="HutaoNativeInputLowLevelKeyboardSource.h">
       <Filter>头文件\core\interfaces</Filter>
     </ClInclude>
+    <ClInclude Include="CustomImplements.h">
+      <Filter>头文件\core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Midl Include="IHutaoString.idl">

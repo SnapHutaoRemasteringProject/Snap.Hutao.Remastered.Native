@@ -1,6 +1,5 @@
 #include "HutaoNativeWindowNonRude.h"
 #include <Windows.h>
-#include <winrt/base.h>
 
 HutaoNativeWindowNonRude::HutaoNativeWindowNonRude(HWND hWnd)
     : m_hWnd(hWnd)

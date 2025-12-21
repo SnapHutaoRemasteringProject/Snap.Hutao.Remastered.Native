@@ -2,7 +2,7 @@ import "Types.idl";
 import "IHutaoString.idl";
 
 [uuid(6DBCFC5C-2555-44DB-AF9D-2A2628CF726E)]
-interface IHutaoNativeFileSystem3 : IInspectable
+interface IHutaoNativeFileSystem3 : IUnknown
 {
     HRESULT PickFile([in] HWND hwnd, [in] PCWSTR title, [in] PCWSTR defaultFileName, [in] PCWSTR fileFilterName, [in] PCWSTR fileFilterType, [out] BOOL* picked, [out] IHutaoString** path);
     HRESULT SaveFile([in] HWND hwnd, [in] PCWSTR title, [in] PCWSTR defaultFileName, [in] PCWSTR fileFilterName, [in] PCWSTR fileFilterType, [out] BOOL* picked, [out] IHutaoString** path);

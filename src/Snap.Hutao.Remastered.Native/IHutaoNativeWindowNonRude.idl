@@ -1,9 +1,8 @@
 import "oaidl.idl";
 import "ocidl.idl";
-import "inspectable.idl";
 
 [uuid(A0AD4485-702B-44B6-B48E-F82240EBBAEF)]
-interface IHutaoNativeWindowNonRude : IInspectable
+interface IHutaoNativeWindowNonRude : IUnknown
 {
     HRESULT Attach();
     HRESULT Detach();
