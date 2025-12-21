@@ -2,7 +2,7 @@ import "Types.idl";
 import "IHutaoString.idl";
 
 [uuid(FB4825F4-3A7F-47A1-8923-32933CB7DE92)]
-interface IHutaoNativeFileSystem4 : IInspectable
+interface IHutaoNativeFileSystem4 : IUnknown
 {
     HRESULT CopyFileAllowDecryptedDestination([in] PCWSTR existingFileName, [in] PCWSTR newFileName, [in] BOOL overwrite);
 }

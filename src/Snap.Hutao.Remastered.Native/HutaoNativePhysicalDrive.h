@@ -1,9 +1,9 @@
 #pragma once
 
 #include "IHutaoNativePhysicalDrive_h.h"
-#include <winrt/base.h>
+#include "CustomImplements.h"
 
-class HutaoNativePhysicalDrive : public winrt::implements<HutaoNativePhysicalDrive, IHutaoNativePhysicalDrive, winrt::non_agile>
+class HutaoNativePhysicalDrive : public hutao::CustomImplements<HutaoNativePhysicalDrive, IHutaoNativePhysicalDrive>
 {
 public:
     HutaoNativePhysicalDrive() = default;

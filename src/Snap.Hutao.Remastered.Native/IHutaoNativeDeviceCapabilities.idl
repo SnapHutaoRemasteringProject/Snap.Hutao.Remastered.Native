@@ -1,9 +1,8 @@
 import "oaidl.idl";
 import "ocidl.idl";
-import "inspectable.idl";
 
 [uuid(1920EFA1-9953-4260-AFB1-35B1672758C1)]
-interface IHutaoNativeDeviceCapabilities : IInspectable
+interface IHutaoNativeDeviceCapabilities : IUnknown
 {
     HRESULT GetPrimaryScreenVerticalRefreshRate([out] int* refreshRate);
 };

@@ -4,6 +4,10 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
+  <Project Path="../../Snap.Hutao.Remastered/src/Snap.Hutao.Remastered/Snap.Hutao.Remastered/Snap.Hutao.Remastered.csproj">
+    <Platform Project="x64" />
+    <Deploy />
+  </Project>
   <Project Path="Snap.Hutao.Remastered.Native.Packaging/Snap.Hutao.Remastered.Native.Packaging.csproj" />
   <Project Path="Snap.Hutao.Remastered.Native.Test/Snap.Hutao.Remastered.Native.Test.vcxproj" Id="15393090-afc4-4e0b-b0a2-1349b3b4100a" />
   <Project Path="Snap.Hutao.Remastered.Native/Snap.Hutao.Remastered.Native.vcxproj" Id="cc6cdca8-cf03-4eec-ba1a-cebaf368b252" />

@@ -1,17 +1,17 @@
 import "oaidl.idl";
 import "ocidl.idl";
-import "inspectable.idl";
 import "IHutaoString.idl";
+import "types.idl";
 
 [uuid(8607ACE4-313C-4C26-B1FB-CA11173B6953)]
-interface IHutaoNativeLoopbackSupport : IInspectable
+interface IHutaoNativeLoopbackSupport : IUnknown
 {
-	HRESULT IsEnabled([in] HSTRING familyName, [in] IHutaoString* sid, [out, retval] boolean* enabled);
-	HRESULT Enable([in] HSTRING familyName, [in] IHutaoString* sid);
+	HRESULT IsEnabled([in] PCWSTR familyName, [in] IHutaoString* sid, [out, retval] boolean* enabled);
+	HRESULT Enable([in] PCWSTR familyName, [in] IHutaoString* sid);
 }
 
 [uuid(A5D67980-F495-4F52-BEF0-27D047E20174)]
-interface IHutaoNativeLoopbackSupport2 : IInspectable
+interface IHutaoNativeLoopbackSupport2 : IUnknown
 {
 	HRESULT IsPublicFirewallEnabled([out, retval] boolean* enabled);
 }

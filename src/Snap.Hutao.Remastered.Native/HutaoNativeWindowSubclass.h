@@ -2,15 +2,14 @@
 
 #include "IHutaoNativeWindowSubclass_h.h"
 #include "HutaoNativeWindowSubclassCallback.h"
+#include "CustomImplements.h"
 #include <Windows.h>
-#include <winrt/base.h>
 #include <CommCtrl.h>
 
 class HutaoNativeWindowSubclass :
-    public winrt::implements<
+    public hutao::CustomImplements<
     HutaoNativeWindowSubclass,
-    IHutaoNativeWindowSubclass,
-    winrt::non_agile>
+    IHutaoNativeWindowSubclass>
 {
 public:
     HutaoNativeWindowSubclass(HWND hWnd, nint callback, LONG_PTR userData);
@@ -27,10 +26,9 @@ private:
 };
 
 class HutaoNativeWindowSubclass2 :
-    public winrt::implements<
+    public hutao::CustomImplements<
     HutaoNativeWindowSubclass2,
-    IHutaoNativeWindowSubclass2,
-    winrt::non_agile>
+    IHutaoNativeWindowSubclass2>
 {
 public:
     HutaoNativeWindowSubclass2();

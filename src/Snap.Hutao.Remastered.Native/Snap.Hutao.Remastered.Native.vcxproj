@@ -171,6 +171,7 @@
     <ClCompile Include="HutaoNativeInputLowLevelKeyboardSource.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CustomImplements.h" />
     <ClInclude Include="DllInjection.h" />
     <ClInclude Include="dllmain.h" />
     <ClInclude Include="FailureInfo.h" />

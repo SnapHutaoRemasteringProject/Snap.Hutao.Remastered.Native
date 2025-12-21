@@ -1,13 +1,8 @@
 #include "HutaoNativeHotKeyAction.h"
 #include <Windows.h>
 
-using namespace winrt;
-
-namespace
-{
-    const wchar_t* WINDOW_CLASS_NAME = L"HutaoNativeHotKeyActionWindowClass";
-    const UINT WM_HOTKEY_MESSAGE = WM_APP + 2;
-}
+const wchar_t* WINDOW_CLASS_NAME = L"HutaoNativeHotKeyActionWindowClass";
+const UINT WM_HOTKEY_MESSAGE = WM_APP + 2;
 
 UINT HutaoNativeHotKeyAction::s_nextHotKeyId = 0x4000; // 从0x4000开始，避免与系统热键冲突
 

@@ -17,12 +17,10 @@
 #include "HutaoNativeProcess.h"
 #include "HutaoNativeWindowNonRude.h"
 #include "types.h"
-#include <winrt/base.h>
+#include "CustomImplements.h"
 #include <Windows.h>
 #include <hstring.h>
 #include <winternl.h>
-
-using namespace winrt;
 
 HRESULT STDMETHODCALLTYPE HutaoNative::MakeLoopbackSupport(IHutaoNativeLoopbackSupport** ppv)
 {
@@ -31,21 +29,21 @@ HRESULT STDMETHODCALLTYPE HutaoNative::MakeLoopbackSupport(IHutaoNativeLoopbackS
         return E_POINTER;
     }
 
-    com_ptr<IHutaoNativeLoopbackSupport> support = make_self<HutaoNativeLoopbackSupport>();
-    *ppv = detach_abi(support);
+    hutao::com_ptr<IHutaoNativeLoopbackSupport> support = hutao::make_com_ptr<HutaoNativeLoopbackSupport>();
+    *ppv = support.detach();
 
     return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE HutaoNative::MakeRegistryNotification(HSTRING keyPath, IHutaoNativeRegistryNotification** ppv)
+HRESULT STDMETHODCALLTYPE HutaoNative::MakeRegistryNotification(PCWSTR keyPath, IHutaoNativeRegistryNotification** ppv)
 {
     if (ppv == nullptr)
     {
         return E_POINTER;
     }
 
-    com_ptr<IHutaoNativeRegistryNotification> notify = make_self<HutaoNativeRegistryNotification>();
-    *ppv = detach_abi(notify);
+    hutao::com_ptr<IHutaoNativeRegistryNotification> notify = hutao::make_com_ptr<HutaoNativeRegistryNotification>();
+    *ppv = notify.detach();
 
     // Mark unused parameter to avoid warning
     (void)keyPath;
@@ -69,8 +67,8 @@ HRESULT STDMETHODCALLTYPE HutaoNative::MakeWindowSubclass(INT64 hWnd, nint callb
     // Convert INT64 to LONG_PTR
     LONG_PTR userDataPtr = static_cast<LONG_PTR>(userData);
 
-    com_ptr<IHutaoNativeWindowSubclass> subclass = make_self<HutaoNativeWindowSubclass>(hwnd, callbackPtr, userDataPtr);
-    *ppv = detach_abi(subclass);
+    hutao::com_ptr<IHutaoNativeWindowSubclass> subclass = hutao::make_com_ptr<HutaoNativeWindowSubclass>(hwnd, callbackPtr, userDataPtr);
+    *ppv = subclass.detach();
 
     return S_OK;
 }
@@ -85,8 +83,8 @@ HRESULT STDMETHODCALLTYPE HutaoNative::MakeWindowNonRude(INT64 hWnd, IHutaoNativ
     // Convert INT64 to HWND
     HWND hwnd = reinterpret_cast<HWND>(hWnd);
 
-    com_ptr<IHutaoNativeWindowNonRude> nonRude = make_self<HutaoNativeWindowNonRude>(hwnd);
-    *ppv = detach_abi(nonRude);
+    hutao::com_ptr<IHutaoNativeWindowNonRude> nonRude = hutao::make_com_ptr<HutaoNativeWindowNonRude>(hwnd);
+    *ppv = nonRude.detach();
 
     return S_OK;
 }
@@ -99,8 +97,8 @@ HRESULT STDMETHODCALLTYPE HutaoNative::MakeDeviceCapabilities(IHutaoNativeDevice
         return E_POINTER;
     }
 
-    com_ptr<IHutaoNativeDeviceCapabilities> capabilities = make_self<HutaoNativeDeviceCapabilities>();
-    *ppv = detach_abi(capabilities);
+    hutao::com_ptr<IHutaoNativeDeviceCapabilities> capabilities = hutao::make_com_ptr<HutaoNativeDeviceCapabilities>();
+    *ppv = capabilities.detach();
 
     return S_OK;
 }
@@ -112,8 +110,8 @@ HRESULT STDMETHODCALLTYPE HutaoNative::MakePhysicalDrive(IHutaoNativePhysicalDri
         return E_POINTER;
     }
 
-    com_ptr<IHutaoNativePhysicalDrive> physicalDrive = make_self<HutaoNativePhysicalDrive>();
-    *ppv = detach_abi(physicalDrive);
+    hutao::com_ptr<IHutaoNativePhysicalDrive> physicalDrive = hutao::make_com_ptr<HutaoNativePhysicalDrive>();
+    *ppv = physicalDrive.detach();
 
     return S_OK;
 }
@@ -125,8 +123,8 @@ HRESULT STDMETHODCALLTYPE HutaoNative::MakeLogicalDrive(IHutaoNativeLogicalDrive
         return E_POINTER;
     }
 
-    com_ptr<IHutaoNativeLogicalDrive> logicalDrive = make_self<HutaoNativeLogicalDrive>();
-    *ppv = detach_abi(logicalDrive);
+    hutao::com_ptr<IHutaoNativeLogicalDrive> logicalDrive = hutao::make_com_ptr<HutaoNativeLogicalDrive>();
+    *ppv = logicalDrive.detach();
 
     return S_OK;
 }
@@ -139,8 +137,8 @@ HRESULT STDMETHODCALLTYPE HutaoNative::MakeInputLowLevelKeyboardSource(IHutaoNat
         return E_POINTER;
     }
 
-    com_ptr<IHutaoNativeInputLowLevelKeyboardSource> source = make_self<HutaoNativeInputLowLevelKeyboardSource>();
-    *ppv = detach_abi(source);
+    hutao::com_ptr<IHutaoNativeInputLowLevelKeyboardSource> source = hutao::make_com_ptr<HutaoNativeInputLowLevelKeyboardSource>();
+    *ppv = source.detach();
 
     return S_OK;
 }
@@ -153,8 +151,8 @@ HRESULT STDMETHODCALLTYPE HutaoNative::MakeFileSystem(IHutaoNativeFileSystem** p
         return E_POINTER;
     }
 
-    com_ptr<IHutaoNativeFileSystem> fileSystem = make_self<HutaoNativeFileSystem>();
-    *ppv = detach_abi(fileSystem);
+    hutao::com_ptr<IHutaoNativeFileSystem> fileSystem = hutao::make_com_ptr<HutaoNativeFileSystem>();
+    *ppv = fileSystem.detach();
 
     return S_OK;
 }
@@ -167,8 +165,8 @@ HRESULT STDMETHODCALLTYPE HutaoNative::MakeNotifyIcon(PCWSTR iconPath, GUID* id,
         return E_POINTER;
     }
 
-    com_ptr<IHutaoNativeNotifyIcon> notifyIcon = make_self<HutaoNativeNotifyIcon>();
-    *ppv = detach_abi(notifyIcon);
+    hutao::com_ptr<IHutaoNativeNotifyIcon> notifyIcon = hutao::make_com_ptr<HutaoNativeNotifyIcon>();
+    *ppv = notifyIcon.detach();
 
     // Mark unused parameters to avoid warning
     (void)iconPath;
@@ -189,8 +187,8 @@ HRESULT STDMETHODCALLTYPE HutaoNative::MakeHotKeyAction(HutaoNativeHotKeyActionK
     WNDPROC wndProc = reinterpret_cast<WNDPROC>(callback);
     LONG_PTR userDataPtr = static_cast<LONG_PTR>(userData);
 
-    com_ptr<IHutaoNativeHotKeyAction> hotKeyAction = make_self<HutaoNativeHotKeyAction>(kind, wndProc, userDataPtr);
-    *ppv = detach_abi(hotKeyAction);
+    hutao::com_ptr<IHutaoNativeHotKeyAction> hotKeyAction = hutao::make_com_ptr<HutaoNativeHotKeyAction>(kind, wndProc, userDataPtr);
+    *ppv = hotKeyAction.detach();
 
     return S_OK;
 }
@@ -203,8 +201,8 @@ HRESULT STDMETHODCALLTYPE HutaoNative::MakeProcess(HutaoNativeProcessStartInfo i
         return E_POINTER;
     }
 
-    com_ptr<IHutaoNativeProcess> process = make_self<HutaoNativeProcess>(info);
-    *ppv = detach_abi(process);
+    hutao::com_ptr<IHutaoNativeProcess> process = hutao::make_com_ptr<HutaoNativeProcess>(info);
+    *ppv = process.detach();
 
     // Mark unused parameter to avoid warning
     (void)info;

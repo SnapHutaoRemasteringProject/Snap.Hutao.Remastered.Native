@@ -1,14 +1,13 @@
 #pragma once
 
 #include "IHutaoNativeNotifyIcon_h.h"
-#include <winrt/base.h>
+#include "CustomImplements.h"
 #include <Windows.h>
 #include <shellapi.h>
 
-class HutaoNativeNotifyIcon : public winrt::implements<
+class HutaoNativeNotifyIcon : public hutao::CustomImplements<
     HutaoNativeNotifyIcon,
-    IHutaoNativeNotifyIcon,
-    winrt::non_agile>
+    IHutaoNativeNotifyIcon>
 {
 public:
     HutaoNativeNotifyIcon();

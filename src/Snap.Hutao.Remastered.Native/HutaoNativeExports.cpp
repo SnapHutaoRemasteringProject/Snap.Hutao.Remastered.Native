@@ -12,11 +12,9 @@
 #include "IHutaoNativeRegistryNotification_h.h"
 #include "IHutaoNative_h.h"
 #include "IHutaoString_h.h"
+#include "CustomImplements.h"
 
 #include <Windows.h>
-#include <winrt/base.h>
-
-using namespace winrt;
 
 DLL_EXPORT HRESULT __stdcall HutaoCreateInstance(
     IHutaoNative** ppInstance) {
@@ -25,8 +23,8 @@ DLL_EXPORT HRESULT __stdcall HutaoCreateInstance(
         return E_POINTER;
     }
 
-    com_ptr<IHutaoNative> instance = make_self<HutaoNative>();
-    *ppInstance = detach_abi(instance);
+    hutao::com_ptr<IHutaoNative> instance = hutao::make_com_ptr<HutaoNative>();
+    *ppInstance = instance.detach();
 
     return S_OK;
 }
@@ -38,8 +36,8 @@ DLL_EXPORT HRESULT __stdcall HutaoStringCreateInstance(
         return E_POINTER;
     }
 
-    com_ptr<IHutaoString> instance = make_self<HutaoString>();
-    *ppInstance = detach_abi(instance);
+    hutao::com_ptr<IHutaoString> instance = hutao::make_com_ptr<HutaoString>();
+    *ppInstance = instance.detach();
 
     return S_OK;
 }
@@ -50,8 +48,8 @@ DLL_EXPORT HRESULT __stdcall HutaoNativeRegistryNotificationCreateInstance(IHuta
         return E_POINTER;
     }
 
-    com_ptr<IHutaoNativeRegistryNotification> instance = make_self<HutaoNativeRegistryNotification>();
-    *ppInstance = detach_abi(instance);
+    hutao::com_ptr<IHutaoNativeRegistryNotification> instance = hutao::make_com_ptr<HutaoNativeRegistryNotification>();
+    *ppInstance = instance.detach();
 
     return S_OK;
 }

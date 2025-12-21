@@ -1,15 +1,13 @@
 #include "HutaoNativeFileSystem.h"
 #include "IHutaoString.h"
 #include "HutaoString.h"
-#include <winrt/base.h>
+#include "CustomImplements.h"
 #include <Windows.h>
 #include <ShlObj.h>
 #include <shellapi.h>
 #include <string>
 #include <vector>
 #include <comdef.h>
-
-using namespace winrt;
 
 // Helper function to perform file operations using SHFileOperationW
 HRESULT HutaoNativeFileSystem::PerformFileOperation(UINT operation, PCWSTR source, PCWSTR destination, long flags)
@@ -78,8 +76,8 @@ HRESULT HutaoNativeFileSystem::CreateHutaoStringFromWideString(PCWSTR wideString
         return S_OK;
     }
     
-    com_ptr<IHutaoString> stringObj = make_self<HutaoString>(wideString);
-    *ppString = detach_abi(stringObj);
+    hutao::com_ptr<IHutaoString> stringObj = hutao::make_com_ptr<HutaoString>(wideString);
+    *ppString = stringObj.detach();
     
     return S_OK;
 }
@@ -262,8 +260,9 @@ HRESULT STDMETHODCALLTYPE HutaoNativeFileSystem::CreateLink(PCWSTR fileLocation,
     }
     
     // Create IShellLink object
-    com_ptr<IShellLinkW> shellLink;
-    HRESULT hr = CoCreateInstance(CLSID_ShellLink, nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&shellLink));
+    IShellLinkW* pShellLink = nullptr;
+    HRESULT hr = CoCreateInstance(CLSID_ShellLink, nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&pShellLink));
+    hutao::com_ptr<IShellLinkW> shellLink(pShellLink);
     if (FAILED(hr))
     {
         return hr;
@@ -297,7 +296,12 @@ HRESULT STDMETHODCALLTYPE HutaoNativeFileSystem::CreateLink(PCWSTR fileLocation,
     }
     
     // Get IPersistFile interface
-    com_ptr<IPersistFile> persistFile = shellLink.as<IPersistFile>();
+    IPersistFile* pPersistFile = nullptr;
+    hr = shellLink->QueryInterface(IID_PPV_ARGS(&pPersistFile));
+    if (FAILED(hr)) {
+        return hr;
+    }
+    hutao::com_ptr<IPersistFile> persistFile(pPersistFile);
     
     // Save the link
     hr = persistFile->Save(fileName, TRUE);

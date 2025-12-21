@@ -2,13 +2,12 @@
 
 #include "IHutaoNativeProcess_h.h"
 #include "Types_h.h"
-#include <winrt/base.h>
+#include "CustomImplements.h"
 #include <Windows.h>
 
-class HutaoNativeProcess : public winrt::implements<
+class HutaoNativeProcess : public hutao::CustomImplements<
     HutaoNativeProcess,
-    IHutaoNativeProcess,
-    winrt::non_agile>
+    IHutaoNativeProcess>
 {
 public:
     HutaoNativeProcess();

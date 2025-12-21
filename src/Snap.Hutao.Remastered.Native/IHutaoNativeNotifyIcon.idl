@@ -2,7 +2,7 @@ import "Types.idl";
 import "IHutaoString.idl";
 
 [uuid(C2203FA4-BB97-47E0-8F72-C96879E4CB11)]
-interface IHutaoNativeNotifyIcon : IInspectable
+interface IHutaoNativeNotifyIcon : IUnknown
 {
     HRESULT Create([in] nint callback, [in] nint userData, [in] PCWSTR tip);
     HRESULT Recreate([in] PCWSTR tip);

@@ -1,14 +1,13 @@
 #pragma once
 
 #include "IHutaoNativeWindowNonRude_h.h"
+#include "CustomImplements.h"
 #include <Windows.h>
-#include <winrt/base.h>
 
 class HutaoNativeWindowNonRude :
-    public winrt::implements<
+    public hutao::CustomImplements<
     HutaoNativeWindowNonRude,
-    IHutaoNativeWindowNonRude,
-    winrt::non_agile>
+    IHutaoNativeWindowNonRude>
 {
 public:
     HutaoNativeWindowNonRude(HWND hWnd);

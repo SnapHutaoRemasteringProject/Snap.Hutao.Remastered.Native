@@ -2,7 +2,7 @@ import "Types.idl";
 import "IHutaoString.idl";
 
 [uuid(13A2B1A2-03CB-46E1-AED5-6AFEA2DFFB39)]
-interface IHutaoNativeProcess : IInspectable
+interface IHutaoNativeProcess : IUnknown
 {
     HRESULT Start();
     HRESULT ResumeMainThread();
