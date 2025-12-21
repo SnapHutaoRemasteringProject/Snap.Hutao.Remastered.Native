@@ -156,6 +156,8 @@
     <ClCompile Include="HutaoNativeExports.cpp" />
     <ClCompile Include="HutaoNativeLoopbackSupport.cpp" />
     <ClCompile Include="HutaoNativeRegistryNotification.cpp" />
+    <ClCompile Include="HutaoNativeWindowNonRude.cpp" />
+    <ClCompile Include="HutaoNativeWindowSubclass.cpp" />
     <ClCompile Include="HutaoString.cpp" />
     <ClCompile Include="IHutaoNative.cpp" />
     <ClCompile Include="IHutaoNativeLoopbackSupport.cpp" />

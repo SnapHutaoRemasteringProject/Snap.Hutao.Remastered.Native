@@ -138,6 +138,12 @@
     <ClCompile Include="HutaoNativePhysicalDrive.cpp">
       <Filter>源文件\core\impl</Filter>
     </ClCompile>
+    <ClCompile Include="HutaoNativeWindowSubclass.cpp">
+      <Filter>源文件\core\impl</Filter>
+    </ClCompile>
+    <ClCompile Include="HutaoNativeWindowNonRude.cpp">
+      <Filter>源文件\core\impl</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Theme.h">

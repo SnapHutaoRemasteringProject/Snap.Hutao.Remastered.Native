@@ -13,15 +13,14 @@ class HutaoNativeWindowSubclass :
     winrt::non_agile>
 {
 public:
-    HutaoNativeWindowSubclass(HWND hWnd, WNDPROC callback, LONG_PTR userData);
+    HutaoNativeWindowSubclass(HWND hWnd, nint callback, LONG_PTR userData);
     ~HutaoNativeWindowSubclass();
 
     virtual HRESULT STDMETHODCALLTYPE Attach() override;
     virtual HRESULT STDMETHODCALLTYPE Detach() override;
-
+    WNDPROC m_callback;
 private:
     HWND m_hWnd;
-    WNDPROC m_callback;
     LONG_PTR m_userData;
     WNDPROC m_originalWndProc;
     bool m_attached;
