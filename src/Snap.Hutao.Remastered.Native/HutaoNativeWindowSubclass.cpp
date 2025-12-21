@@ -31,12 +31,12 @@ static LRESULT CALLBACK SubclassWndProc(
     return DefSubclassProc(hWnd, uMsg, wParam, lParam);
 }
 
-HutaoNativeWindowSubclass::HutaoNativeWindowSubclass(HWND hWnd, WNDPROC callback, LONG_PTR userData)
+HutaoNativeWindowSubclass::HutaoNativeWindowSubclass(HWND hWnd, nint callback, LONG_PTR userData)
     : m_hWnd(hWnd)
-    , m_callback(callback)
+    , m_callback(reinterpret_cast<WNDPROC>(callback))
     , m_userData(userData)
     , m_originalWndProc(nullptr)
-    , m_attached(false)
+	, m_attached(false)
 {
 }
 

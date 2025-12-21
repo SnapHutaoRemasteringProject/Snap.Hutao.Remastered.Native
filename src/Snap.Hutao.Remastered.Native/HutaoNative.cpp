@@ -63,13 +63,13 @@ HRESULT STDMETHODCALLTYPE HutaoNative::MakeWindowSubclass(INT64 hWnd, nint callb
     // Convert INT64 to HWND
     HWND hwnd = reinterpret_cast<HWND>(hWnd);
     
-    // Convert nint to WNDPROC
-    WNDPROC wndProc = reinterpret_cast<WNDPROC>(callback);
+    // Convert nint to LONG_PTR for constructor
+    LONG_PTR callbackPtr = static_cast<LONG_PTR>(callback);
     
     // Convert INT64 to LONG_PTR
     LONG_PTR userDataPtr = static_cast<LONG_PTR>(userData);
 
-    com_ptr<IHutaoNativeWindowSubclass> subclass = make_self<HutaoNativeWindowSubclass>(hwnd, wndProc, userDataPtr);
+    com_ptr<IHutaoNativeWindowSubclass> subclass = make_self<HutaoNativeWindowSubclass>(hwnd, callbackPtr, userDataPtr);
     *ppv = detach_abi(subclass);
 
     return S_OK;
@@ -255,7 +255,7 @@ HRESULT STDMETHODCALLTYPE HutaoNative::GetWindowsVersion(HutaoPrivateWindowsVers
     LONG status = pRtlGetVersion(&versionInfo);
     if (status != 0) // STATUS_SUCCESS is 0
     {
-        return HRESULT_FROM_WIN32(RtlNtStatusToDosError(status));
+        return HRESULT_FROM_NT(status);
     }
 
     // Fill the structure
