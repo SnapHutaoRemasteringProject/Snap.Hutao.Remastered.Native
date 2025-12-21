@@ -21,15 +21,15 @@
 
 class HutaoNative : public winrt::implements<
     HutaoNative, 
-    IHutaoNative, 
+    IHutaoNative,
+    IHutaoNativePrivate,
+    IHutaoPrivate2,
     IHutaoNative2,
     IHutaoNative3,
     IHutaoNative4,
     IHutaoNative5,
     IHutaoNative6,
     IHutaoNative7,
-    IHutaoNativePrivate,
-    IHutaoPrivate2,
     winrt::non_agile>
 {
 public:
