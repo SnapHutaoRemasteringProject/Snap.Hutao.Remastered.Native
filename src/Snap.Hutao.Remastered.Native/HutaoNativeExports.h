@@ -18,9 +18,4 @@ DLL_EXPORT HRESULT __stdcall HutaoNativeRegistryNotificationCreateInstance(
 DLL_EXPORT HRESULT HutaoInitializeWilCallbacks(HutaoNativeLoggingCallback loggingCallback, HutaoNativeMessageCallback messageCallback);
 DLL_EXPORT void HutaoTestWilCallbacks();
 DLL_EXPORT BOOL HutaoHResultIsWin32(HRESULT hr, WIN32_ERROR  error);
-DLL_EXPORT HRESULT __stdcall MemoryUtilitiesPatch(
-    PCWSTR moduleName, 
-    uint offset, 
-    int size, 
-    PatchCallbackFunc callback, 
-    GCHandle state);
+

@@ -5,9 +5,13 @@
 #include "PrivilegeUtils.h"
 #include "HookUtils.h"
 #include "MemoryUtils.h"
+#include "StringUtils.h"
 #include <Windows.h>
+#include <vector>
+#include <string>
+#include <tlhelp32.h>
 
-// Windows¹³×Ó×¢Èë·½·¨1£¨Ê¹ÓÃWH_GETMESSAGE¹³×Ó£©
+// Windowsé’©å­æ³¨å…¥æ–¹æ³•1ï¼ˆä½¿ç”¨WH_GETMESSAGEé’©å­ï¼‰
 HRESULT DllInjectionUtilitiesInjectUsingWindowsHook(
     LPCWSTR dllPath,
     LPCWSTR functionName,
@@ -23,21 +27,21 @@ HRESULT DllInjectionUtilitiesInjectUsingWindowsHook(
 
     EnableDebugPrivilege();
 
-    // »ñÈ¡Ä¿±ê½ø³ÌµÄÖ÷Ïß³ÌID
+    // è·å–ç›®æ ‡è¿›ç¨‹çš„ä¸»çº¿ç¨‹ID
     DWORD targetThreadId = GetMainThreadId(processId);
     if (targetThreadId == 0) {
-        // Èç¹ûÃ»ÓĞÖ÷Ïß³Ì£¬³¢ÊÔÃ¶¾ÙÆäËûÏß³Ì
+        // å¦‚æœæ²¡æœ‰ä¸»çº¿ç¨‹ï¼Œå°è¯•æšä¸¾å…¶ä»–çº¿ç¨‹
         targetThreadId = FindAnyThreadId(processId);
         if (targetThreadId == 0) {
             return HRESULT_FROM_WIN32(ERROR_NOT_FOUND);
         }
     }
 
-    // Ê¹ÓÃ¹³×Ó×¢Èë£¨WH_GETMESSAGE£©
+    // ä½¿ç”¨é’©å­æ³¨å…¥ï¼ˆWH_GETMESSAGEï¼‰
     return InjectUsingHook(dllPath, functionName, targetThreadId, WH_GETMESSAGE);
 }
 
-// Windows¹³×Ó×¢Èë·½·¨2£¨Ê¹ÓÃWH_CALLWNDPROC¹³×Ó£©
+// Windowsé’©å­æ³¨å…¥æ–¹æ³•2ï¼ˆä½¿ç”¨WH_CALLWNDPROCé’©å­ï¼‰
 HRESULT DllInjectionUtilitiesInjectUsingWindowsHook2(
     LPCWSTR dllPath,
     LPCWSTR functionName,
@@ -53,7 +57,7 @@ HRESULT DllInjectionUtilitiesInjectUsingWindowsHook2(
 
     EnableDebugPrivilege();
 
-    // »ñÈ¡Ä¿±ê½ø³ÌµÄÖ÷Ïß³ÌID
+    // è·å–ç›®æ ‡è¿›ç¨‹çš„ä¸»çº¿ç¨‹ID
     DWORD targetThreadId = GetMainThreadId(processId);
     if (targetThreadId == 0) {
         targetThreadId = FindAnyThreadId(processId);
@@ -62,11 +66,11 @@ HRESULT DllInjectionUtilitiesInjectUsingWindowsHook2(
         }
     }
 
-    // Ê¹ÓÃ¹³×Ó×¢Èë£¨WH_CALLWNDPROC£©
+    // ä½¿ç”¨é’©å­æ³¨å…¥ï¼ˆWH_CALLWNDPROCï¼‰
     return InjectUsingHook(dllPath, functionName, targetThreadId, WH_CALLWNDPROC);
 }
 
-// Ô¶³ÌÏß³Ì×¢Èë£¨½ö¼ÓÔØDLL£©
+// è¿œç¨‹çº¿ç¨‹æ³¨å…¥ï¼ˆä»…åŠ è½½DLLï¼‰
 HRESULT DllInjectionUtilitiesInjectUsingRemoteThread(
     LPCWSTR dllPath,
     int processId)
@@ -81,7 +85,7 @@ HRESULT DllInjectionUtilitiesInjectUsingRemoteThread(
 
     EnableDebugPrivilege();
 
-    // ´ò¿ªÄ¿±ê½ø³Ì
+    // æ‰“å¼€ç›®æ ‡è¿›ç¨‹
     HANDLE hProcess = OpenProcess(
         PROCESS_CREATE_THREAD | PROCESS_QUERY_INFORMATION |
         PROCESS_VM_OPERATION | PROCESS_VM_WRITE | PROCESS_VM_READ,
@@ -91,14 +95,14 @@ HRESULT DllInjectionUtilitiesInjectUsingRemoteThread(
         return HRESULT_FROM_WIN32(GetLastError());
     }
 
-    // ÔÚÄ¿±ê½ø³ÌÖĞ·ÖÅäÄÚ´æ²¢Ğ´ÈëDLLÂ·¾¶
+    // åœ¨ç›®æ ‡è¿›ç¨‹ä¸­åˆ†é…å†…å­˜å¹¶å†™å…¥DLLè·¯å¾„
     LPVOID pRemoteMemory = NULL;
     if (!WriteProcessStringW(hProcess, dllPath, &pRemoteMemory)) {
         CloseHandle(hProcess);
         return HRESULT_FROM_WIN32(GetLastError());
     }
 
-    // »ñÈ¡LoadLibraryWº¯ÊıµØÖ·
+    // è·å–LoadLibraryWå‡½æ•°åœ°å€
     LPVOID pLoadLibrary = (LPVOID)GetProcAddress(
         GetModuleHandleW(L"kernel32.dll"), "LoadLibraryW");
 
@@ -108,7 +112,7 @@ HRESULT DllInjectionUtilitiesInjectUsingRemoteThread(
         return HRESULT_FROM_WIN32(ERROR_PROC_NOT_FOUND);
     }
 
-    // ´´½¨Ô¶³ÌÏß³Ìµ÷ÓÃLoadLibraryW
+    // åˆ›å»ºè¿œç¨‹çº¿ç¨‹è°ƒç”¨LoadLibraryW
     HANDLE hRemoteThread = CreateRemoteThread(hProcess, NULL, 0,
         (LPTHREAD_START_ROUTINE)pLoadLibrary, pRemoteMemory, 0, NULL);
 
@@ -119,16 +123,16 @@ HRESULT DllInjectionUtilitiesInjectUsingRemoteThread(
         return HRESULT_FROM_WIN32(lastError);
     }
 
-    // µÈ´ıÏß³ÌÍê³É
-    WaitForSingleObject(hRemoteThread, 5000); // 5Ãë³¬Ê±
+    // ç­‰å¾…çº¿ç¨‹å®Œæˆ
+    WaitForSingleObject(hRemoteThread, 5000); // 5ç§’è¶…æ—¶
 
-    // »ñÈ¡ÍË³öÂë
+    // è·å–é€€å‡ºç 
     DWORD exitCode = 0;
     GetExitCodeThread(hRemoteThread, &exitCode);
 
     CloseHandle(hRemoteThread);
 
-    // ÑÓ³ÙÊÍ·ÅÄÚ´æ£¬È·±£DLLÒÑ¼ÓÔØ
+    // å»¶è¿Ÿé‡Šæ”¾å†…å­˜ï¼Œç¡®ä¿DLLå·²åŠ è½½
     Sleep(100);
     VirtualFreeEx(hProcess, pRemoteMemory, 0, MEM_RELEASE);
     CloseHandle(hProcess);
@@ -136,7 +140,7 @@ HRESULT DllInjectionUtilitiesInjectUsingRemoteThread(
     return (exitCode != 0) ? S_OK : E_FAIL;
 }
 
-// Ô¶³ÌÏß³Ì×¢Èë£¨¼ÓÔØDLL²¢µ÷ÓÃÖ¸¶¨º¯Êı£©
+// è¿œç¨‹çº¿ç¨‹æ³¨å…¥ï¼ˆåŠ è½½DLLå¹¶è°ƒç”¨æŒ‡å®šå‡½æ•°ï¼‰
 HRESULT DllInjectionUtilitiesInjectUsingRemoteThreadWithFunction(
     LPCWSTR dllPath,
     LPCWSTR functionName,
@@ -152,26 +156,188 @@ HRESULT DllInjectionUtilitiesInjectUsingRemoteThreadWithFunction(
 
     EnableDebugPrivilege();
 
-    // ÏÈ×¢ÈëDLL
-    HRESULT hr = DllInjectionUtilitiesInjectUsingRemoteThread(dllPath, processId);
-    if (FAILED(hr)) {
+    // æ‰“å¼€ç›®æ ‡è¿›ç¨‹
+    HANDLE hProcess = OpenProcess(
+        PROCESS_CREATE_THREAD | PROCESS_QUERY_INFORMATION |
+        PROCESS_VM_OPERATION | PROCESS_VM_WRITE | PROCESS_VM_READ,
+        FALSE, processId);
+
+    if (!hProcess) {
+        return HRESULT_FROM_WIN32(GetLastError());
+    }
+
+    HRESULT hr = S_OK;
+    LPVOID pRemoteDllPath = NULL;
+    HMODULE hRemoteModule = NULL;
+    HMODULE hLocalModule = NULL;
+    FARPROC pLocalFunction = NULL;
+    LPVOID pRemoteFunction = NULL;
+    HANDLE hRemoteThread = NULL;
+    LPCSTR ansiFunctionName = NULL;
+    DWORD exitCode = 0;
+    std::wstring wDllPath;
+    size_t lastSlash = 0;
+    std::wstring wDllName;
+    HANDLE hSnapshot = INVALID_HANDLE_VALUE;
+    MODULEENTRY32W me32 = { 0 };
+    bool found = false;
+    ULONG_PTR localBase = 0;
+    ULONG_PTR remoteBase = 0;
+    ULONG_PTR localFunctionAddr = 0;
+
+    // åœ¨ç›®æ ‡è¿›ç¨‹ä¸­åˆ†é…å†…å­˜å¹¶å†™å…¥DLLè·¯å¾„
+    if (!WriteProcessStringW(hProcess, dllPath, &pRemoteDllPath)) {
+        hr = HRESULT_FROM_WIN32(GetLastError());
+        CloseHandle(hProcess);
         return hr;
     }
 
-    // µÈ´ıDLL¼ÓÔØÍê³É
-    Sleep(200);
+    // è·å–LoadLibraryWå‡½æ•°åœ°å€
+    LPVOID pLoadLibraryW = (LPVOID)GetProcAddress(
+        GetModuleHandleW(L"kernel32.dll"), "LoadLibraryW");
 
-    // »ñÈ¡×¢ÈëµÄDLLÄ£¿é¾ä±ú
-    HMODULE hRemoteModule = GetRemoteModuleHandle(processId, dllPath);
-    if (!hRemoteModule) {
-        // DLL¿ÉÄÜÒÑ¼ÓÔØµ«Î´ÕÒµ½Ä£¿éĞÅÏ¢
-        // ·µ»Ø³É¹¦£¬ÒòÎªDLLÒÑ¼ÓÔØ£¬µ«ÎŞ·¨µ÷ÓÃÖ¸¶¨º¯Êı
-        return S_OK;
+    if (!pLoadLibraryW) {
+        hr = HRESULT_FROM_WIN32(ERROR_PROC_NOT_FOUND);
+        goto cleanup;
     }
 
-    // ÕâÊÇÒ»¸ö¸ß¼¶¹¦ÄÜ£¬ĞèÒª´´½¨Ô¶³Ì´úÂë´æ¸ù
-    // ÓÉÓÚ²»Ê¹ÓÃSTLÇÒÒªÇó¼òµ¥£¬ÕâÀï·µ»Ø²»Ö§³Ö
-    // Êµ¼ÊÊµÏÖĞèÒª¸ü¶à¹¤×÷
+    // åˆ›å»ºè¿œç¨‹çº¿ç¨‹è°ƒç”¨LoadLibraryWåŠ è½½DLL
+    hRemoteThread = CreateRemoteThread(hProcess, NULL, 0,
+        (LPTHREAD_START_ROUTINE)pLoadLibraryW, pRemoteDllPath, 0, NULL);
 
-    return HRESULT_FROM_WIN32(ERROR_NOT_SUPPORTED);
+    if (!hRemoteThread) {
+        hr = HRESULT_FROM_WIN32(GetLastError());
+        goto cleanup;
+    }
+
+    // ç­‰å¾…çº¿ç¨‹å®Œæˆ
+    WaitForSingleObject(hRemoteThread, 5000); // 5ç§’è¶…æ—¶
+    
+    GetExitCodeThread(hRemoteThread, &exitCode);
+    CloseHandle(hRemoteThread);
+    hRemoteThread = NULL;
+
+    if (exitCode == 0) {
+        hr = E_FAIL;
+        goto cleanup;
+    }
+
+    // ç­‰å¾…DLLåŠ è½½å®Œæˆ
+    Sleep(200);
+
+    // ä½¿ç”¨Toolhelp32æšä¸¾è¿œç¨‹è¿›ç¨‹æ¨¡å—æ‰¾åˆ°DLLçš„åŸºå€
+    // é¦–å…ˆéœ€è¦å°†å‡½æ•°åä»å®½å­—ç¬¦è½¬æ¢ä¸ºå¤šå­—èŠ‚ï¼ˆUTF-8ï¼‰
+    // ä½¿ç”¨STL vectorè¿›è¡Œå­—ç¬¦ä¸²å¤„ç†
+    
+    // è·å–DLLæ–‡ä»¶åï¼ˆä¸å«è·¯å¾„ï¼‰
+    wDllPath = std::wstring(dllPath);
+    lastSlash = wDllPath.find_last_of(L"\\/");
+    wDllName = (lastSlash != std::wstring::npos) ? 
+        wDllPath.substr(lastSlash + 1) : wDllPath;
+    
+    // æšä¸¾è¿œç¨‹è¿›ç¨‹æ¨¡å—
+    hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPMODULE | TH32CS_SNAPMODULE32, processId);
+    if (hSnapshot == INVALID_HANDLE_VALUE) {
+        hr = HRESULT_FROM_WIN32(GetLastError());
+        goto cleanup;
+    }
+    
+    me32.dwSize = sizeof(MODULEENTRY32W);
+    
+    if (!Module32FirstW(hSnapshot, &me32)) {
+        CloseHandle(hSnapshot);
+        hr = HRESULT_FROM_WIN32(GetLastError());
+        goto cleanup;
+    }
+    
+    found = false;
+    do {
+        if (_wcsicmp(me32.szModule, wDllName.c_str()) == 0 ||
+            _wcsicmp(me32.szExePath, wDllPath.c_str()) == 0) {
+            hRemoteModule = me32.hModule;
+            found = true;
+            break;
+        }
+    } while (Module32NextW(hSnapshot, &me32));
+    
+    CloseHandle(hSnapshot);
+    hSnapshot = INVALID_HANDLE_VALUE;
+    
+    if (!found) {
+        // DLLå¯èƒ½å·²åŠ è½½ä½†æœªæ‰¾åˆ°æ¨¡å—ä¿¡æ¯
+        hr = S_OK; // è¿”å›æˆåŠŸï¼Œå› ä¸ºDLLå·²åŠ è½½ï¼Œä½†æ— æ³•è°ƒç”¨æŒ‡å®šå‡½æ•°
+        goto cleanup;
+    }
+
+    // åœ¨æœ¬åœ°åŠ è½½ç›¸åŒçš„DLL
+    hLocalModule = LoadLibraryW(dllPath);
+    if (!hLocalModule) {
+        hr = HRESULT_FROM_WIN32(GetLastError());
+        goto cleanup;
+    }
+
+    // åœ¨æœ¬åœ°DLLä¸­è·å–ç›®æ ‡å‡½æ•°åœ°å€
+    // ä½¿ç”¨StringUtilsä¸­çš„è¾…åŠ©å‡½æ•°è·å–å‡½æ•°å
+    ansiFunctionName = GetAnsiFunctionName(functionName);
+    if (!ansiFunctionName) {
+        hr = E_OUTOFMEMORY;
+        goto cleanup;
+    }
+    
+    pLocalFunction = GetProcAddress(hLocalModule, ansiFunctionName);
+    if (!pLocalFunction) {
+        hr = HRESULT_FROM_WIN32(ERROR_PROC_NOT_FOUND);
+        goto cleanup;
+    }
+
+    // è®¡ç®—è¿œç¨‹å‡½æ•°åœ°å€ï¼šè¿œç¨‹åŸºå€ + (æœ¬åœ°å‡½æ•°åœ°å€ - æœ¬åœ°åŸºå€)
+    localBase = (ULONG_PTR)hLocalModule;
+    remoteBase = (ULONG_PTR)hRemoteModule;
+    localFunctionAddr = (ULONG_PTR)pLocalFunction;
+    
+    pRemoteFunction = (LPVOID)(remoteBase + (localFunctionAddr - localBase));
+
+    // åˆ›å»ºè¿œç¨‹çº¿ç¨‹è°ƒç”¨ç›®æ ‡å‡½æ•°
+    hRemoteThread = CreateRemoteThread(hProcess, NULL, 0,
+        (LPTHREAD_START_ROUTINE)pRemoteFunction, NULL, 0, NULL);
+
+    if (!hRemoteThread) {
+        hr = HRESULT_FROM_WIN32(GetLastError());
+        goto cleanup;
+    }
+
+    // ç­‰å¾…çº¿ç¨‹å®Œæˆ
+    WaitForSingleObject(hRemoteThread, 5000); // 5ç§’è¶…æ—¶
+    
+    GetExitCodeThread(hRemoteThread, &exitCode);
+    CloseHandle(hRemoteThread);
+    hRemoteThread = NULL;
+
+    hr = (exitCode != 0) ? S_OK : E_FAIL;
+
+cleanup:
+    // æ¸…ç†èµ„æº
+    if (hRemoteThread) {
+        CloseHandle(hRemoteThread);
+    }
+    
+    if (hLocalModule) {
+        FreeLibrary(hLocalModule);
+    }
+    
+    if (ansiFunctionName) {
+        FreeConvertedString((LPVOID)ansiFunctionName);
+    }
+    
+    if (pRemoteDllPath) {
+        VirtualFreeEx(hProcess, pRemoteDllPath, 0, MEM_RELEASE);
+    }
+    
+    if (hSnapshot != INVALID_HANDLE_VALUE) {
+        CloseHandle(hSnapshot);
+    }
+    
+    CloseHandle(hProcess);
+    
+    return hr;
 }

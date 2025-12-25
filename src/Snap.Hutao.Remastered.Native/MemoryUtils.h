@@ -15,7 +15,6 @@ BOOL ReadProcessData(HANDLE hProcess, LPCVOID pRemoteAddress, LPVOID pBuffer, SI
 PINJECTION_DATA CreateInjectionData(LPCWSTR dllPath, LPCWSTR functionName);
 VOID FreeInjectionData(PINJECTION_DATA pData);
 
-// Patch callback function pointer type
 typedef HRESULT (__stdcall* PatchCallbackFunc)(byte* ptr, int size, GCHandle state);
 
 // Memory utilities patch function
