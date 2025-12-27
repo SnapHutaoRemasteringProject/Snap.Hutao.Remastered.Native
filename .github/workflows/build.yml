@@ -2,10 +2,10 @@ name: Build
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ master ]
   pull_request:
-    branches: [ main, master ]
-  workflow_dispatch:  # 允许手动触发
+    branches: [ master ]
+  workflow_dispatch: 
 
 env:
   DOTNET_VERSION: '10.0.x'
@@ -64,7 +64,7 @@ jobs:
       with:
         name: nuget-package
         path: nuget/*.nupkg
-        retention-days: 7
+        retention-days: 30
 
     - name: Upload Native DLLs artifact
       uses: actions/upload-artifact@v4
@@ -73,7 +73,7 @@ jobs:
         path: |
           src/Snap.Hutao.Remastered.Native/x64/${{ env.BUILD_CONFIGURATION }}/*.dll
           src/x64/${{ env.BUILD_CONFIGURATION }}/*.dll
-        retention-days: 7
+        retention-days: 30
 
     - name: Upload Build logs
       if: always()
@@ -84,4 +84,4 @@ jobs:
           **/*.log
           **/bin/**/*.log
           **/obj/**/*.log
-        retention-days: 3
+        retention-days: 7
