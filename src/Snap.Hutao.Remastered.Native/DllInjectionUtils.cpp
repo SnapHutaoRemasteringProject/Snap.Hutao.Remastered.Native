@@ -12,7 +12,7 @@
 #include <tlhelp32.h>
 
 // Windows钩子注入方法1（使用WH_GETMESSAGE钩子）
-HRESULT DllInjectionUtilitiesInjectUsingWindowsHook(
+DLL_EXPORT HRESULT __stdcall DllInjectionUtilitiesInjectUsingWindowsHook(
     LPCWSTR dllPath,
     LPCWSTR functionName,
     int processId)
@@ -42,7 +42,7 @@ HRESULT DllInjectionUtilitiesInjectUsingWindowsHook(
 }
 
 // Windows钩子注入方法2（使用WH_CALLWNDPROC钩子）
-HRESULT DllInjectionUtilitiesInjectUsingWindowsHook2(
+DLL_EXPORT HRESULT __stdcall DllInjectionUtilitiesInjectUsingWindowsHook2(
     LPCWSTR dllPath,
     LPCWSTR functionName,
     int processId)
@@ -71,7 +71,7 @@ HRESULT DllInjectionUtilitiesInjectUsingWindowsHook2(
 }
 
 // 远程线程注入（仅加载DLL）
-HRESULT DllInjectionUtilitiesInjectUsingRemoteThread(
+DLL_EXPORT HRESULT __stdcall DllInjectionUtilitiesInjectUsingRemoteThread(
     LPCWSTR dllPath,
     int processId)
 {
@@ -141,7 +141,7 @@ HRESULT DllInjectionUtilitiesInjectUsingRemoteThread(
 }
 
 // 远程线程注入（加载DLL并调用指定函数）
-HRESULT DllInjectionUtilitiesInjectUsingRemoteThreadWithFunction(
+DLL_EXPORT HRESULT __stdcall DllInjectionUtilitiesInjectUsingRemoteThreadWithFunction(
     LPCWSTR dllPath,
     LPCWSTR functionName,
     int processId)

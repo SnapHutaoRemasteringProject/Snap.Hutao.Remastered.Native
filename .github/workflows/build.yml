@@ -54,10 +54,13 @@ jobs:
 
     - name: Create NuGet package
       run: |
-        dotnet pack "src/Snap.Hutao.Remastered.Native.Packaging/Snap.Hutao.Remastered.Native.Packaging.csproj" `
-          -c ${{ env.BUILD_CONFIGURATION }} `
-          --no-build `
-          --output "nuget/"
+        msbuild "src/Snap.Hutao.Remastered.Native.Packaging/Snap.Hutao.Remastered.Native.Packaging.csproj" `
+          -t:Pack `
+          -p:Configuration=${{ env.BUILD_CONFIGURATION }} `
+          -p:PackageOutputPath="nuget/" `
+          -p:RestorePackages=false `
+          -p:IncludeSymbols=false `
+          -p:IncludeSource=false
 
     - name: Upload NuGet artifact
       uses: actions/upload-artifact@v4
