@@ -1,6 +1,6 @@
 #pragma once
 
-#include "DllInjection.h"
+#include "DllInjectionUtils.h"
 #include "ProcessUtils.h"
 #include "PrivilegeUtils.h"
 #include "HookUtils.h"
