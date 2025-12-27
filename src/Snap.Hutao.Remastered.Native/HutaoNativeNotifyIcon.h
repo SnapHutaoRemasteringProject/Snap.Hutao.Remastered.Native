@@ -2,6 +2,7 @@
 
 #include "IHutaoNativeNotifyIcon_h.h"
 #include "CustomImplements.h"
+#include "HutaoNativeNotifyIconCallback.h"
 #include <Windows.h>
 #include <shellapi.h>
 
@@ -10,7 +11,7 @@ class HutaoNativeNotifyIcon : public hutao::CustomImplements<
     IHutaoNativeNotifyIcon>
 {
 public:
-    HutaoNativeNotifyIcon();
+    HutaoNativeNotifyIcon(PCWSTR iconPath = nullptr);
     ~HutaoNativeNotifyIcon();
 
     // IHutaoNativeNotifyIcon methods
@@ -25,8 +26,9 @@ private:
     UINT m_uCallbackMessage = 0;
     HICON m_hIcon = nullptr;
     bool m_created = false;
-    WNDPROC m_callback = nullptr;
+    HutaoNativeNotifyIconCallback m_callback = { nullptr };
     nint m_userData = 0;
+    wchar_t m_iconPath[MAX_PATH] = { 0 };
 
     static LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
     static ATOM RegisterWindowClass();
