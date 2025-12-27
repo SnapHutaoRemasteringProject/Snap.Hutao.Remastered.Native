@@ -43,7 +43,6 @@ jobs:
         msbuild "src/Snap.Hutao.Remastered.Native/Snap.Hutao.Remastered.Native.vcxproj" `
           -p:Configuration=${{ env.BUILD_CONFIGURATION }} `
           -p:Platform=${{ env.BUILD_PLATFORM }} `
-          -p:PlatformToolset=v143 `
           -p:WindowsTargetPlatformVersion=10.0
 
     - name: Build Packaging project
