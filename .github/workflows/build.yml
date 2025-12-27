@@ -57,26 +57,33 @@ jobs:
         msbuild "src/Snap.Hutao.Remastered.Native.Packaging/Snap.Hutao.Remastered.Native.Packaging.csproj" `
           -t:Pack `
           -p:Configuration=${{ env.BUILD_CONFIGURATION }} `
-          -p:PackageOutputPath="nuget/" `
+          -p:PackageOutputPath="${{ github.workspace }}/nuget/" `
           -p:RestorePackages=false `
           -p:IncludeSymbols=false `
           -p:IncludeSource=false
+
+    - name: List generated files
+      run: |
+        echo "Listing files in nuget directory:"
+        dir "nuget" /b 2>nul || echo "nuget directory not found"
+        echo "Listing files in workspace:"
+        dir "${{ github.workspace }}/nuget" /b 2>nul || echo "Workspace nuget directory not found"
 
     - name: Upload NuGet artifact
       uses: actions/upload-artifact@v4
       with:
         name: nuget-package
-        path: nuget/*.nupkg
+        path: ${{ github.workspace }}/nuget/*.nupkg
         retention-days: 30
+        if-no-files-found: error
 
     - name: Upload Native DLLs artifact
       uses: actions/upload-artifact@v4
       with:
         name: native-dlls
-        path: |
-          src/Snap.Hutao.Remastered.Native/x64/${{ env.BUILD_CONFIGURATION }}/*.dll
-          src/x64/${{ env.BUILD_CONFIGURATION }}/*.dll
+        path: src/Snap.Hutao.Remastered.Native/x64/${{ env.BUILD_CONFIGURATION }}/*.dll
         retention-days: 30
+        if-no-files-found: error
 
     - name: Upload Build logs
       if: always()
