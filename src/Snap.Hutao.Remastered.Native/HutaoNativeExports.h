@@ -4,6 +4,7 @@
 #include "Types.h"
 #include "HutaoNativeLoggingCallBack.h"
 #include "HutaoNativeMessageCallback.h"
+#include "HutaoNativeHotKeyBeforeSwitchCallback.h"
 #include "IHutaoNative_h.h"
 #include "IHutaoString_h.h"
 #include "MemoryUtils.h"
@@ -18,4 +19,4 @@ DLL_EXPORT HRESULT __stdcall HutaoNativeRegistryNotificationCreateInstance(
 DLL_EXPORT HRESULT HutaoInitializeWilCallbacks(HutaoNativeLoggingCallback loggingCallback, HutaoNativeMessageCallback messageCallback);
 DLL_EXPORT void HutaoTestWilCallbacks();
 DLL_EXPORT BOOL HutaoHResultIsWin32(HRESULT hr, WIN32_ERROR  error);
-
+DLL_EXPORT HRESULT HutaoNativeHotKeyInitializeBeforeSwitchCallback(HutaoNativeHotKeyBeforeSwitchCallback callback);

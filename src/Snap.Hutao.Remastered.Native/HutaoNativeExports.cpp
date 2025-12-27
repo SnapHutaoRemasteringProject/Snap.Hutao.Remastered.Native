@@ -1,8 +1,7 @@
-#pragma once
-
 #include "dllmain.h"
 #include "HutaoNativeExports.h"
 #include "WilCallbacksManager.h"
+#include "HotKeyCallbackManager.h"
 #include "Types.h"
 #include "HutaoNative.h"
 #include "HutaoString.h"
@@ -70,4 +69,10 @@ DLL_EXPORT BOOL HutaoHResultIsWin32(HRESULT hr, WIN32_ERROR error)
 {
     // Compare HRESULT with HRESULT_FROM_WIN32(error)
     return hr == HRESULT_FROM_WIN32(error) ? TRUE : FALSE;
+}
+
+DLL_EXPORT HRESULT HutaoNativeHotKeyInitializeBeforeSwitchCallback(HutaoNativeHotKeyBeforeSwitchCallback callback)
+{
+	g_hotKeyCallbackManager.Initialize(callback);
+    return S_OK;
 }
