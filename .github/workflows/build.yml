@@ -1,0 +1,87 @@
+name: Build
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:  # 允许手动触发
+
+env:
+  DOTNET_VERSION: '10.0.x'
+  MSBUILD_VERSION: '17.0'
+  SOLUTION_PATH: 'src/Snap.Hutao.Remastered.Native.slnx'
+  BUILD_CONFIGURATION: 'Release'
+  BUILD_PLATFORM: 'x64'
+
+jobs:
+  build:
+    runs-on: windows-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v2
+      with:
+        msbuild-version: ${{ env.MSBUILD_VERSION }}
+
+    - name: Restore NuGet packages
+      run: |
+        dotnet restore "${{ env.SOLUTION_PATH }}"
+
+    - name: Build C++ Native project
+      run: |
+        msbuild "src/Snap.Hutao.Remastered.Native/Snap.Hutao.Remastered.Native.vcxproj" `
+          -p:Configuration=${{ env.BUILD_CONFIGURATION }} `
+          -p:Platform=${{ env.BUILD_PLATFORM }} `
+          -p:PlatformToolset=v143 `
+          -p:WindowsTargetPlatformVersion=10.0
+
+    - name: Build Packaging project
+      run: |
+        dotnet build "src/Snap.Hutao.Remastered.Native.Packaging/Snap.Hutao.Remastered.Native.Packaging.csproj" `
+          -c ${{ env.BUILD_CONFIGURATION }} `
+          --no-restore
+
+    - name: Create NuGet package
+      run: |
+        dotnet pack "src/Snap.Hutao.Remastered.Native.Packaging/Snap.Hutao.Remastered.Native.Packaging.csproj" `
+          -c ${{ env.BUILD_CONFIGURATION }} `
+          --no-build `
+          --output "nuget/"
+
+    - name: Upload NuGet artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: nuget-package
+        path: nuget/*.nupkg
+        retention-days: 7
+
+    - name: Upload Native DLLs artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: native-dlls
+        path: |
+          src/Snap.Hutao.Remastered.Native/x64/${{ env.BUILD_CONFIGURATION }}/*.dll
+          src/x64/${{ env.BUILD_CONFIGURATION }}/*.dll
+        retention-days: 7
+
+    - name: Upload Build logs
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: build-logs
+        path: |
+          **/*.log
+          **/bin/**/*.log
+          **/obj/**/*.log
+        retention-days: 3
