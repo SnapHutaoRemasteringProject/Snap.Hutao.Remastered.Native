@@ -48,9 +48,10 @@ jobs:
 
     - name: Build Packaging project
       run: |
-        dotnet build "src/Snap.Hutao.Remastered.Native.Packaging/Snap.Hutao.Remastered.Native.Packaging.csproj" `
-          -c ${{ env.BUILD_CONFIGURATION }} `
-          --no-restore
+        msbuild "src/Snap.Hutao.Remastered.Native.Packaging/Snap.Hutao.Remastered.Native.Packaging.csproj" `
+          -p:Configuration=${{ env.BUILD_CONFIGURATION }} `
+          -p:Platform=AnyCPU `
+          -p:RestorePackages=false
 
     - name: Create NuGet package
       run: |
