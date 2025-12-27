@@ -60,14 +60,20 @@ jobs:
           -p:PackageOutputPath="${{ github.workspace }}/nuget/" `
           -p:RestorePackages=false `
           -p:IncludeSymbols=false `
-          -p:IncludeSource=false
+          -p:IncludeSource=false `
+          -p:NoBuild=false
 
     - name: List generated files
       run: |
+        echo "Current directory:"
+        pwd
+        echo "Workspace: ${{ github.workspace }}"
         echo "Listing files in nuget directory:"
         dir "nuget" /b 2>nul || echo "nuget directory not found"
-        echo "Listing files in workspace:"
+        echo "Listing files in workspace nuget directory:"
         dir "${{ github.workspace }}/nuget" /b 2>nul || echo "Workspace nuget directory not found"
+        echo "Listing all .nupkg files recursively:"
+        dir /s /b *.nupkg 2>nul || echo "No .nupkg files found"
 
     - name: Upload NuGet artifact
       uses: actions/upload-artifact@v4
