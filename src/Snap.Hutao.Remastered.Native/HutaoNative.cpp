@@ -165,11 +165,11 @@ HRESULT STDMETHODCALLTYPE HutaoNative::MakeNotifyIcon(PCWSTR iconPath, GUID* id,
         return E_POINTER;
     }
 
-    hutao::com_ptr<IHutaoNativeNotifyIcon> notifyIcon = hutao::make_com_ptr<HutaoNativeNotifyIcon>();
+    // Pass iconPath to constructor
+    hutao::com_ptr<IHutaoNativeNotifyIcon> notifyIcon = hutao::make_com_ptr<HutaoNativeNotifyIcon>(iconPath);
     *ppv = notifyIcon.detach();
 
-    // Mark unused parameters to avoid warning
-    (void)iconPath;
+    // Mark unused parameter to avoid warning
     (void)id;
 
     return S_OK;

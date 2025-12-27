@@ -299,6 +299,9 @@
     <ClInclude Include="HutaoNativeHotKeyBeforeSwitchCallback.h">
       <Filter>头文件\core\struct</Filter>
     </ClInclude>
+    <ClInclude Include="HutaoNativeNotifyIconCallback.h">
+      <Filter>头文件\core\struct</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Midl Include="IHutaoString.idl">
