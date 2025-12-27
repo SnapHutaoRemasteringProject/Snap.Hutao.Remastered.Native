@@ -140,7 +140,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="DllInjection.cpp" />
+    <ClCompile Include="DllInjectionUtils.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="FirewallRuleManager.cpp" />
     <ClCompile Include="FrameworkTheming.cpp" />
@@ -167,12 +167,15 @@
     <ClCompile Include="ProcessUtils.cpp" />
     <ClCompile Include="StringUtils.cpp" />
     <ClCompile Include="WilCallbacksManager.cpp" />
+    <ClCompile Include="HotKeyCallbackManager.cpp" />
     <ClCompile Include="WinRTImpl.cpp" />
     <ClCompile Include="HutaoNativeInputLowLevelKeyboardSource.cpp" />
+    <ClCompile Include="WindowUtils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CustomImplements.h" />
-    <ClInclude Include="DllInjection.h" />
+    <ClInclude Include="WindowUtils.h" />
+    <ClInclude Include="DllInjectionUtils.h" />
     <ClInclude Include="dllmain.h" />
     <ClInclude Include="FailureInfo.h" />
     <ClInclude Include="FirewallRuleManager.h" />
@@ -185,12 +188,12 @@
     <ClInclude Include="HutaoNativeNotifyIcon.h" />
     <ClInclude Include="HutaoNativeHotKeyAction.h" />
     <ClInclude Include="HutaoNativeProcess.h" />
-    <ClInclude Include="HutaoNativeGuidHelper.h" />
-    <ClInclude Include="HutaoNativeGuids.h" />
     <ClInclude Include="HutaoNativeLoggingCallback.h" />
     <ClInclude Include="HutaoNativeLoopbackSupport.h" />
     <ClInclude Include="HutaoNativeMessageCallback.h" />
     <ClInclude Include="HutaoNativePhysicalDrive.h" />
+    <ClInclude Include="HutaoNativeWindowNonRude.h" />
+    <ClInclude Include="HutaoNativeWindowSubclass.h" />
     <ClInclude Include="HutaoPrivateWindowsVersion.h" />
     <ClInclude Include="IHutaoNativeDeviceCapabilities.h" />
     <ClInclude Include="IHutaoNativeFileSystem.h" />
@@ -201,6 +204,8 @@
     <ClInclude Include="IHutaoNativePhysicalDrive.h" />
     <ClInclude Include="HutaoNativeRegistryNotification.h" />
     <ClInclude Include="HutaoNativeWindowSubclassCallback.h" />
+    <ClInclude Include="HutaoNativeHotKeyBeforeSwitchCallback.h" />
+    <ClInclude Include="HotKeyCallbackManager.h" />
     <ClInclude Include="HutaoString.h" />
     <ClInclude Include="IHutaoNative.h" />
     <ClInclude Include="IHutaoNativeLoopbackSupport.h" />

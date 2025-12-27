@@ -44,18 +44,12 @@ HRESULT STDMETHODCALLTYPE HutaoNativeWindowNonRude::Attach()
     m_originalStyle = currentStyle;
 
     // 设置non-rude样式：
-    // 1. 移除WS_EX_APPWINDOW（防止窗口出现在任务栏）
-    // 2. 添加WS_EX_TOOLWINDOW（工具窗口，不会出现在任务栏）
+    // 1. 保留WS_EX_APPWINDOW，以允许窗口出现在任务栏
+    // 2. 不添加WS_EX_TOOLWINDOW，因为工具窗口不会出现在任务栏
     // 3. 添加WS_EX_NOACTIVATE（防止窗口激活）
     LONG_PTR newStyle = currentStyle;
     
-    // 移除WS_EX_APPWINDOW
-    newStyle &= ~WS_EX_APPWINDOW;
-    
-    // 添加WS_EX_TOOLWINDOW
-    newStyle |= WS_EX_TOOLWINDOW;
-    
-    // 添加WS_EX_NOACTIVATE（可选，防止窗口激活）
+    // 添加WS_EX_NOACTIVATE（防止窗口激活）
     newStyle |= WS_EX_NOACTIVATE;
 
     // 应用新样式
