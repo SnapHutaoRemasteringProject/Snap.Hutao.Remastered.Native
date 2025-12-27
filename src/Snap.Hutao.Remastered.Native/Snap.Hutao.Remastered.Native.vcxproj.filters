@@ -60,9 +60,6 @@
     <ClCompile Include="dllmain.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="DllInjection.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="ProcessUtils.cpp">
       <Filter>源文件\utils</Filter>
     </ClCompile>
@@ -85,7 +82,7 @@
       <Filter>源文件\core\impl</Filter>
     </ClCompile>
     <ClCompile Include="FrameworkTheming.cpp">
-      <Filter>源文件</Filter>
+      <Filter>源文件\core\export</Filter>
     </ClCompile>
     <ClCompile Include="FirewallRuleManager.cpp">
       <Filter>源文件\core\internal</Filter>
@@ -144,6 +141,15 @@
     <ClCompile Include="HutaoNativeWindowNonRude.cpp">
       <Filter>源文件\core\impl</Filter>
     </ClCompile>
+    <ClCompile Include="WindowUtils.cpp">
+      <Filter>源文件\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="DllInjectionUtils.cpp">
+      <Filter>源文件\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="HotKeyCallbackManager.cpp">
+      <Filter>源文件\core\internal</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Theme.h">
@@ -153,12 +159,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="FrameworkTheming.h">
-      <Filter>头文件</Filter>
+      <Filter>头文件\core\export</Filter>
     </ClInclude>
     <ClInclude Include="Types.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="DllInjection.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="ProcessUtils.h">
@@ -178,12 +181,6 @@
     </ClInclude>
     <ClInclude Include="IHutaoNative.h">
       <Filter>头文件\core\interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="HutaoNativeGuidHelper.h">
-      <Filter>头文件\core</Filter>
-    </ClInclude>
-    <ClInclude Include="HutaoNativeGuids.h">
-      <Filter>头文件\core</Filter>
     </ClInclude>
     <ClInclude Include="IHutaoNativeLoopbackSupport.h">
       <Filter>头文件\core\interfaces</Filter>
@@ -283,6 +280,24 @@
     </ClInclude>
     <ClInclude Include="CustomImplements.h">
       <Filter>头文件\core</Filter>
+    </ClInclude>
+    <ClInclude Include="HutaoNativeWindowNonRude.h">
+      <Filter>头文件\core\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="HutaoNativeWindowSubclass.h">
+      <Filter>头文件\core\impl</Filter>
+    </ClInclude>
+    <ClInclude Include="WindowUtils.h">
+      <Filter>头文件\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="DllInjectionUtils.h">
+      <Filter>头文件\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="HotKeyCallbackManager.h">
+      <Filter>头文件\core\internal</Filter>
+    </ClInclude>
+    <ClInclude Include="HutaoNativeHotKeyBeforeSwitchCallback.h">
+      <Filter>头文件\core\struct</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
