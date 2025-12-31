@@ -1,17 +1,11 @@
 #include "HutaoNativeLogicalDrive.h"
+#include "Error.h"
 #include <Windows.h>
 
 HRESULT STDMETHODCALLTYPE HutaoNativeLogicalDrive::GetDiskFreeSpace(PCWSTR path, long* bytes) noexcept
 {
-    if (bytes == nullptr)
-    {
-        return E_POINTER;
-    }
-
-    if (path == nullptr)
-    {
-        return E_INVALIDARG;
-    }
+    AssertNonNullAndReturn(bytes);
+    AssertNonNullAndReturn(path);
 
     ULARGE_INTEGER freeBytesAvailableToCaller;
     ULARGE_INTEGER totalNumberOfBytes;
@@ -26,7 +20,9 @@ HRESULT STDMETHODCALLTYPE HutaoNativeLogicalDrive::GetDiskFreeSpace(PCWSTR path,
 
     if (!success)
     {
-        return HRESULT_FROM_WIN32(GetLastError());
+        HRESULT hr = HRESULT_FROM_WIN32(GetLastError());
+        ThrowForHR(hr, "GetDiskFreeSpaceExW failed in GetDiskFreeSpace");
+        return hr;
     }
 
     // 返回可用字节数（以字节为单位）

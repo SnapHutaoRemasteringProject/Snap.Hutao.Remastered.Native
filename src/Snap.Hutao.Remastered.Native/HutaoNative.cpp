@@ -18,16 +18,14 @@
 #include "HutaoNativeWindowNonRude.h"
 #include "types.h"
 #include "CustomImplements.h"
+#include "Error.h"
 #include <Windows.h>
 #include <hstring.h>
 #include <winternl.h>
 
 HRESULT STDMETHODCALLTYPE HutaoNative::MakeLoopbackSupport(IHutaoNativeLoopbackSupport** ppv)
 {
-    if (ppv == nullptr)
-    {
-        return E_POINTER;
-    }
+    AssertNonNullAndReturn(ppv);
 
     hutao::com_ptr<IHutaoNativeLoopbackSupport> support = hutao::make_com_ptr<HutaoNativeLoopbackSupport>();
     *ppv = support.detach();
@@ -37,10 +35,7 @@ HRESULT STDMETHODCALLTYPE HutaoNative::MakeLoopbackSupport(IHutaoNativeLoopbackS
 
 HRESULT STDMETHODCALLTYPE HutaoNative::MakeRegistryNotification(PCWSTR keyPath, IHutaoNativeRegistryNotification** ppv)
 {
-    if (ppv == nullptr)
-    {
-        return E_POINTER;
-    }
+    AssertNonNullAndReturn(ppv);
 
     hutao::com_ptr<IHutaoNativeRegistryNotification> notify = hutao::make_com_ptr<HutaoNativeRegistryNotification>();
     *ppv = notify.detach();
@@ -53,10 +48,7 @@ HRESULT STDMETHODCALLTYPE HutaoNative::MakeRegistryNotification(PCWSTR keyPath, 
 
 HRESULT STDMETHODCALLTYPE HutaoNative::MakeWindowSubclass(INT64 hWnd, nint callback, INT64 userData, IHutaoNativeWindowSubclass** ppv)
 {
-    if (ppv == nullptr)
-    {
-        return E_POINTER;
-    }
+    AssertNonNullAndReturn(ppv);
 
     // Convert INT64 to HWND
     HWND hwnd = reinterpret_cast<HWND>(hWnd);
@@ -75,10 +67,7 @@ HRESULT STDMETHODCALLTYPE HutaoNative::MakeWindowSubclass(INT64 hWnd, nint callb
 
 HRESULT STDMETHODCALLTYPE HutaoNative::MakeWindowNonRude(INT64 hWnd, IHutaoNativeWindowNonRude** ppv)
 {
-    if (ppv == nullptr)
-    {
-        return E_POINTER;
-    }
+    AssertNonNullAndReturn(ppv);
 
     // Convert INT64 to HWND
     HWND hwnd = reinterpret_cast<HWND>(hWnd);
@@ -92,10 +81,7 @@ HRESULT STDMETHODCALLTYPE HutaoNative::MakeWindowNonRude(INT64 hWnd, IHutaoNativ
 // IHutaoNative2 methods
 HRESULT STDMETHODCALLTYPE HutaoNative::MakeDeviceCapabilities(IHutaoNativeDeviceCapabilities** ppv)
 {
-    if (ppv == nullptr)
-    {
-        return E_POINTER;
-    }
+    AssertNonNullAndReturn(ppv);
 
     hutao::com_ptr<IHutaoNativeDeviceCapabilities> capabilities = hutao::make_com_ptr<HutaoNativeDeviceCapabilities>();
     *ppv = capabilities.detach();
@@ -105,10 +91,7 @@ HRESULT STDMETHODCALLTYPE HutaoNative::MakeDeviceCapabilities(IHutaoNativeDevice
 
 HRESULT STDMETHODCALLTYPE HutaoNative::MakePhysicalDrive(IHutaoNativePhysicalDrive** ppv)
 {
-    if (ppv == nullptr)
-    {
-        return E_POINTER;
-    }
+    AssertNonNullAndReturn(ppv);
 
     hutao::com_ptr<IHutaoNativePhysicalDrive> physicalDrive = hutao::make_com_ptr<HutaoNativePhysicalDrive>();
     *ppv = physicalDrive.detach();
@@ -118,10 +101,7 @@ HRESULT STDMETHODCALLTYPE HutaoNative::MakePhysicalDrive(IHutaoNativePhysicalDri
 
 HRESULT STDMETHODCALLTYPE HutaoNative::MakeLogicalDrive(IHutaoNativeLogicalDrive** ppv)
 {
-    if (ppv == nullptr)
-    {
-        return E_POINTER;
-    }
+    AssertNonNullAndReturn(ppv);
 
     hutao::com_ptr<IHutaoNativeLogicalDrive> logicalDrive = hutao::make_com_ptr<HutaoNativeLogicalDrive>();
     *ppv = logicalDrive.detach();
@@ -132,10 +112,7 @@ HRESULT STDMETHODCALLTYPE HutaoNative::MakeLogicalDrive(IHutaoNativeLogicalDrive
 // IHutaoNative3 methods
 HRESULT STDMETHODCALLTYPE HutaoNative::MakeInputLowLevelKeyboardSource(IHutaoNativeInputLowLevelKeyboardSource** ppv)
 {
-    if (ppv == nullptr)
-    {
-        return E_POINTER;
-    }
+    AssertNonNullAndReturn(ppv);
 
     hutao::com_ptr<IHutaoNativeInputLowLevelKeyboardSource> source = hutao::make_com_ptr<HutaoNativeInputLowLevelKeyboardSource>();
     *ppv = source.detach();
@@ -146,10 +123,7 @@ HRESULT STDMETHODCALLTYPE HutaoNative::MakeInputLowLevelKeyboardSource(IHutaoNat
 // IHutaoNative4 methods
 HRESULT STDMETHODCALLTYPE HutaoNative::MakeFileSystem(IHutaoNativeFileSystem** ppv)
 {
-    if (ppv == nullptr)
-    {
-        return E_POINTER;
-    }
+    AssertNonNullAndReturn(ppv);
 
     hutao::com_ptr<IHutaoNativeFileSystem> fileSystem = hutao::make_com_ptr<HutaoNativeFileSystem>();
     *ppv = fileSystem.detach();
@@ -160,10 +134,7 @@ HRESULT STDMETHODCALLTYPE HutaoNative::MakeFileSystem(IHutaoNativeFileSystem** p
 // IHutaoNative5 methods
 HRESULT STDMETHODCALLTYPE HutaoNative::MakeNotifyIcon(PCWSTR iconPath, GUID* id, IHutaoNativeNotifyIcon** ppv)
 {
-    if (ppv == nullptr)
-    {
-        return E_POINTER;
-    }
+    AssertNonNullAndReturn(ppv);
 
     // Pass iconPath to constructor
     hutao::com_ptr<IHutaoNativeNotifyIcon> notifyIcon = hutao::make_com_ptr<HutaoNativeNotifyIcon>(iconPath);
@@ -178,10 +149,7 @@ HRESULT STDMETHODCALLTYPE HutaoNative::MakeNotifyIcon(PCWSTR iconPath, GUID* id,
 // IHutaoNative6 methods
 HRESULT STDMETHODCALLTYPE HutaoNative::MakeHotKeyAction(HutaoNativeHotKeyActionKind kind, nint callback, nint userData, IHutaoNativeHotKeyAction** ppv)
 {
-    if (ppv == nullptr)
-    {
-        return E_POINTER;
-    }
+    AssertNonNullAndReturn(ppv);
 
     // Convert nint to appropriate types
     WNDPROC wndProc = reinterpret_cast<WNDPROC>(callback);
@@ -196,10 +164,7 @@ HRESULT STDMETHODCALLTYPE HutaoNative::MakeHotKeyAction(HutaoNativeHotKeyActionK
 // IHutaoNative7 methods
 HRESULT STDMETHODCALLTYPE HutaoNative::MakeProcess(HutaoNativeProcessStartInfo info, IHutaoNativeProcess** ppv)
 {
-    if (ppv == nullptr)
-    {
-        return E_POINTER;
-    }
+    AssertNonNullAndReturn(ppv);
 
     hutao::com_ptr<IHutaoNativeProcess> process = hutao::make_com_ptr<HutaoNativeProcess>(info);
     *ppv = process.detach();
@@ -213,10 +178,7 @@ HRESULT STDMETHODCALLTYPE HutaoNative::MakeProcess(HutaoNativeProcessStartInfo i
 // IHutaoNativePrivate methods
 HRESULT STDMETHODCALLTYPE HutaoNative::IsCurrentWindowsVersionSupported(BOOL* isSupported)
 {
-    if (isSupported == nullptr)
-    {
-        return E_POINTER;
-    }
+    AssertNonNullAndReturn(isSupported);
 
     // Simple implementation: always return TRUE (supported)
     // Actual implementation should check Windows version
@@ -226,17 +188,16 @@ HRESULT STDMETHODCALLTYPE HutaoNative::IsCurrentWindowsVersionSupported(BOOL* is
 
 HRESULT STDMETHODCALLTYPE HutaoNative::GetWindowsVersion(HutaoPrivateWindowsVersion* pv)
 {
-    if (pv == nullptr)
-    {
-        return E_POINTER;
-    }
+    AssertNonNullAndReturn(pv);
 
     // Use RtlGetVersion to get accurate Windows version information
     typedef LONG (WINAPI* RtlGetVersionPtr)(PRTL_OSVERSIONINFOW);
     HMODULE hNtdll = GetModuleHandleW(L"ntdll.dll");
     if (hNtdll == nullptr)
     {
-        return HRESULT_FROM_WIN32(GetLastError());
+        HRESULT hr = HRESULT_FROM_WIN32(GetLastError());
+        ThrowForHR(hr, "GetModuleHandleW(ntdll.dll) failed");
+        return hr;
     }
 
     RtlGetVersionPtr pRtlGetVersion = reinterpret_cast<RtlGetVersionPtr>(
@@ -244,7 +205,9 @@ HRESULT STDMETHODCALLTYPE HutaoNative::GetWindowsVersion(HutaoPrivateWindowsVers
     
     if (pRtlGetVersion == nullptr)
     {
-        return HRESULT_FROM_WIN32(GetLastError());
+        HRESULT hr = HRESULT_FROM_WIN32(GetLastError());
+        ThrowForHR(hr, "GetProcAddress(RtlGetVersion) failed");
+        return hr;
     }
 
     RTL_OSVERSIONINFOW versionInfo = { 0 };
@@ -253,7 +216,9 @@ HRESULT STDMETHODCALLTYPE HutaoNative::GetWindowsVersion(HutaoPrivateWindowsVers
     LONG status = pRtlGetVersion(&versionInfo);
     if (status != 0) // STATUS_SUCCESS is 0
     {
-        return HRESULT_FROM_NT(status);
+        HRESULT hr = HRESULT_FROM_NT(status);
+        ThrowForHR(hr, "RtlGetVersion failed");
+        return hr;
     }
 
     // Fill the structure
@@ -267,10 +232,8 @@ HRESULT STDMETHODCALLTYPE HutaoNative::GetWindowsVersion(HutaoPrivateWindowsVers
 
 HRESULT STDMETHODCALLTYPE HutaoNative::ShowErrorMessage(PCWSTR title, PCWSTR message)
 {
-    if (title == nullptr || message == nullptr)
-    {
-        return E_INVALIDARG;
-    }
+    AssertNonNullAndReturn(title);
+    AssertNonNullAndReturn(message);
 
     // Show message box
     int result = MessageBoxW(
@@ -288,10 +251,8 @@ HRESULT STDMETHODCALLTYPE HutaoNative::ShowErrorMessage(PCWSTR title, PCWSTR mes
 // IHutaoPrivate2 methods
 HRESULT STDMETHODCALLTYPE HutaoNative::ExchangeGameUidForIdentifier1820(PCWSTR gameUid, byte* identifier)
 {
-    if (gameUid == nullptr || identifier == nullptr)
-    {
-        return E_INVALIDARG;
-    }
+    AssertNonNullAndReturn(gameUid);
+    AssertNonNullAndReturn(identifier);
 
     // Calculate string length (excluding null terminator)
     size_t length = 0;
