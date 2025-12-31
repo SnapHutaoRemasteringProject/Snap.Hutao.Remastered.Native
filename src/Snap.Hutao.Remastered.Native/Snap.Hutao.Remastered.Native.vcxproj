@@ -138,6 +138,7 @@
   <ItemGroup>
     <ClCompile Include="DllInjectionUtils.cpp" />
     <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="Error.cpp" />
     <ClCompile Include="FirewallRuleManager.cpp" />
     <ClCompile Include="FrameworkTheming.cpp" />
     <ClCompile Include="HookUtils.cpp" />
@@ -170,6 +171,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CustomImplements.h" />
+    <ClInclude Include="Error.h" />
     <ClInclude Include="HutaoNativeNotifyIconCallback.h" />
     <ClInclude Include="WindowUtils.h" />
     <ClInclude Include="DllInjectionUtils.h" />

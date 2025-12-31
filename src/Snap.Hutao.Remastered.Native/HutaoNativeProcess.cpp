@@ -1,4 +1,5 @@
 #include "HutaoNativeProcess.h"
+#include "Error.h"
 #include <Windows.h>
 #include <string>
 #include <vector>
@@ -99,7 +100,9 @@ HRESULT STDMETHODCALLTYPE HutaoNativeProcess::Start()
     
     if (!CreateProcessInternal())
     {
-        return HRESULT_FROM_WIN32(GetLastError());
+        HRESULT hr = HRESULT_FROM_WIN32(GetLastError());
+        ThrowForHR(hr, "CreateProcessW failed in Start");
+        return hr;
     }
     
     m_started = true;
@@ -113,12 +116,16 @@ HRESULT STDMETHODCALLTYPE HutaoNativeProcess::ResumeMainThread()
 {
     if (!m_started || m_processInfo.hThread == nullptr)
     {
-        return HRESULT_FROM_WIN32(ERROR_INVALID_STATE);
+        HRESULT hr = HRESULT_FROM_WIN32(ERROR_INVALID_STATE);
+        return hr;
     }
     
-    if (ResumeThread(m_processInfo.hThread) == (DWORD)-1)
+    DWORD resumeResult = ResumeThread(m_processInfo.hThread);
+    if (resumeResult == (DWORD)-1)
     {
-        return HRESULT_FROM_WIN32(GetLastError());
+        HRESULT hr = HRESULT_FROM_WIN32(GetLastError());
+        ThrowForHR(hr, "ResumeThread failed in ResumeMainThread");
+        return hr;
     }
     
     return S_OK;
@@ -128,19 +135,24 @@ HRESULT STDMETHODCALLTYPE HutaoNativeProcess::WaitForExit()
 {
     if (!m_started || m_processInfo.hProcess == nullptr)
     {
-        return HRESULT_FROM_WIN32(ERROR_INVALID_STATE);
+        HRESULT hr = HRESULT_FROM_WIN32(ERROR_INVALID_STATE);
+        return hr;
     }
     
     DWORD waitResult = WaitForSingleObject(m_processInfo.hProcess, INFINITE);
     if (waitResult != WAIT_OBJECT_0)
     {
-        return HRESULT_FROM_WIN32(GetLastError());
+        HRESULT hr = HRESULT_FROM_WIN32(GetLastError());
+        ThrowForHR(hr, "WaitForSingleObject failed in WaitForExit");
+        return hr;
     }
     
     // 获取退出码
     if (!::GetExitCodeProcess(m_processInfo.hProcess, &m_exitCode))
     {
-        return HRESULT_FROM_WIN32(GetLastError());
+        HRESULT hr = HRESULT_FROM_WIN32(GetLastError());
+        ThrowForHR(hr, "GetExitCodeProcess failed in WaitForExit");
+        return hr;
     }
     
     m_exited = true;
@@ -151,12 +163,15 @@ HRESULT STDMETHODCALLTYPE HutaoNativeProcess::Kill()
 {
     if (!m_started || m_processInfo.hProcess == nullptr)
     {
-        return HRESULT_FROM_WIN32(ERROR_INVALID_STATE);
+        HRESULT hr = HRESULT_FROM_WIN32(ERROR_INVALID_STATE);
+        return hr;
     }
     
     if (!TerminateProcess(m_processInfo.hProcess, 1))
     {
-        return HRESULT_FROM_WIN32(GetLastError());
+        HRESULT hr = HRESULT_FROM_WIN32(GetLastError());
+        ThrowForHR(hr, "TerminateProcess failed in Kill");
+        return hr;
     }
     
     // 等待进程结束
@@ -174,15 +189,13 @@ HRESULT STDMETHODCALLTYPE HutaoNativeProcess::Kill()
 
 HRESULT STDMETHODCALLTYPE HutaoNativeProcess::GetId(uint* id)
 {
-    if (id == nullptr)
-    {
-        return E_POINTER;
-    }
+    AssertNonNullAndReturn(id);
     
     if (!m_started || m_processInfo.hProcess == nullptr)
     {
         *id = 0;
-        return HRESULT_FROM_WIN32(ERROR_INVALID_STATE);
+        HRESULT hr = HRESULT_FROM_WIN32(ERROR_INVALID_STATE);
+        return hr;
     }
     
     *id = m_processInfo.dwProcessId;
@@ -191,15 +204,13 @@ HRESULT STDMETHODCALLTYPE HutaoNativeProcess::GetId(uint* id)
 
 HRESULT STDMETHODCALLTYPE HutaoNativeProcess::GetProcessHandle(long long* hProcess)
 {
-    if (hProcess == nullptr)
-    {
-        return E_POINTER;
-    }
+    AssertNonNullAndReturn(hProcess);
     
     if (!m_started || m_processInfo.hProcess == nullptr)
     {
         *hProcess = 0L;
-        return HRESULT_FROM_WIN32(ERROR_INVALID_STATE);
+        HRESULT hr = HRESULT_FROM_WIN32(ERROR_INVALID_STATE);
+        return hr;
     }
     
     // 复制句柄
@@ -213,7 +224,9 @@ HRESULT STDMETHODCALLTYPE HutaoNativeProcess::GetProcessHandle(long long* hProce
         FALSE,
         DUPLICATE_SAME_ACCESS))
     {
-        return HRESULT_FROM_WIN32(GetLastError());
+        HRESULT hr = HRESULT_FROM_WIN32(GetLastError());
+        ThrowForHR(hr, "DuplicateHandle failed in GetProcessHandle");
+        return hr;
     }
     
     *hProcess = (long long)hProcessCopy;
@@ -222,15 +235,13 @@ HRESULT STDMETHODCALLTYPE HutaoNativeProcess::GetProcessHandle(long long* hProce
 
 HRESULT STDMETHODCALLTYPE HutaoNativeProcess::GetMainWindowHandle(long long* hWnd)
 {
-    if (hWnd == nullptr)
-    {
-        return E_POINTER;
-    }
+    AssertNonNullAndReturn(hWnd);
     
     if (!m_started || m_processInfo.hProcess == nullptr)
     {
         *hWnd = 0L;
-        return HRESULT_FROM_WIN32(ERROR_INVALID_STATE);
+        HRESULT hr = HRESULT_FROM_WIN32(ERROR_INVALID_STATE);
+        return hr;
     }
     
     // 查找进程的主窗口
@@ -272,16 +283,15 @@ HRESULT STDMETHODCALLTYPE HutaoNativeProcess::GetMainWindowHandle(long long* hWn
 
 HRESULT STDMETHODCALLTYPE HutaoNativeProcess::GetExitCodeProcess(BOOL* isRunning, uint* exitCode)
 {
-    if (isRunning == nullptr || exitCode == nullptr)
-    {
-        return E_POINTER;
-    }
+    AssertNonNullAndReturn(isRunning);
+    AssertNonNullAndReturn(exitCode);
     
     if (!m_started || m_processInfo.hProcess == nullptr)
     {
         *isRunning = FALSE;
         *exitCode = 0;
-        return HRESULT_FROM_WIN32(ERROR_INVALID_STATE);
+        HRESULT hr = HRESULT_FROM_WIN32(ERROR_INVALID_STATE);
+        return hr;
     }
     
     if (m_exited)
@@ -295,7 +305,9 @@ HRESULT STDMETHODCALLTYPE HutaoNativeProcess::GetExitCodeProcess(BOOL* isRunning
     DWORD currentExitCode;
     if (!::GetExitCodeProcess(m_processInfo.hProcess, &currentExitCode))
     {
-        return HRESULT_FROM_WIN32(GetLastError());
+        HRESULT hr = HRESULT_FROM_WIN32(GetLastError());
+        ThrowForHR(hr, "GetExitCodeProcess failed in GetExitCodeProcess");
+        return hr;
     }
     
     if (currentExitCode == STILL_ACTIVE)

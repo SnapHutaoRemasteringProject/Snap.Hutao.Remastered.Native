@@ -1,4 +1,5 @@
 #include "HutaoNativeHotKeyAction.h"
+#include "Error.h"
 #include <Windows.h>
 
 const wchar_t* WINDOW_CLASS_NAME = L"HutaoNativeHotKeyActionWindowClass";
@@ -18,13 +19,16 @@ HutaoNativeHotKeyAction::HutaoNativeHotKeyAction()
 }
 
 HutaoNativeHotKeyAction::HutaoNativeHotKeyAction(HutaoNativeHotKeyActionKind kind, WNDPROC callback, LONG_PTR userData)
+    : m_callback(callback)
+    , m_modifiers(0)
+    , m_vk(0)
+    , m_enabled(false)
+    , m_hotKeyId(0)
+    , m_hWnd(nullptr)
 {
-	m_callback = callback;
-    m_modifiers = 0;
-    m_vk = 0;
-    m_enabled = false;
     m_hotKeyId = static_cast<int>(++s_nextHotKeyId);
-	m_hWnd = nullptr;
+    (void)kind;
+    (void)userData;
 }
 
 HutaoNativeHotKeyAction::~HutaoNativeHotKeyAction()
@@ -77,7 +81,7 @@ LRESULT CALLBACK HutaoNativeHotKeyAction::WndProc(HWND hWnd, UINT message, WPARA
 {
     if (message == WM_CREATE)
     {
-        CREATESTRUCT* pCreate = reinterpret_cast<CREATESTRUCT*>(lParam);
+        CREATESTRUCTW* pCreate = reinterpret_cast<CREATESTRUCTW*>(lParam);
         SetWindowLongPtrW(hWnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(pCreate->lpCreateParams));
         return 0;
     }
@@ -135,10 +139,7 @@ HRESULT STDMETHODCALLTYPE HutaoNativeHotKeyAction::Update(int modifiers, uint vk
 
 HRESULT STDMETHODCALLTYPE HutaoNativeHotKeyAction::GetIsEnabled(BOOL* isEnabled)
 {
-    if (isEnabled == nullptr)
-    {
-        return E_POINTER;
-    }
+    AssertNonNullAndReturn(isEnabled);
 
     *isEnabled = m_enabled ? TRUE : FALSE;
     return S_OK;
@@ -161,7 +162,9 @@ HRESULT STDMETHODCALLTYPE HutaoNativeHotKeyAction::SetIsEnabled(BOOL isEnabled)
             m_hWnd = CreateMessageWindow();
             if (m_hWnd == nullptr)
             {
-                return HRESULT_FROM_WIN32(GetLastError());
+                HRESULT hr = HRESULT_FROM_WIN32(GetLastError());
+                ThrowForHR(hr, "CreateMessageWindow failed in SetIsEnabled");
+                return hr;
             }
         }
 
