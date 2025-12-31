@@ -90,21 +90,7 @@ HRESULT STDMETHODCALLTYPE HutaoNativeLoopbackSupport::Enable(PCWSTR familyName, 
     return hr;
 }
 
-HutaoNativeLoopbackSupport2::HutaoNativeLoopbackSupport2()
-    : m_firewallManager(new FirewallRuleManager())
-{
-}
-
-HutaoNativeLoopbackSupport2::~HutaoNativeLoopbackSupport2()
-{
-    if (m_firewallManager)
-    {
-        delete m_firewallManager;
-        m_firewallManager = nullptr;
-    }
-}
-
-HRESULT STDMETHODCALLTYPE HutaoNativeLoopbackSupport2::IsPublicFirewallEnabled(boolean* enabled)
+HRESULT STDMETHODCALLTYPE HutaoNativeLoopbackSupport::IsPublicFirewallEnabled(boolean* enabled)
 {
     AssertNonNullAndReturn(enabled);
 
