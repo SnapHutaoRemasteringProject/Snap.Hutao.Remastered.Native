@@ -1,26 +1,37 @@
-#include"FrameworkTheming.h"
+#include "FrameworkTheming.h"
 #include "types.h"
-#include "dllmain.h"
-#include "Theme.h"
 #include <Windows.h>
-#include <cstdarg>
-#include <cstdint>
-#include <string.h>
+#include <cstring>
+#include <atomic>
 
-DLL_EXPORT HRESULT __stdcall FrameworkThemingSetTheme(Theme theme) {
-    // 验证输入参数 (匹配C#的Theme枚举)
-    if ((((byte)theme) & 0x03) > 0x02) {  // BaseMask检查
+// Global function pointers
+DXamlInstanceStorageGetValueFunc pDXamlInstanceStorageGetValue = nullptr;
+DXamlServicesGetHandleFunc pDXamlServicesGetHandle = nullptr;
+FrameworkThemingOnThemeChangedFunc pFrameworkThemingOnThemeChanged = nullptr;
+
+// Initialization flag
+std::atomic<int32_t> g_InitializationResult(-1);
+
+// Static initialization once flag
+static INIT_ONCE g_InitOnce = INIT_ONCE_STATIC_INIT;
+
+DLL_EXPORT HRESULT __stdcall FrameworkThemingSetTheme(Theme theme)
+{
+    // Validate theme parameter (matching C# validation)
+    if ((static_cast<byte>(theme) & 0x03) > 0x02) {
         return E_INVALIDARG;
     }
 
     BOOL fPending = FALSE;
     HRESULT hr = S_OK;
 
+    // One-time initialization
     if (!InitOnceBeginInitialize(&g_InitOnce, 0, &fPending, nullptr)) {
         return E_FAIL;
     }
+
     if (fPending) {
-        hr = InitializeXamlFunctions();
+        hr = InitializeFrameworkThemingFunctions();
         g_InitializationResult = hr;
 
         if (!InitOnceComplete(&g_InitOnce, 0, nullptr)) {
@@ -31,144 +42,55 @@ DLL_EXPORT HRESULT __stdcall FrameworkThemingSetTheme(Theme theme) {
         hr = g_InitializationResult.load();
     }
 
-    if (SUCCEEDED(hr)) {  // 成功
-        if (!g_pGetValueFunction || !g_pOnThemeChangedFunction) {
-            return E_UNEXPECTED;
-        }
-
-        int64_t contextObject = 0;
-
-        // 调用获取的 GetValue 函数
-        auto getValueFunc = reinterpret_cast<HRESULT(__stdcall*)(int64_t*)>(g_pGetValueFunction);
-        getValueFunc(&contextObject);
-
-        if (contextObject == 0) {
-            return E_HANDLE;
-        }
-
-        // 导航到主题对象 (根据逆向分析的结构偏移)
-        int64_t* ptr1 = reinterpret_cast<int64_t*>(contextObject + 64);
-        if (ptr1 == nullptr || *ptr1 == 0) {
-            return E_HANDLE;
-        }
-
-        int64_t* ptr2 = reinterpret_cast<int64_t*>(*ptr1 + 1648);
-        if (ptr2 == nullptr || *ptr2 == 0) {
-            return E_HANDLE;
-        }
-
-        // 设置主题值
-        uint8_t* themeValue = reinterpret_cast<uint8_t*>(*ptr2 + 80);
-        *themeValue = (byte)theme;
-
-        // 调用 OnThemeChanged 函数
-        auto onThemeChangedFunc = reinterpret_cast<HRESULT(__stdcall*)(int64_t, uint8_t)>(g_pOnThemeChangedFunction);
-        return onThemeChangedFunc(*ptr2, 1);  // forceUpdate = true
-
-    }
-    else {  // 初始化失败
-        return hr;
-    }
-}
-
-static HRESULT InitializeXamlFunctions() {
-    HMODULE xamlModule = GetModuleHandleW(L"microsoft.ui.xaml.dll");
-    if (!xamlModule) {
-        xamlModule = LoadLibraryW(L"microsoft.ui.xaml.dll");
-        if (!xamlModule) {
-            return HRESULT_FROM_WIN32(ERROR_MOD_NOT_FOUND);
-        }
-    }
-
-    HRESULT hr = InitializeXamlFunctions_Exact(xamlModule);
     if (FAILED(hr)) {
         return hr;
     }
 
-    return S_OK;
-}
-
-static HRESULT InitializeXamlFunctions_Exact(HMODULE xamlModule) {
-    PIMAGE_DOS_HEADER dosHeader = (PIMAGE_DOS_HEADER)xamlModule;
-    PIMAGE_NT_HEADERS ntHeaders = (PIMAGE_NT_HEADERS)((uint8_t*)xamlModule + dosHeader->e_lfanew);
-    uint8_t* moduleBase = (uint8_t*)xamlModule;
-    uint8_t* moduleEnd = moduleBase + ntHeaders->OptionalHeader.SizeOfImage;
-
-    // 准备特征码1（11字节）
-    GetValuePattern getValuePattern;
-    getValuePattern.part1 = -2092412096;
-    getValuePattern.part2 = -1958207252;
-    getValuePattern.part3 = -29735;
-    getValuePattern.part4 = 13;
-
-    // 搜索特征码1
-    void* foundGetValue = FindPattern(moduleBase, ntHeaders->OptionalHeader.SizeOfImage,
-        &getValuePattern, sizeof(getValuePattern));
-
-    if (!foundGetValue) {
-        // 原始代码调用 LogFile 两次
-        return E_NOT_FOUND;
+    // Check if function pointers are initialized
+    if (!pDXamlInstanceStorageGetValue || !pDXamlServicesGetHandle || !pFrameworkThemingOnThemeChanged) {
+        return E_UNEXPECTED;
     }
 
-    g_pGetValueFunction = foundGetValue;
-
-    // 准备特征码2（26字节）
-    OnThemeChangedPattern onThemeChangedPattern;
-    onThemeChangedPattern.parts[0] = 610044232;
-    onThemeChangedPattern.parts[1] = 1820936208;
-    onThemeChangedPattern.parts[2] = -1991763932;
-    onThemeChangedPattern.parts[3] = 1461724276;
-    onThemeChangedPattern.parts[4] = 1463899713;
-    onThemeChangedPattern.parts[5] = 552371016;
-    onThemeChangedPattern.lastPart = 1526;
-
-    // 搜索特征码2（与原始循环逻辑一致）
-    size_t searchOffset = 0;
-    size_t moduleSize = ntHeaders->OptionalHeader.SizeOfImage;
-
-    while (searchOffset + 26 <= moduleSize) {
-        void* currentPos = moduleBase + searchOffset;
-        void* found = FindPattern(currentPos, moduleSize - searchOffset,
-            &onThemeChangedPattern, sizeof(onThemeChangedPattern));
-
-        if (!found) break;
-
-        uintptr_t offset = (uintptr_t)found - (uintptr_t)moduleBase;
-
-        // ==== 完全照抄原始验证条件 ====
-        if ((moduleSize - offset) != 30 && *((uint8_t*)found + 30) == 8) {
-            g_pOnThemeChangedFunction = found;
-            return S_OK; // 成功
-        }
-
-        searchOffset = offset + 31;
-        if (searchOffset >= moduleSize) {
-            // 原始代码记录错误日志后返回 2147943568
-            return E_NOT_FOUND;
-        }
+    // Get DXamlCore instance
+    DXamlCoreAbi* pXamlCore = nullptr;
+    hr = pDXamlInstanceStorageGetValue(&pXamlCore);
+    if (FAILED(hr) || !pXamlCore) {
+        return hr;
     }
 
-    return E_NOT_FOUND;
-}
+    // Get CCoreServices from DXamlCore (offset 8 * sizeof(uint64_t) = 64 bytes)
+    // In C#: CCoreServiceAbi* pCoreService = (CCoreServiceAbi*)((ulong*)pXamlCore + 8);
+    CCoreServiceAbi* pCoreService = reinterpret_cast<CCoreServiceAbi*>(
+        reinterpret_cast<uint64_t*>(pXamlCore) + 8);
 
-static void* FindPattern(void* start, size_t size, const void* pattern, size_t patternSize) {
-    for (size_t i = 0; i <= size - patternSize; ++i) {
-        if (memcmp((uint8_t*)start + i, pattern, patternSize) == 0) {
-            return (uint8_t*)start + i;
-        }
+    // Get FrameworkTheming instance from CCoreServices (offset 0x670)
+    // In C#: FrameworkThemingAbi* theming = *(FrameworkThemingAbi**)(*(ulong*)pCoreService + 0x670L);
+    uint64_t* pCoreServiceVtable = reinterpret_cast<uint64_t*>(pCoreService);
+    uint64_t coreServiceThis = *pCoreServiceVtable;
+    FrameworkThemingAbi* theming = *reinterpret_cast<FrameworkThemingAbi**>(coreServiceThis + 0x670);
+
+    if (!theming) {
+        return E_HANDLE;
     }
-    return nullptr;
+
+    // Set theme value (offset 0x50)
+    // In C#: ((Theme*)theming)[0x50] = theme;
+    Theme* themePtr = reinterpret_cast<Theme*>(theming);
+    themePtr[0x50] = theme;
+
+    // Call OnThemeChanged with forceUpdate = true
+    return pFrameworkThemingOnThemeChanged(theming, TRUE);
 }
 
-// 辅助函数：预初始化（可选）
-HRESULT FrameworkThemingInitialize() {
+HRESULT FrameworkThemingInitialize()
+{
     BOOL fPending = FALSE;
     if (!InitOnceBeginInitialize(&g_InitOnce, 0, &fPending, nullptr)) {
         return E_FAIL;
     }
 
     if (fPending) {
-        HRESULT hr = InitializeXamlFunctions();
+        HRESULT hr = InitializeFrameworkThemingFunctions();
         g_InitializationResult = hr;
 
         if (!InitOnceComplete(&g_InitOnce, 0, nullptr)) {
@@ -180,7 +102,210 @@ HRESULT FrameworkThemingInitialize() {
     return g_InitializationResult.load();
 }
 
-// 辅助函数：检查是否已初始化
-BOOL FrameworkThemingIsInitialized() {
+BOOL FrameworkThemingIsInitialized()
+{
     return g_InitializationResult.load() >= 0;
+}
+
+HMODULE GetMuxModule()
+{
+    HMODULE hModule = GetModuleHandleW(L"microsoft.ui.xaml.dll");
+    if (!hModule) {
+        hModule = LoadLibraryW(L"microsoft.ui.xaml.dll");
+    }
+    return hModule;
+}
+
+DWORD GetImageSize(HMODULE hModule)
+{
+    if (!hModule) {
+        return 0;
+    }
+
+    PIMAGE_DOS_HEADER pDosHeader = reinterpret_cast<PIMAGE_DOS_HEADER>(hModule);
+    if (pDosHeader->e_magic != IMAGE_DOS_SIGNATURE) {
+        return 0;
+    }
+
+    PIMAGE_NT_HEADERS64 pNtHeaders = reinterpret_cast<PIMAGE_NT_HEADERS64>(
+        reinterpret_cast<uint8_t*>(hModule) + pDosHeader->e_lfanew);
+    if (pNtHeaders->Signature != IMAGE_NT_SIGNATURE) {
+        return 0;
+    }
+
+    return pNtHeaders->OptionalHeader.SizeOfImage;
+}
+
+const uint8_t* FindPattern(const uint8_t* haystack, size_t haystackSize, 
+                          const uint8_t* needle, size_t needleSize)
+{
+    if (!haystack || !needle || needleSize == 0 || haystackSize < needleSize) {
+        return nullptr;
+    }
+
+    for (size_t i = 0; i <= haystackSize - needleSize; ++i) {
+        if (memcmp(haystack + i, needle, needleSize) == 0) {
+            return haystack + i;
+        }
+    }
+
+    return nullptr;
+}
+
+HRESULT InitializeFrameworkThemingFunctions()
+{
+    HMODULE mux = GetMuxModule();
+    if (!mux) {
+        return HRESULT_FROM_WIN32(ERROR_MOD_NOT_FOUND);
+    }
+
+    DWORD imageSize = GetImageSize(mux);
+    if (imageSize == 0) {
+        return E_FAIL;
+    }
+
+    const uint8_t* moduleBase = reinterpret_cast<const uint8_t*>(mux);
+    const uint8_t* moduleEnd = moduleBase + imageSize;
+
+    // Pattern for DXamlInstanceStorage::GetValue
+    // 40 53                    push    rbx
+    // 48 83 EC 20              sub     rsp, 20h
+    // 48 8B D9                 mov     rbx, phValue
+    // 8B 0D (?? ?? 6B 00)      mov     ecx, cs:?g_dwTlsIndex@DXamlInstanceStorage@@3KA ; dwTlsIndex
+    static const uint8_t patternDXamlInstanceStorageGetValue[] = {
+        0x40, 0x53, 0x48, 0x83, 0xEC, 0x20, 0x48, 0x8B, 0xD9, 0x8B, 0x0D
+    };
+
+    const uint8_t* foundGetValue = FindPattern(moduleBase, imageSize,
+        patternDXamlInstanceStorageGetValue, sizeof(patternDXamlInstanceStorageGetValue));
+    
+    if (!foundGetValue) {
+        return E_NOT_FOUND;
+    }
+
+    pDXamlInstanceStorageGetValue = reinterpret_cast<DXamlInstanceStorageGetValueFunc>(
+        const_cast<uint8_t*>(foundGetValue));
+
+    // Pattern for DXamlServices::GetHandle
+    // First pattern: 48 83 EC 28              sub     rsp, 28h
+    //                48 83 64 24 30 00        and     [rsp+28h+arg_0], 0
+    //                48 8D 4C 24 30           lea     rcx, [rsp+28h+arg_0]
+    static const uint8_t patternDXamlServicesGetHandle[] = {
+        0x48, 0x83, 0xEC, 0x28, 0x48, 0x83, 0x64, 0x24, 0x30, 0x00, 0x48, 0x8D, 0x4C, 0x24, 0x30
+    };
+
+    // Second pattern for verification
+    // 48 8B 44 24 30           mov     rax, [rsp+28h+arg_0]
+    // 48 8B 40 40              mov     rax, [rax+40h]
+    // 48 83 C4 28              add     rsp, 28h
+    // C3                       retn
+    static const uint8_t secondPatternDXamlServicesGetHandle[] = {
+        0x48, 0x8B, 0x44, 0x24, 0x30, 0x48, 0x8B, 0x40, 0x40, 0x48, 0x83, 0xC4, 0x28, 0xC3
+    };
+
+    // Pattern to exclude (InternalDebugInterop::GetCore)
+    // 48 89 4C 24 08           mov     [rsp+arg_0], rcx
+    static const uint8_t patternInternalDebugInteropGetCore[] = {
+        0x48, 0x89, 0x4C, 0x24, 0x08
+    };
+
+    // Search for DXamlServicesGetHandle pattern
+    size_t offset = 0;
+    const uint8_t* foundGetHandle = nullptr;
+    
+    while (offset < imageSize) {
+        foundGetHandle = FindPattern(moduleBase + offset, imageSize - offset,
+            patternDXamlServicesGetHandle, sizeof(patternDXamlServicesGetHandle));
+        
+        if (!foundGetHandle) {
+            break;
+        }
+
+        size_t foundOffset = foundGetHandle - moduleBase;
+        
+        // Check if this is NOT InternalDebugInterop::GetCore
+        // (pattern should NOT be present 5 bytes before)
+        if (foundOffset >= 5) {
+            const uint8_t* checkStart = foundGetHandle - 5;
+            if (memcmp(checkStart, patternInternalDebugInteropGetCore, 
+                      sizeof(patternInternalDebugInteropGetCore)) != 0) {
+                
+                // Check if second pattern follows
+                const uint8_t* secondPatternStart = foundGetHandle + sizeof(patternDXamlServicesGetHandle);
+                if (secondPatternStart + sizeof(secondPatternDXamlServicesGetHandle) <= moduleEnd) {
+                    if (memcmp(secondPatternStart, secondPatternDXamlServicesGetHandle,
+                              sizeof(secondPatternDXamlServicesGetHandle)) == 0) {
+                        // Found the correct function
+                        break;
+                    }
+                }
+            }
+        }
+
+        offset = foundOffset + 1;
+        foundGetHandle = nullptr;
+    }
+
+    if (!foundGetHandle) {
+        return E_NOT_FOUND;
+    }
+
+    pDXamlServicesGetHandle = reinterpret_cast<DXamlServicesGetHandleFunc>(
+        const_cast<uint8_t*>(foundGetHandle));
+
+    // Pattern for FrameworkTheming::OnThemeChanged
+    // 48 89 5C 24 10           mov     [rsp+arg_8], rbx
+    // 48 89 6C 24 18           mov     [rsp+arg_10], rbp
+    // 48 89 74 24 20           mov     [rsp+arg_18], rsi
+    // 57                       push    rdi
+    // 41 56                    push    r14
+    // 41 57                    push    r15
+    // 48 83 EC 40              sub     rsp, 40h
+    // 48 8B 05 ?? ?? 3D 00     mov     rax, cs:__security_cookie
+    static const uint8_t patternFrameworkThemingOnThemeChanged[] = {
+        0x48, 0x89, 0x5C, 0x24, 0x10, 0x48, 0x89, 0x6C, 0x24, 0x18, 0x48, 0x89, 0x74, 0x24, 0x20,
+        0x57, 0x41, 0x56, 0x41, 0x57, 0x48, 0x83, 0xEC, 0x40, 0x48, 0x8B, 0x05
+    };
+
+    // Second pattern for verification: 0x3D, 0x00
+    static const uint8_t secondPatternFrameworkThemingOnThemeChanged[] = {
+        0x3D, 0x00
+    };
+
+    // Search for FrameworkThemingOnThemeChanged pattern
+    offset = 0;
+    const uint8_t* foundOnThemeChanged = nullptr;
+    
+    while (offset < imageSize) {
+        foundOnThemeChanged = FindPattern(moduleBase + offset, imageSize - offset,
+            patternFrameworkThemingOnThemeChanged, sizeof(patternFrameworkThemingOnThemeChanged));
+        
+        if (!foundOnThemeChanged) {
+            break;
+        }
+
+        size_t foundOffset = foundOnThemeChanged - moduleBase;
+        
+        // Check if second pattern follows (2 bytes after the first pattern)
+        const uint8_t* secondPatternStart = foundOnThemeChanged + sizeof(patternFrameworkThemingOnThemeChanged) + 2;
+        if (secondPatternStart + sizeof(secondPatternFrameworkThemingOnThemeChanged) <= moduleEnd) {
+            if (memcmp(secondPatternStart, secondPatternFrameworkThemingOnThemeChanged,
+                      sizeof(secondPatternFrameworkThemingOnThemeChanged)) == 0) {
+                // Found the correct function
+                break;
+            }
+        }
+
+        offset = foundOffset + 1;
+        foundOnThemeChanged = nullptr;
+    }
+
+    if (!foundOnThemeChanged) {
+        return E_NOT_FOUND;
+    }
+
+    pFrameworkThemingOnThemeChanged = reinterpret_cast<FrameworkThemingOnThemeChangedFunc>(
+        const_cast<uint8_t*>(foundOnThemeChanged));
+
+    return S_OK;
 }
