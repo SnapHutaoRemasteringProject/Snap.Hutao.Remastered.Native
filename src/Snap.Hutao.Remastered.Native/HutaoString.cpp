@@ -1,7 +1,6 @@
-#pragma once
-
 #include "HutaoString.h"
 #include "IHutaoString_h.h"
+#include "Error.h"
 #include <algorithm>
 #include <Windows.h>
 #include <cstdint>
@@ -23,10 +22,7 @@ HutaoString::HutaoString(const std::wstring& initialValue)
 
 HRESULT __stdcall HutaoString::GetBuffer(PCWSTR* buffer) noexcept
 {
-	if (buffer == nullptr)
-	{
-		return E_POINTER;
-	}
+	AssertNonNullAndReturn(buffer);
 
 	try
 	{
@@ -41,10 +37,7 @@ HRESULT __stdcall HutaoString::GetBuffer(PCWSTR* buffer) noexcept
 
 HRESULT __stdcall HutaoString::GetBufferSize(uint32_t* size) noexcept
 {
-	if (size == nullptr)
-	{
-		return E_POINTER;
-	}
+	AssertNonNullAndReturn(size);
 
 	try
 	{
@@ -92,10 +85,7 @@ HRESULT __stdcall HutaoString::SetBuffer(PCWSTR value, uint32_t length) noexcept
 
 HRESULT __stdcall HutaoString::GetLength(uint32_t* length) noexcept
 {
-	if (length == nullptr)
-	{
-		return E_POINTER;
-	}
+	AssertNonNullAndReturn(length);
 
 	try
 	{
@@ -144,10 +134,8 @@ HRESULT __stdcall HutaoString::Append(PCWSTR value) noexcept
 
 HRESULT __stdcall HutaoString::CompareTo(IHutaoString* other, int32_t* result) noexcept
 {
-	if (other == nullptr || result == nullptr)
-	{
-		return E_POINTER;
-	}
+	AssertNonNullAndReturn(other);
+	AssertNonNullAndReturn(result);
 
 	try
 	{
@@ -220,10 +208,7 @@ HRESULT __stdcall HutaoString::ToLower() noexcept
 
 HRESULT __stdcall HutaoString::Substring(uint32_t start, uint32_t length, IHutaoString** result) noexcept
 {
-	if (result == nullptr)
-	{
-		return E_POINTER;
-	}
+	AssertNonNullAndReturn(result);
 
 	*result = nullptr;
 

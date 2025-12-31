@@ -2,6 +2,7 @@
 #include "HutaoNativeLoggingCallback.h"
 #include "HutaoNativeMessageCallback.h"
 #include "FailureInfo.h"
+#include "Error.h"
 
 WilCallbacksManager::WilCallbacksManager()
 {
@@ -23,7 +24,7 @@ void WilCallbacksManager::Initialize(HutaoNativeLoggingCallback loggingCallback,
 	loggingCallback_ = loggingCallback;
 	messageCallback_ = messageCallback;
 
-	LogMsg(L"WilCallbacksManager initialized.");
+	LogMessage("WilCallbacksManager initialized.");
 }
 
 HutaoNativeLoggingCallback WilCallbacksManager::GetLoggingCallback()
