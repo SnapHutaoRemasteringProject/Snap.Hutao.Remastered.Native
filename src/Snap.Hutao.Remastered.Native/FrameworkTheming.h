@@ -13,12 +13,10 @@ struct FrameworkThemingAbi;
 
 // Function pointer types matching the C# signatures
 typedef HRESULT (__stdcall* DXamlInstanceStorageGetValueFunc)(DXamlCoreAbi** ppXamlCore);
-typedef CCoreServiceAbi* (__stdcall* DXamlServicesGetHandleFunc)();
 typedef HRESULT (__stdcall* FrameworkThemingOnThemeChangedFunc)(FrameworkThemingAbi* theming, BOOL forceUpdate);
 
 // Global function pointers (initialized in static initialization)
 extern DXamlInstanceStorageGetValueFunc pDXamlInstanceStorageGetValue;
-extern DXamlServicesGetHandleFunc pDXamlServicesGetHandle;
 extern FrameworkThemingOnThemeChangedFunc pFrameworkThemingOnThemeChanged;
 
 // Initialization flag
