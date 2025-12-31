@@ -1,11 +1,10 @@
-#pragma once
-
 #include "DllInjectionUtils.h"
 #include "ProcessUtils.h"
 #include "PrivilegeUtils.h"
 #include "HookUtils.h"
 #include "MemoryUtils.h"
 #include "StringUtils.h"
+#include "Error.h"
 #include <Windows.h>
 #include <vector>
 #include <string>
@@ -17,9 +16,9 @@ DLL_EXPORT HRESULT __stdcall DllInjectionUtilitiesInjectUsingWindowsHook(
     LPCWSTR functionName,
     int processId)
 {
-    if (!dllPath || !functionName || processId <= 0) {
-        return E_INVALIDARG;
-    }
+    AssertNonNullAndReturn(dllPath);
+	AssertNonNullAndReturn(functionName);
+    ThrowIfAndReturn(processId <= 0, "Invaild processid", E_INVALIDARG);
 
     if (GetFileAttributesW(dllPath) == INVALID_FILE_ATTRIBUTES) {
         return HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND);
@@ -27,7 +26,6 @@ DLL_EXPORT HRESULT __stdcall DllInjectionUtilitiesInjectUsingWindowsHook(
 
     EnableDebugPrivilege();
 
-    // 获取目标进程的主线程ID
     DWORD targetThreadId = GetMainThreadId(processId);
     if (targetThreadId == 0) {
         // 如果没有主线程，尝试枚举其他线程
@@ -37,7 +35,6 @@ DLL_EXPORT HRESULT __stdcall DllInjectionUtilitiesInjectUsingWindowsHook(
         }
     }
 
-    // 使用钩子注入（WH_GETMESSAGE）
     return InjectUsingHook(dllPath, functionName, targetThreadId, WH_GETMESSAGE);
 }
 
@@ -47,17 +44,13 @@ DLL_EXPORT HRESULT __stdcall DllInjectionUtilitiesInjectUsingWindowsHook2(
     LPCWSTR functionName,
     int processId)
 {
-    if (!dllPath || !functionName || processId <= 0) {
-        return E_INVALIDARG;
-    }
-
-    if (GetFileAttributesW(dllPath) == INVALID_FILE_ATTRIBUTES) {
-        return HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND);
-    }
+    AssertNonNullAndReturn(dllPath);
+    AssertNonNullAndReturn(functionName);
+    ThrowIfAndReturn(processId <= 0, "Invaild processid", E_INVALIDARG);
+    ThrowIfAndReturn(GetFileAttributesW(dllPath) == INVALID_FILE_ATTRIBUTES, "Dll not found", HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND));
 
     EnableDebugPrivilege();
 
-    // 获取目标进程的主线程ID
     DWORD targetThreadId = GetMainThreadId(processId);
     if (targetThreadId == 0) {
         targetThreadId = FindAnyThreadId(processId);
@@ -75,13 +68,9 @@ DLL_EXPORT HRESULT __stdcall DllInjectionUtilitiesInjectUsingRemoteThread(
     LPCWSTR dllPath,
     int processId)
 {
-    if (!dllPath || processId <= 0) {
-        return E_INVALIDARG;
-    }
-
-    if (GetFileAttributesW(dllPath) == INVALID_FILE_ATTRIBUTES) {
-        return HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND);
-    }
+	AssertNonNullAndReturn(dllPath);
+	ThrowIfAndReturn(processId <= 0, "Invaild processid", E_INVALIDARG);
+    ThrowIfAndReturn(GetFileAttributesW(dllPath) == INVALID_FILE_ATTRIBUTES, "Dll not found", HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND));
 
     EnableDebugPrivilege();
 
@@ -91,9 +80,7 @@ DLL_EXPORT HRESULT __stdcall DllInjectionUtilitiesInjectUsingRemoteThread(
         PROCESS_VM_OPERATION | PROCESS_VM_WRITE | PROCESS_VM_READ,
         FALSE, processId);
 
-    if (!hProcess) {
-        return HRESULT_FROM_WIN32(GetLastError());
-    }
+	ThrowIfAndReturn(!hProcess, "Failed to open target process", HRESULT_FROM_WIN32(GetLastError()));
 
     // 在目标进程中分配内存并写入DLL路径
     LPVOID pRemoteMemory = NULL;
@@ -109,6 +96,7 @@ DLL_EXPORT HRESULT __stdcall DllInjectionUtilitiesInjectUsingRemoteThread(
     if (!pLoadLibrary) {
         VirtualFreeEx(hProcess, pRemoteMemory, 0, MEM_RELEASE);
         CloseHandle(hProcess);
+		ThrowForHR(HRESULT_FROM_WIN32(ERROR_PROC_NOT_FOUND), "Failed to get LoadLibraryW address");
         return HRESULT_FROM_WIN32(ERROR_PROC_NOT_FOUND);
     }
 
@@ -120,11 +108,12 @@ DLL_EXPORT HRESULT __stdcall DllInjectionUtilitiesInjectUsingRemoteThread(
         DWORD lastError = GetLastError();
         VirtualFreeEx(hProcess, pRemoteMemory, 0, MEM_RELEASE);
         CloseHandle(hProcess);
+		ThrowForHR(HRESULT_FROM_WIN32(lastError), "Failed to create remote thread");
         return HRESULT_FROM_WIN32(lastError);
     }
 
     // 等待线程完成
-    WaitForSingleObject(hRemoteThread, 5000); // 5秒超时
+    WaitForSingleObject(hRemoteThread, 5000);
 
     // 获取退出码
     DWORD exitCode = 0;
@@ -132,7 +121,6 @@ DLL_EXPORT HRESULT __stdcall DllInjectionUtilitiesInjectUsingRemoteThread(
 
     CloseHandle(hRemoteThread);
 
-    // 延迟释放内存，确保DLL已加载
     Sleep(100);
     VirtualFreeEx(hProcess, pRemoteMemory, 0, MEM_RELEASE);
     CloseHandle(hProcess);
@@ -140,32 +128,11 @@ DLL_EXPORT HRESULT __stdcall DllInjectionUtilitiesInjectUsingRemoteThread(
     return (exitCode != 0) ? S_OK : E_FAIL;
 }
 
-// 远程线程注入（加载DLL并调用指定函数）
-DLL_EXPORT HRESULT __stdcall DllInjectionUtilitiesInjectUsingRemoteThreadWithFunction(
+HRESULT __stdcall InjectUsingRemoteThreadWithFunctionCore(
     LPCWSTR dllPath,
     LPCWSTR functionName,
-    int processId)
-{
-    if (!dllPath || !functionName || processId <= 0) {
-        return E_INVALIDARG;
-    }
-
-    if (GetFileAttributesW(dllPath) == INVALID_FILE_ATTRIBUTES) {
-        return HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND);
-    }
-
-    EnableDebugPrivilege();
-
-    // 打开目标进程
-    HANDLE hProcess = OpenProcess(
-        PROCESS_CREATE_THREAD | PROCESS_QUERY_INFORMATION |
-        PROCESS_VM_OPERATION | PROCESS_VM_WRITE | PROCESS_VM_READ,
-        FALSE, processId);
-
-    if (!hProcess) {
-        return HRESULT_FROM_WIN32(GetLastError());
-    }
-
+    int processId,
+    HANDLE hProcess) {
     HRESULT hr = S_OK;
     LPVOID pRemoteDllPath = NULL;
     HMODULE hRemoteModule = NULL;
@@ -189,6 +156,7 @@ DLL_EXPORT HRESULT __stdcall DllInjectionUtilitiesInjectUsingRemoteThreadWithFun
     if (!WriteProcessStringW(hProcess, dllPath, &pRemoteDllPath)) {
         hr = HRESULT_FROM_WIN32(GetLastError());
         CloseHandle(hProcess);
+		ThrowForHR(hr, "Failed to write DLL path to remote process");
         return hr;
     }
 
@@ -198,6 +166,7 @@ DLL_EXPORT HRESULT __stdcall DllInjectionUtilitiesInjectUsingRemoteThreadWithFun
 
     if (!pLoadLibraryW) {
         hr = HRESULT_FROM_WIN32(ERROR_PROC_NOT_FOUND);
+		ThrowForHR(hr, "Failed to get LoadLibraryW address");
         goto cleanup;
     }
 
@@ -207,49 +176,46 @@ DLL_EXPORT HRESULT __stdcall DllInjectionUtilitiesInjectUsingRemoteThreadWithFun
 
     if (!hRemoteThread) {
         hr = HRESULT_FROM_WIN32(GetLastError());
+		ThrowForHR(hr, "Failed to create remote thread for LoadLibraryW");
         goto cleanup;
     }
 
     // 等待线程完成
-    WaitForSingleObject(hRemoteThread, 5000); // 5秒超时
-    
+    WaitForSingleObject(hRemoteThread, 5000);
+
     GetExitCodeThread(hRemoteThread, &exitCode);
     CloseHandle(hRemoteThread);
     hRemoteThread = NULL;
 
     if (exitCode == 0) {
         hr = E_FAIL;
+		ThrowForHR(hr, "Remote LoadLibraryW failed");
         goto cleanup;
     }
 
     // 等待DLL加载完成
     Sleep(200);
 
-    // 使用Toolhelp32枚举远程进程模块找到DLL的基址
-    // 首先需要将函数名从宽字符转换为多字节（UTF-8）
-    // 使用STL vector进行字符串处理
-    
-    // 获取DLL文件名（不含路径）
     wDllPath = std::wstring(dllPath);
     lastSlash = wDllPath.find_last_of(L"\\/");
-    wDllName = (lastSlash != std::wstring::npos) ? 
+    wDllName = (lastSlash != std::wstring::npos) ?
         wDllPath.substr(lastSlash + 1) : wDllPath;
-    
+
     // 枚举远程进程模块
     hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPMODULE | TH32CS_SNAPMODULE32, processId);
     if (hSnapshot == INVALID_HANDLE_VALUE) {
         hr = HRESULT_FROM_WIN32(GetLastError());
         goto cleanup;
     }
-    
+
     me32.dwSize = sizeof(MODULEENTRY32W);
-    
+
     if (!Module32FirstW(hSnapshot, &me32)) {
         CloseHandle(hSnapshot);
         hr = HRESULT_FROM_WIN32(GetLastError());
         goto cleanup;
     }
-    
+
     found = false;
     do {
         if (_wcsicmp(me32.szModule, wDllName.c_str()) == 0 ||
@@ -259,12 +225,11 @@ DLL_EXPORT HRESULT __stdcall DllInjectionUtilitiesInjectUsingRemoteThreadWithFun
             break;
         }
     } while (Module32NextW(hSnapshot, &me32));
-    
+
     CloseHandle(hSnapshot);
     hSnapshot = INVALID_HANDLE_VALUE;
-    
+
     if (!found) {
-        // DLL可能已加载但未找到模块信息
         hr = S_OK; // 返回成功，因为DLL已加载，但无法调用指定函数
         goto cleanup;
     }
@@ -273,20 +238,21 @@ DLL_EXPORT HRESULT __stdcall DllInjectionUtilitiesInjectUsingRemoteThreadWithFun
     hLocalModule = LoadLibraryW(dllPath);
     if (!hLocalModule) {
         hr = HRESULT_FROM_WIN32(GetLastError());
+		ThrowForHR(hr, "Failed to load local DLL");
         goto cleanup;
     }
 
-    // 在本地DLL中获取目标函数地址
-    // 使用StringUtils中的辅助函数获取函数名
     ansiFunctionName = GetAnsiFunctionName(functionName);
     if (!ansiFunctionName) {
         hr = E_OUTOFMEMORY;
+		ThrowForHR(hr, "Failed to convert function name to ANSI");
         goto cleanup;
     }
-    
+
     pLocalFunction = GetProcAddress(hLocalModule, ansiFunctionName);
     if (!pLocalFunction) {
         hr = HRESULT_FROM_WIN32(ERROR_PROC_NOT_FOUND);
+		ThrowForHR(hr, "Failed to get target function address in local DLL");
         goto cleanup;
     }
 
@@ -294,7 +260,7 @@ DLL_EXPORT HRESULT __stdcall DllInjectionUtilitiesInjectUsingRemoteThreadWithFun
     localBase = (ULONG_PTR)hLocalModule;
     remoteBase = (ULONG_PTR)hRemoteModule;
     localFunctionAddr = (ULONG_PTR)pLocalFunction;
-    
+
     pRemoteFunction = (LPVOID)(remoteBase + (localFunctionAddr - localBase));
 
     // 创建远程线程调用目标函数
@@ -303,12 +269,13 @@ DLL_EXPORT HRESULT __stdcall DllInjectionUtilitiesInjectUsingRemoteThreadWithFun
 
     if (!hRemoteThread) {
         hr = HRESULT_FROM_WIN32(GetLastError());
+		ThrowForHR(hr, "Failed to create remote thread for target function");
         goto cleanup;
     }
 
     // 等待线程完成
     WaitForSingleObject(hRemoteThread, 5000); // 5秒超时
-    
+
     GetExitCodeThread(hRemoteThread, &exitCode);
     CloseHandle(hRemoteThread);
     hRemoteThread = NULL;
@@ -320,24 +287,50 @@ cleanup:
     if (hRemoteThread) {
         CloseHandle(hRemoteThread);
     }
-    
+
     if (hLocalModule) {
         FreeLibrary(hLocalModule);
     }
-    
+
     if (ansiFunctionName) {
         FreeConvertedString((LPVOID)ansiFunctionName);
     }
-    
+
     if (pRemoteDllPath) {
         VirtualFreeEx(hProcess, pRemoteDllPath, 0, MEM_RELEASE);
     }
-    
+
     if (hSnapshot != INVALID_HANDLE_VALUE) {
         CloseHandle(hSnapshot);
     }
-    
+
     CloseHandle(hProcess);
-    
+
     return hr;
+}
+DLL_EXPORT HRESULT __stdcall DllInjectionUtilitiesInjectUsingRemoteThreadWithFunction(
+    LPCWSTR dllPath,
+    LPCWSTR functionName,
+    int processId)
+{
+    AssertNonNullAndReturn(dllPath);
+    AssertNonNullAndReturn(functionName);
+    ThrowIfAndReturn(processId <= 0, "Invaild processid", E_INVALIDARG);
+    ThrowIfAndReturn(GetFileAttributesW(dllPath) == INVALID_FILE_ATTRIBUTES, "Dll not found", HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND));
+
+    EnableDebugPrivilege();
+
+    // 打开目标进程
+    HANDLE hProcess = OpenProcess(
+        PROCESS_CREATE_THREAD | PROCESS_QUERY_INFORMATION |
+        PROCESS_VM_OPERATION | PROCESS_VM_WRITE | PROCESS_VM_READ,
+        FALSE, processId);
+
+    if (!hProcess) {
+		ThrowForHR(HRESULT_FROM_WIN32(GetLastError()), "Failed to open target process");
+        return HRESULT_FROM_WIN32(GetLastError());
+    }
+
+    return InjectUsingRemoteThreadWithFunctionCore(
+		dllPath, functionName, processId, hProcess);
 }
