@@ -1,7 +1,6 @@
-#pragma once
-
 #include "HutaoNativeLoopbackSupport.h"
 #include "FirewallRuleManager.h"
+#include "Error.h"
 #include <Windows.h>
 #include <string>
 
@@ -21,19 +20,14 @@ HutaoNativeLoopbackSupport::~HutaoNativeLoopbackSupport()
 
 HRESULT STDMETHODCALLTYPE HutaoNativeLoopbackSupport::IsEnabled(PCWSTR familyName, IHutaoString* sid, boolean* enabled)
 {
-    if (enabled == nullptr)
-    {
-        return E_POINTER;
-    }
-
-    if (familyName == nullptr)
-    {
-        return E_INVALIDARG;
-    }
+    AssertNonNullAndReturn(enabled);
+    AssertNonNullAndReturn(familyName);
 
     if (!m_firewallManager)
     {
-        return E_FAIL;
+        HRESULT hr = E_FAIL;
+        ThrowForHR(hr, "Firewall manager is null in IsEnabled");
+        return hr;
     }
 
     LPCWSTR sidBuffer = nullptr;
@@ -42,6 +36,7 @@ HRESULT STDMETHODCALLTYPE HutaoNativeLoopbackSupport::IsEnabled(PCWSTR familyNam
         HRESULT hr = sid->GetBuffer(&sidBuffer);
         if (FAILED(hr))
         {
+            ThrowForHR(hr, "IHutaoString::GetBuffer failed in IsEnabled");
             return hr;
         }
     }
@@ -53,6 +48,7 @@ HRESULT STDMETHODCALLTYPE HutaoNativeLoopbackSupport::IsEnabled(PCWSTR familyNam
     HRESULT hr = m_firewallManager->IsLoopbackExempt(familyNameStr, sidStr, &nativeEnabled);
     if (FAILED(hr))
     {
+        ThrowForHR(hr, "FirewallRuleManager::IsLoopbackExempt failed in IsEnabled");
         return hr;
     }
 
@@ -62,14 +58,13 @@ HRESULT STDMETHODCALLTYPE HutaoNativeLoopbackSupport::IsEnabled(PCWSTR familyNam
 
 HRESULT STDMETHODCALLTYPE HutaoNativeLoopbackSupport::Enable(PCWSTR familyName, IHutaoString* sid)
 {
-    if (familyName == nullptr)
-    {
-        return E_INVALIDARG;
-    }
+    AssertNonNullAndReturn(familyName);
 
     if (!m_firewallManager)
     {
-        return E_FAIL;
+        HRESULT hr = E_FAIL;
+        ThrowForHR(hr, "Firewall manager is null in Enable");
+        return hr;
     }
 
     LPCWSTR sidBuffer = nullptr;
@@ -78,6 +73,7 @@ HRESULT STDMETHODCALLTYPE HutaoNativeLoopbackSupport::Enable(PCWSTR familyName, 
         HRESULT hr = sid->GetBuffer(&sidBuffer);
         if (FAILED(hr))
         {
+            ThrowForHR(hr, "IHutaoString::GetBuffer failed in Enable");
             return hr;
         }
     }
@@ -85,7 +81,13 @@ HRESULT STDMETHODCALLTYPE HutaoNativeLoopbackSupport::Enable(PCWSTR familyName, 
     std::wstring familyNameStr = familyName;
     std::wstring sidStr = sidBuffer ? sidBuffer : L"";
 
-    return m_firewallManager->AddLoopbackExempt(familyNameStr, sidStr);
+    HRESULT hr = m_firewallManager->AddLoopbackExempt(familyNameStr, sidStr);
+    if (FAILED(hr))
+    {
+        ThrowForHR(hr, "FirewallRuleManager::AddLoopbackExempt failed in Enable");
+    }
+
+    return hr;
 }
 
 HutaoNativeLoopbackSupport2::HutaoNativeLoopbackSupport2()
@@ -104,20 +106,20 @@ HutaoNativeLoopbackSupport2::~HutaoNativeLoopbackSupport2()
 
 HRESULT STDMETHODCALLTYPE HutaoNativeLoopbackSupport2::IsPublicFirewallEnabled(boolean* enabled)
 {
-    if (enabled == nullptr)
-    {
-        return E_POINTER;
-    }
+    AssertNonNullAndReturn(enabled);
 
     if (!m_firewallManager)
     {
-        return E_FAIL;
+        HRESULT hr = E_FAIL;
+        ThrowForHR(hr, "Firewall manager is null in IsPublicFirewallEnabled");
+        return hr;
     }
 
     BOOL nativeEnabled = FALSE;
     HRESULT hr = m_firewallManager->IsPublicFirewallEnabled(&nativeEnabled);
     if (FAILED(hr))
     {
+        ThrowForHR(hr, "FirewallRuleManager::IsPublicFirewallEnabled failed in IsPublicFirewallEnabled");
         return hr;
     }
 

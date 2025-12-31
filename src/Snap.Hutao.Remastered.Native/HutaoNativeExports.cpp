@@ -12,15 +12,13 @@
 #include "IHutaoNative_h.h"
 #include "IHutaoString_h.h"
 #include "CustomImplements.h"
-
+#include "Error.h"
 #include <Windows.h>
 
 DLL_EXPORT HRESULT __stdcall HutaoCreateInstance(
     IHutaoNative** ppInstance) {
 
-    if (ppInstance == nullptr) {
-        return E_POINTER;
-    }
+    AssertNonNullAndReturn(ppInstance);
 
     hutao::com_ptr<IHutaoNative> instance = hutao::make_com_ptr<HutaoNative>();
     *ppInstance = instance.detach();
@@ -31,9 +29,7 @@ DLL_EXPORT HRESULT __stdcall HutaoCreateInstance(
 DLL_EXPORT HRESULT __stdcall HutaoStringCreateInstance(
     IHutaoString** ppInstance) {
 
-    if (ppInstance == nullptr) {
-        return E_POINTER;
-    }
+    AssertNonNullAndReturn(ppInstance);
 
     hutao::com_ptr<IHutaoString> instance = hutao::make_com_ptr<HutaoString>();
     *ppInstance = instance.detach();
@@ -43,9 +39,7 @@ DLL_EXPORT HRESULT __stdcall HutaoStringCreateInstance(
 
 DLL_EXPORT HRESULT __stdcall HutaoNativeRegistryNotificationCreateInstance(IHutaoNativeRegistryNotification** ppInstance)
 {
-    if (ppInstance == nullptr) {
-        return E_POINTER;
-    }
+    AssertNonNullAndReturn(ppInstance);
 
     hutao::com_ptr<IHutaoNativeRegistryNotification> instance = hutao::make_com_ptr<HutaoNativeRegistryNotification>();
     *ppInstance = instance.detach();
@@ -61,13 +55,12 @@ DLL_EXPORT HRESULT HutaoInitializeWilCallbacks(HutaoNativeLoggingCallback loggin
 
 DLL_EXPORT void HutaoTestWilCallbacks()
 {
-	LogInfo(L"HutaoTestWilCallbacks invoked.");
-	LogMsg(L"This is a test message from HutaoTestWilCallbacks.");
+	LogForHR(S_OK);
+	LogMessage("This is a test message from HutaoTestWilCallbacks.");
 }
 
 DLL_EXPORT BOOL HutaoHResultIsWin32(HRESULT hr, WIN32_ERROR error)
 {
-    // Compare HRESULT with HRESULT_FROM_WIN32(error)
     return hr == HRESULT_FROM_WIN32(error) ? TRUE : FALSE;
 }
 
