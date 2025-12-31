@@ -1,5 +1,6 @@
 #include "FrameworkTheming.h"
 #include "types.h"
+#include "Error.h"
 #include <Windows.h>
 #include <cstring>
 #include <atomic>
@@ -18,16 +19,16 @@ static INIT_ONCE g_InitOnce = INIT_ONCE_STATIC_INIT;
 DLL_EXPORT HRESULT __stdcall FrameworkThemingSetTheme(Theme theme)
 {
     // Validate theme parameter (matching C# validation)
-    if ((static_cast<byte>(theme) & 0x03) > 0x02) {
-        return E_INVALIDARG;
-    }
+    ThrowIfAndReturn(((static_cast<byte>(theme) & 0x03) > 0x02), "Invalid theme value", E_INVALIDARG);
 
     BOOL fPending = FALSE;
     HRESULT hr = S_OK;
 
     // One-time initialization
     if (!InitOnceBeginInitialize(&g_InitOnce, 0, &fPending, nullptr)) {
-        return E_FAIL;
+        hr = HRESULT_FROM_WIN32(GetLastError());
+        ThrowForHR(hr, "InitOnceBeginInitialize failed");
+        return hr;
     }
 
     if (fPending) {
@@ -35,28 +36,26 @@ DLL_EXPORT HRESULT __stdcall FrameworkThemingSetTheme(Theme theme)
         g_InitializationResult = hr;
 
         if (!InitOnceComplete(&g_InitOnce, 0, nullptr)) {
-            return E_FAIL;
+            hr = HRESULT_FROM_WIN32(GetLastError());
+            ThrowForHR(hr, "InitOnceComplete failed");
+            return hr;
         }
     }
     else {
-        hr = g_InitializationResult.load();
+        hr = static_cast<HRESULT>(g_InitializationResult.load());
     }
 
-    if (FAILED(hr)) {
-        return hr;
-    }
+    ThrowIfAndReturn(FAILED(hr), "InitializeFrameworkThemingFunctions failed", hr);
 
     // Check if function pointers are initialized
-    if (!pDXamlInstanceStorageGetValue || !pDXamlServicesGetHandle || !pFrameworkThemingOnThemeChanged) {
-        return E_UNEXPECTED;
-    }
+    ThrowIfAndReturn(!pDXamlInstanceStorageGetValue || !pDXamlServicesGetHandle || !pFrameworkThemingOnThemeChanged,
+        "FrameworkTheming functions not initialized", E_UNEXPECTED);
 
     // Get DXamlCore instance
     DXamlCoreAbi* pXamlCore = nullptr;
     hr = pDXamlInstanceStorageGetValue(&pXamlCore);
-    if (FAILED(hr) || !pXamlCore) {
-        return hr;
-    }
+    ThrowIfAndReturn(FAILED(hr), "DXamlInstanceStorageGetValue failed", hr);
+    ThrowIfAndReturn(!pXamlCore, "DXamlCore instance is null", E_HANDLE);
 
     // Get CCoreServices from DXamlCore (offset 8 * sizeof(uint64_t) = 64 bytes)
     // In C#: CCoreServiceAbi* pCoreService = (CCoreServiceAbi*)((ulong*)pXamlCore + 8);
@@ -69,9 +68,7 @@ DLL_EXPORT HRESULT __stdcall FrameworkThemingSetTheme(Theme theme)
     uint64_t coreServiceThis = *pCoreServiceVtable;
     FrameworkThemingAbi* theming = *reinterpret_cast<FrameworkThemingAbi**>(coreServiceThis + 0x670);
 
-    if (!theming) {
-        return E_HANDLE;
-    }
+    ThrowIfAndReturn(!theming, "FrameworkTheming instance not found", E_HANDLE);
 
     // Set theme value (offset 0x50)
     // In C#: ((Theme*)theming)[0x50] = theme;
@@ -79,27 +76,35 @@ DLL_EXPORT HRESULT __stdcall FrameworkThemingSetTheme(Theme theme)
     themePtr[0x50] = theme;
 
     // Call OnThemeChanged with forceUpdate = true
-    return pFrameworkThemingOnThemeChanged(theming, TRUE);
+    hr = pFrameworkThemingOnThemeChanged(theming, TRUE);
+    ThrowIfAndReturn(FAILED(hr), "FrameworkTheming::OnThemeChanged failed", hr);
+    return hr;
 }
 
 HRESULT FrameworkThemingInitialize()
 {
     BOOL fPending = FALSE;
+    HRESULT hr = S_OK;
+
     if (!InitOnceBeginInitialize(&g_InitOnce, 0, &fPending, nullptr)) {
-        return E_FAIL;
+        hr = HRESULT_FROM_WIN32(GetLastError());
+        ThrowForHR(hr, "InitOnceBeginInitialize failed");
+        return hr;
     }
 
     if (fPending) {
-        HRESULT hr = InitializeFrameworkThemingFunctions();
+        hr = InitializeFrameworkThemingFunctions();
         g_InitializationResult = hr;
 
         if (!InitOnceComplete(&g_InitOnce, 0, nullptr)) {
-            return E_FAIL;
+            hr = HRESULT_FROM_WIN32(GetLastError());
+            ThrowForHR(hr, "InitOnceComplete failed");
+            return hr;
         }
         return hr;
     }
 
-    return g_InitializationResult.load();
+    return static_cast<HRESULT>(g_InitializationResult.load());
 }
 
 BOOL FrameworkThemingIsInitialized()
@@ -155,14 +160,10 @@ const uint8_t* FindPattern(const uint8_t* haystack, size_t haystackSize,
 HRESULT InitializeFrameworkThemingFunctions()
 {
     HMODULE mux = GetMuxModule();
-    if (!mux) {
-        return HRESULT_FROM_WIN32(ERROR_MOD_NOT_FOUND);
-    }
+    ThrowIfAndReturn(!mux, "microsoft.ui.xaml.dll not found", HRESULT_FROM_WIN32(ERROR_MOD_NOT_FOUND));
 
     DWORD imageSize = GetImageSize(mux);
-    if (imageSize == 0) {
-        return E_FAIL;
-    }
+    ThrowIfAndReturn(imageSize == 0, "GetImageSize failed", E_FAIL);
 
     const uint8_t* moduleBase = reinterpret_cast<const uint8_t*>(mux);
     const uint8_t* moduleEnd = moduleBase + imageSize;
@@ -178,10 +179,7 @@ HRESULT InitializeFrameworkThemingFunctions()
 
     const uint8_t* foundGetValue = FindPattern(moduleBase, imageSize,
         patternDXamlInstanceStorageGetValue, sizeof(patternDXamlInstanceStorageGetValue));
-    
-    if (!foundGetValue) {
-        return E_NOT_FOUND;
-    }
+    ThrowIfAndReturn(!foundGetValue, "DXamlInstanceStorage::GetValue pattern not found", E_NOT_FOUND);
 
     pDXamlInstanceStorageGetValue = reinterpret_cast<DXamlInstanceStorageGetValueFunc>(
         const_cast<uint8_t*>(foundGetValue));
@@ -246,9 +244,7 @@ HRESULT InitializeFrameworkThemingFunctions()
         foundGetHandle = nullptr;
     }
 
-    if (!foundGetHandle) {
-        return E_NOT_FOUND;
-    }
+    ThrowIfAndReturn(!foundGetHandle, "DXamlServices::GetHandle pattern not found", E_NOT_FOUND);
 
     pDXamlServicesGetHandle = reinterpret_cast<DXamlServicesGetHandleFunc>(
         const_cast<uint8_t*>(foundGetHandle));
@@ -300,9 +296,7 @@ HRESULT InitializeFrameworkThemingFunctions()
         foundOnThemeChanged = nullptr;
     }
 
-    if (!foundOnThemeChanged) {
-        return E_NOT_FOUND;
-    }
+    ThrowIfAndReturn(!foundOnThemeChanged, "FrameworkTheming::OnThemeChanged pattern not found", E_NOT_FOUND);
 
     pFrameworkThemingOnThemeChanged = reinterpret_cast<FrameworkThemingOnThemeChangedFunc>(
         const_cast<uint8_t*>(foundOnThemeChanged));
