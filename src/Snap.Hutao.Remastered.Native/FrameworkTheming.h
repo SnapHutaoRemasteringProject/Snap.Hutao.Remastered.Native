@@ -1,35 +1,38 @@
 #pragma once
 
-#include"dllmain.h"
-#include"Theme.h"
+#include "dllmain.h"
+#include "Theme.h"
 #include <Windows.h>
 #include <cstdint>
 #include <atomic>
 
-INIT_ONCE InitOnce = INIT_ONCE{ FALSE };
-BOOL fPending = false;
+// Forward declarations for internal types
+struct CCoreServiceAbi;
+struct DXamlCoreAbi;
+struct FrameworkThemingAbi;
 
-static INIT_ONCE g_InitOnce = INIT_ONCE_STATIC_INIT;
-static std::atomic<int32_t> g_InitializationResult = -1;
-static void* g_pGetValueFunction = nullptr;
-static void* g_pOnThemeChangedFunction = nullptr;
+// Function pointer types matching the C# signatures
+typedef HRESULT (__stdcall* DXamlInstanceStorageGetValueFunc)(DXamlCoreAbi** ppXamlCore);
+typedef CCoreServiceAbi* (__stdcall* DXamlServicesGetHandleFunc)();
+typedef HRESULT (__stdcall* FrameworkThemingOnThemeChangedFunc)(FrameworkThemingAbi* theming, BOOL forceUpdate);
 
-static HRESULT InitializeXamlFunctions();
-static HRESULT InitializeXamlFunctions_Exact(HMODULE xamlModule);
-static void* FindPattern(void* start, size_t size, const void* pattern, size_t patternSize);
+// Global function pointers (initialized in static initialization)
+extern DXamlInstanceStorageGetValueFunc pDXamlInstanceStorageGetValue;
+extern DXamlServicesGetHandleFunc pDXamlServicesGetHandle;
+extern FrameworkThemingOnThemeChangedFunc pFrameworkThemingOnThemeChanged;
 
+// Initialization flag
+extern std::atomic<int32_t> g_InitializationResult;
+
+// Main export function
 DLL_EXPORT HRESULT __stdcall FrameworkThemingSetTheme(Theme theme);
 
-#pragma pack(push, 1)
-struct GetValuePattern {
-    int32_t part1; // -2092412096
-    int32_t part2; // -1958207252
-    int16_t part3; // -29735
-    uint8_t part4; // 13
-};
+// Helper functions
+HRESULT FrameworkThemingInitialize();
+BOOL FrameworkThemingIsInitialized();
 
-struct OnThemeChangedPattern {
-    int32_t parts[6]; // {610044232, 1820936208, -1991763932, 1461724276, 1463899713, 552371016}
-    int16_t lastPart; // 1526
-};
-#pragma pack(pop)
+// Internal functions
+HRESULT InitializeFrameworkThemingFunctions();
+HMODULE GetMuxModule();
+DWORD GetImageSize(HMODULE hModule);
+const uint8_t* FindPattern(const uint8_t* haystack, size_t haystackSize, const uint8_t* needle, size_t needleSize);
