@@ -3,15 +3,17 @@
 #include "IHutaoNativeHotKeyAction_h.h"
 #include "Types_h.h"
 #include "CustomImplements.h"
+#include "HutaoNativeHotKeyActionCallback.h"
 #include <Windows.h>
+#include <thread>
+#include <atomic>
 
 class HutaoNativeHotKeyAction : public hutao::CustomImplements<
     HutaoNativeHotKeyAction,
     IHutaoNativeHotKeyAction>
 {
 public:
-    HutaoNativeHotKeyAction();
-	HutaoNativeHotKeyAction(HutaoNativeHotKeyActionKind kind, WNDPROC callback, LONG_PTR userData);
+	HutaoNativeHotKeyAction(HutaoNativeHotKeyActionKind kind, HutaoNativeHotKeyActionCallback callback, nint userData);
     ~HutaoNativeHotKeyAction();
 
     // IHutaoNativeHotKeyAction methods
@@ -20,12 +22,16 @@ public:
     virtual HRESULT STDMETHODCALLTYPE SetIsEnabled(BOOL isEnabled) override;
 
 private:
-	WNDPROC m_callback;
+    HutaoNativeHotKeyActionKind m_kind;
+    HutaoNativeHotKeyActionCallback m_callback;
+    nint m_userData;
     int m_modifiers;
     uint m_vk;
     bool m_enabled;
     int m_hotKeyId;
     HWND m_hWnd;
+    std::atomic<bool> m_isRunning;
+    std::thread m_actionThread;
     static UINT s_nextHotKeyId;
 
     static LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
@@ -33,4 +39,12 @@ private:
     HWND CreateMessageWindow();
     void UnregisterHotKey();
     void RegisterHotKey();
+    
+    // 动作执行函数
+    void ExecuteAction();
+    void StopAction();
+    
+    // 输入模拟函数
+    void SimulateMouseClick();
+    void SimulateKeyPress();
 };
