@@ -152,11 +152,12 @@ HRESULT STDMETHODCALLTYPE HutaoNative::MakeHotKeyAction(HutaoNativeHotKeyActionK
 {
     AssertNonNullAndReturn(ppv);
 
-    HutaoNativeHotKeyActionCallback cb = {};
-    cb.value = reinterpret_cast<HutaoNativeHotKeyActionCallbackFunc>(callback);
-    GCHandle userDataHandle = static_cast<GCHandle>(userData);
+    // Convert nint to appropriate types
+    HutaoNativeHotKeyActionCallback actionCallback;
+    actionCallback.value = reinterpret_cast<void (__stdcall *)(BOOL, LONG_PTR)>(callback);
+    LONG_PTR userDataPtr = static_cast<LONG_PTR>(userData);
 
-    hutao::com_ptr<IHutaoNativeHotKeyAction> hotKeyAction = hutao::make_com_ptr<HutaoNativeHotKeyAction>(kind, cb, userDataHandle);
+    hutao::com_ptr<IHutaoNativeHotKeyAction> hotKeyAction = hutao::make_com_ptr<HutaoNativeHotKeyAction>(kind, actionCallback, userDataPtr);
     *ppv = hotKeyAction.detach();
 
     return S_OK;
