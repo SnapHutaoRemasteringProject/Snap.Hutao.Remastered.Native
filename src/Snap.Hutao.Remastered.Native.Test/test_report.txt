@@ -1,0 +1,34 @@
+﻿测试报告
+========
+
+统计信息:
+  测试套件数: 4
+  总测试数: 7
+  通过测试: 7
+  失败测试: 0
+  错误测试: 0
+  跳过测试: 0
+  总时间: 0.004秒
+  通过率: 100.0%
+
+详细结果:
+--------
+
+测试套件: BasicFunctionTests
+描述: 基础功能测试套件
+
+测试套件: InterfaceTests
+描述: 接口功能测试套件
+
+测试套件: BasicFunctionTests
+描述: 基础功能测试套件
+  - TestBasicAssertions [通过] (0.000秒) - 测试通过
+  - TestHResultAssertions [通过] (0.000秒) - 测试通过
+
+测试套件: InterfaceTests
+描述: 接口功能测试套件
+  - TestIHutaoNativeInterface [通过] (0.004秒) - 测试通过
+  - TestIHutaoNative2Interface [通过] (0.000秒) - 测试通过
+  - TestIHutaoNative3Interface [通过] (0.000秒) - 测试通过
+  - TestIHutaoNative4Interface [通过] (0.000秒) - 测试通过
+  - TestIHutaoNative5Interface [通过] (0.000秒) - 测试通过
