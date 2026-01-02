@@ -30,12 +30,12 @@ template<typename T>
 struct IsIUnknown : std::false_type {};
 
 template<>
-struct IsIUnknown<IUnknown> : std::true_type {};
+struct IsIUnknown<::IUnknown> : std::true_type {};
 
 // Helper to get IUnknown pointer from interface
 template<typename Interface>
-inline IUnknown* GetIUnknownFromInterface(Interface* pInterface) {
-    return static_cast<IUnknown*>(static_cast<void*>(pInterface));
+inline ::IUnknown* GetIUnknownFromInterface(Interface* pInterface) {
+    return static_cast<::IUnknown*>(static_cast<void*>(pInterface));
 }
 
 // CustomImplements class template
@@ -55,9 +55,9 @@ public:
         *ppvObject = nullptr;
 
         // Check for IUnknown
-        if (IsEqualIID(riid, __uuidof(IUnknown))) {
+        if (IsEqualIID(riid, __uuidof(::IUnknown))) {
             // 使用reinterpret_cast避免多重继承导致的转换不明确
-            *ppvObject = reinterpret_cast<IUnknown*>(this);
+            *ppvObject = reinterpret_cast<::IUnknown*>(this);
             AddRef();
             return S_OK;
         }

@@ -19,6 +19,7 @@
 #include "types.h"
 #include "CustomImplements.h"
 #include "Error.h"
+#include "HutaoNativeHotKeyActionCallback.h"
 #include <Windows.h>
 #include <hstring.h>
 #include <winternl.h>
@@ -151,11 +152,11 @@ HRESULT STDMETHODCALLTYPE HutaoNative::MakeHotKeyAction(HutaoNativeHotKeyActionK
 {
     AssertNonNullAndReturn(ppv);
 
-    // Convert nint to appropriate types
-    WNDPROC wndProc = reinterpret_cast<WNDPROC>(callback);
-    LONG_PTR userDataPtr = static_cast<LONG_PTR>(userData);
+    HutaoNativeHotKeyActionCallback cb = {};
+    cb.value = reinterpret_cast<HutaoNativeHotKeyActionCallbackFunc>(callback);
+    GCHandle userDataHandle = static_cast<GCHandle>(userData);
 
-    hutao::com_ptr<IHutaoNativeHotKeyAction> hotKeyAction = hutao::make_com_ptr<HutaoNativeHotKeyAction>(kind, wndProc, userDataPtr);
+    hutao::com_ptr<IHutaoNativeHotKeyAction> hotKeyAction = hutao::make_com_ptr<HutaoNativeHotKeyAction>(kind, cb, userDataHandle);
     *ppv = hotKeyAction.detach();
 
     return S_OK;
