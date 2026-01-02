@@ -1,39 +1,38 @@
 #include "HutaoNativeHotKeyAction.h"
 #include "Error.h"
 #include <Windows.h>
+#include <chrono>
 
 const wchar_t* WINDOW_CLASS_NAME = L"HutaoNativeHotKeyActionWindowClass";
 const UINT WM_HOTKEY_MESSAGE = WM_APP + 2;
 
 UINT HutaoNativeHotKeyAction::s_nextHotKeyId = 0x4000; // 从0x4000开始，避免与系统热键冲突
 
-HutaoNativeHotKeyAction::HutaoNativeHotKeyAction()
-    : m_callback(nullptr)
-    , m_modifiers(0)
-    , m_vk(0)
-    , m_enabled(false)
-    , m_hotKeyId(0)
-    , m_hWnd(nullptr)
-{
-    m_hotKeyId = static_cast<int>(++s_nextHotKeyId);
-}
-
-HutaoNativeHotKeyAction::HutaoNativeHotKeyAction(HutaoNativeHotKeyActionKind kind, WNDPROC callback, LONG_PTR userData)
+HutaoNativeHotKeyAction::HutaoNativeHotKeyAction(HutaoNativeHotKeyActionKind kind, HutaoNativeHotKeyActionCallback callback, GCHandle userData)
     : m_callback(callback)
+    , m_userData(userData)
+    , m_kind(kind)
     , m_modifiers(0)
     , m_vk(0)
     , m_enabled(false)
     , m_hotKeyId(0)
     , m_hWnd(nullptr)
+    , m_clicking(false)
+    , m_clickIntervalMs(50) // default 50ms interval
+    , m_keyPressing(false)
+    , m_keyIntervalMs(100) // default 100ms interval for key press
+    , m_active(false)
 {
     m_hotKeyId = static_cast<int>(++s_nextHotKeyId);
-    (void)kind;
-    (void)userData;
 }
 
 HutaoNativeHotKeyAction::~HutaoNativeHotKeyAction()
 {
     SetIsEnabled(FALSE);
+
+    StopAutoClick();
+    StopAutoKeyPress();
+
     if (m_hWnd != nullptr)
     {
         DestroyWindow(m_hWnd);
@@ -71,7 +70,7 @@ HWND HutaoNativeHotKeyAction::CreateMessageWindow()
         nullptr,
         nullptr,
         GetModuleHandle(nullptr),
-        this // 将this指针传递给窗口
+        reinterpret_cast<LPVOID>(this)
     );
 
     return hWnd;
@@ -89,9 +88,29 @@ LRESULT CALLBACK HutaoNativeHotKeyAction::WndProc(HWND hWnd, UINT message, WPARA
     HutaoNativeHotKeyAction* pThis = reinterpret_cast<HutaoNativeHotKeyAction*>(GetWindowLongPtrW(hWnd, GWLP_USERDATA));
     if (pThis != nullptr)
     {
-        if (message == WM_HOTKEY && pThis->m_callback != nullptr)
+        if (message == WM_HOTKEY)
         {
-            pThis->m_callback(hWnd, message, wParam, lParam);
+            // Toggle active state on hotkey press
+            bool newState = !pThis->m_active.load();
+            pThis->m_active.store(newState);
+
+            // Notify managed side about toggled state
+            if (pThis->m_callback.value != nullptr)
+            {
+                BOOL isOn = newState ? TRUE : FALSE;
+                pThis->m_callback.value(isOn, pThis->m_userData);
+            }
+
+            // Start/stop auto actions based on kind
+            if (pThis->m_kind == HutaoNativeHotKeyActionKind::MouseClickRepeatForever)
+            {
+                if (pThis->m_active.load()) pThis->StartAutoClick(); else pThis->StopAutoClick();
+            }
+            else if (pThis->m_kind == HutaoNativeHotKeyActionKind::KeyPressRepeatForever)
+            {
+                if (pThis->m_active.load()) pThis->StartAutoKeyPress(); else pThis->StopAutoKeyPress();
+            }
+
             return 0;
         }
     }
@@ -115,6 +134,87 @@ void HutaoNativeHotKeyAction::RegisterHotKey()
     }
 
     ::RegisterHotKey(m_hWnd, m_hotKeyId, m_modifiers, m_vk);
+}
+
+// Auto-click implementation
+void HutaoNativeHotKeyAction::StartAutoClick()
+{
+    bool expected = false;
+    if (!m_clicking.compare_exchange_strong(expected, true))
+        return; // already clicking
+
+    // Launch thread
+    m_clickThread = std::thread([this]() {
+        // Continue clicking until stopped
+        while (m_clicking.load())
+        {
+            // Simulate left mouse down and up
+            INPUT inputs[2];
+            ZeroMemory(inputs, sizeof(inputs));
+
+            inputs[0].type = INPUT_MOUSE;
+            inputs[0].mi.dwFlags = MOUSEEVENTF_LEFTDOWN;
+
+            inputs[1].type = INPUT_MOUSE;
+            inputs[1].mi.dwFlags = MOUSEEVENTF_LEFTUP;
+
+            SendInput(2, inputs, sizeof(INPUT));
+
+            std::this_thread::sleep_for(std::chrono::milliseconds(m_clickIntervalMs));
+        }
+    });
+}
+
+void HutaoNativeHotKeyAction::StopAutoClick()
+{
+    bool expected = true;
+    if (!m_clicking.compare_exchange_strong(expected, false))
+        return; // not clicking
+
+    if (m_clickThread.joinable())
+    {
+        m_clickThread.join();
+    }
+}
+
+// Auto-keypress implementation
+void HutaoNativeHotKeyAction::StartAutoKeyPress()
+{
+    bool expected = false;
+    if (!m_keyPressing.compare_exchange_strong(expected, true))
+        return; // already pressing
+
+    m_keyThread = std::thread([this]() {
+        // Repeatedly send configured vk or 'F'
+        WORD vkToSend = (WORD)m_vk ? (WORD)m_vk : 0x46;
+        INPUT inputs[2];
+        ZeroMemory(inputs, sizeof(inputs));
+        inputs[0].type = INPUT_KEYBOARD;
+        inputs[0].ki.wVk = vkToSend;
+        inputs[0].ki.dwFlags = 0; // key down
+
+        inputs[1].type = INPUT_KEYBOARD;
+        inputs[1].ki.wVk = vkToSend;
+        inputs[1].ki.dwFlags = KEYEVENTF_KEYUP; // key up
+
+        while (m_keyPressing.load())
+        {
+            SendInput(2, inputs, sizeof(INPUT));
+            std::this_thread::sleep_for(std::chrono::milliseconds(m_keyIntervalMs));
+        }
+    });
+}
+
+void HutaoNativeHotKeyAction::StopAutoKeyPress()
+{
+    bool expected = true;
+    if (!m_keyPressing.compare_exchange_strong(expected, false))
+        return; // not pressing
+
+    if (m_keyThread.joinable())
+    {
+        m_keyThread.join();
+    }
 }
 
 HRESULT STDMETHODCALLTYPE HutaoNativeHotKeyAction::Update(int modifiers, uint vk)
@@ -180,5 +280,6 @@ HRESULT STDMETHODCALLTYPE HutaoNativeHotKeyAction::SetIsEnabled(BOOL isEnabled)
     }
 
     m_enabled = newEnabled;
+
     return S_OK;
 }

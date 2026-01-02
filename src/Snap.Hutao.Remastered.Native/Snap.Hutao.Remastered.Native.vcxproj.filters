@@ -302,6 +302,9 @@
     <ClInclude Include="Error.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="HutaoNativeHotKeyActionCallback.h">
+      <Filter>头文件\core\struct</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Midl Include="IHutaoString.idl">
