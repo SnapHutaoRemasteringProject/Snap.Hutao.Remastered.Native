@@ -13,7 +13,7 @@ class HutaoNativeHotKeyAction : public hutao::CustomImplements<
     IHutaoNativeHotKeyAction>
 {
 public:
-	HutaoNativeHotKeyAction(HutaoNativeHotKeyActionKind kind, HutaoNativeHotKeyActionCallback callback, GCHandle userData);
+	HutaoNativeHotKeyAction(HutaoNativeHotKeyActionKind kind, HutaoNativeHotKeyActionCallback callback, nint userData);
     ~HutaoNativeHotKeyAction();
 
     // IHutaoNativeHotKeyAction methods
@@ -22,14 +22,16 @@ public:
     virtual HRESULT STDMETHODCALLTYPE SetIsEnabled(BOOL isEnabled) override;
 
 private:
-	HutaoNativeHotKeyActionCallback m_callback;
-	GCHandle m_userData;
-	HutaoNativeHotKeyActionKind m_kind;
+    HutaoNativeHotKeyActionKind m_kind;
+    HutaoNativeHotKeyActionCallback m_callback;
+    nint m_userData;
     int m_modifiers;
     uint m_vk;
     bool m_enabled;
     int m_hotKeyId;
     HWND m_hWnd;
+    std::atomic<bool> m_isRunning;
+    std::thread m_actionThread;
     static UINT s_nextHotKeyId;
 
     // running state toggled by WM_HOTKEY
@@ -41,21 +43,14 @@ private:
     // Window helpers
     static ATOM RegisterWindowClass();
     HWND CreateMessageWindow();
-    static LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
-
-    // Auto-click support
-    std::thread m_clickThread;
-    std::atomic<bool> m_clicking;
-    int m_clickIntervalMs;
-
-    void StartAutoClick();
-    void StopAutoClick();
-
-    // Auto-keypress support (for KeyPressRepeatForever)
-    std::thread m_keyThread;
-    std::atomic<bool> m_keyPressing;
-    int m_keyIntervalMs;
-
-    void StartAutoKeyPress();
-    void StopAutoKeyPress();
+    void UnregisterHotKey();
+    void RegisterHotKey();
+    
+    // 动作执行函数
+    void ExecuteAction();
+    void StopAction();
+    
+    // 输入模拟函数
+    void SimulateMouseClick();
+    void SimulateKeyPress();
 };
