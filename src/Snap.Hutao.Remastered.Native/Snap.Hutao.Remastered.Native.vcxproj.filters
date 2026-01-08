@@ -43,9 +43,6 @@
     <Filter Include="源文件\core\internal">
       <UniqueIdentifier>{4159fb15-a6c7-412f-aa46-8c9aaf9c9d62}</UniqueIdentifier>
     </Filter>
-    <Filter Include="源文件\core\interfaces\idl">
-      <UniqueIdentifier>{fe556673-b249-4b0c-9439-6195529caf3d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="头文件\core\struct">
       <UniqueIdentifier>{48ba24c5-b40b-4288-8b86-7e4043b0fc29}</UniqueIdentifier>
     </Filter>
@@ -304,6 +301,18 @@
     </ClInclude>
     <ClInclude Include="HutaoNativeRegistryNotificationCallBack.h">
       <Filter>头文件\core\struct</Filter>
+    </ClInclude>
+    <ClInclude Include="HutaoNativeHotKeyActionCallback.h">
+      <Filter>头文件\core\interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="IHutaoNativeFileSystem2.h">
+      <Filter>头文件\core\interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="IHutaoNativeFileSystem3.h">
+      <Filter>头文件\core\interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="IHutaoNativeFileSystem4.h">
+      <Filter>头文件\core\interfaces</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

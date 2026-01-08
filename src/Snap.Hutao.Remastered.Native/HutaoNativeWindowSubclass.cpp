@@ -1,8 +1,10 @@
 #include "HutaoNativeWindowSubclass.h"
 #include <Windows.h>
 #include <CommCtrl.h>
+#include <shobjidl.h>
 
 #pragma comment(lib, "Comctl32.lib")
+#pragma comment(lib, "Ole32.lib")
 
 static LRESULT CALLBACK SubclassWndProc(
     HWND hWnd,
@@ -110,11 +112,17 @@ HRESULT __stdcall HutaoNativeWindowSubclass::Detach()
 // HutaoNativeWindowSubclass2 实现
 HutaoNativeWindowSubclass2::HutaoNativeWindowSubclass2()
     : m_initialized(false)
+    , m_pTaskbarList(nullptr)
 {
 }
 
 HutaoNativeWindowSubclass2::~HutaoNativeWindowSubclass2()
 {
+    if (m_pTaskbarList)
+    {
+        m_pTaskbarList->Release();
+        m_pTaskbarList = nullptr;
+    }
 }
 
 HRESULT __stdcall HutaoNativeWindowSubclass2::InitializeTaskbarProgress()
@@ -129,14 +137,36 @@ HRESULT __stdcall HutaoNativeWindowSubclass2::InitializeTaskbarProgress()
     icex.dwSize = sizeof(INITCOMMONCONTROLSEX);
     icex.dwICC = ICC_PROGRESS_CLASS;
     
-    if (InitCommonControlsEx(&icex))
+    if (!InitCommonControlsEx(&icex))
     {
-        m_initialized = true;
-        return S_OK;
+        return HRESULT_FROM_WIN32(GetLastError());
+    }
+
+    HRESULT hr = CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED);
+    if (FAILED(hr) && hr != RPC_E_CHANGED_MODE)
+    {
+        return hr;
+    }
+
+    hr = CoCreateInstance(CLSID_TaskbarList, nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&m_pTaskbarList));
+    if (SUCCEEDED(hr) && m_pTaskbarList)
+    {
+        hr = m_pTaskbarList->HrInit();
+        if (SUCCEEDED(hr))
+        {
+            m_initialized = true;
+            return S_OK;
+        }
+        else
+        {
+            m_pTaskbarList->Release();
+            m_pTaskbarList = nullptr;
+            return hr;
+        }
     }
     else
     {
-        return HRESULT_FROM_WIN32(GetLastError());
+        return hr;
     }
 }
 
@@ -155,9 +185,76 @@ HRESULT __stdcall HutaoNativeWindowSubclass2::SetTaskbarProgress(
         }
     }
 
-    // 这里需要实现任务栏进度条设置
-    // 实际实现需要使用ITaskbarList3接口
-    // 暂时返回E_NOTIMPL
+    if (!m_pTaskbarList)
+    {
+        return E_UNEXPECTED;
+    }
+
+    // 获取调用线程的窗口句柄
+    HWND hWnd = GetActiveWindow();
+    if (hWnd == nullptr)
+    {
+        // 如果没有活动窗口，尝试获取控制台窗口
+        hWnd = GetConsoleWindow();
+        if (hWnd == nullptr)
+        {
+            return HRESULT_FROM_WIN32(ERROR_INVALID_WINDOW_HANDLE);
+        }
+    }
+
+    // 根据flags设置进度状态
+    TBPFLAG tbpFlags = TBPF_NORMAL;
     
-    return E_NOTIMPL;
+    switch (flags)
+    {
+    case 0: // 正常进度
+        tbpFlags = TBPF_NORMAL;
+        break;
+    case 1: // 暂停/错误状态
+        tbpFlags = TBPF_ERROR;
+        break;
+    case 2: // 暂停状态
+        tbpFlags = TBPF_PAUSED;
+        break;
+    case 3: // 不确定状态
+        tbpFlags = TBPF_INDETERMINATE;
+        break;
+    case 4: // 无进度
+        tbpFlags = TBPF_NOPROGRESS;
+        break;
+    default:
+        tbpFlags = TBPF_NORMAL;
+        break;
+    }
+
+    // 首先设置进度状态
+    HRESULT hr = m_pTaskbarList->SetProgressState(hWnd, tbpFlags);
+    if (FAILED(hr))
+    {
+        return hr;
+    }
+
+    // 如果状态不是无进度或不确定状态，则设置进度值
+    if (tbpFlags != TBPF_NOPROGRESS && tbpFlags != TBPF_INDETERMINATE)
+    {
+        // 确保maximum不为0，避免除零错误
+        if (maximum == 0)
+        {
+            maximum = 100; // 默认最大值
+        }
+
+        // 确保value不超过maximum
+        if (value > maximum)
+        {
+            value = maximum;
+        }
+
+        hr = m_pTaskbarList->SetProgressValue(hWnd, value, maximum);
+        if (FAILED(hr))
+        {
+            return hr;
+        }
+    }
+
+    return S_OK;
 }
