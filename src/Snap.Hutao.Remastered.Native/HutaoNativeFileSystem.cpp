@@ -75,7 +75,7 @@ HRESULT HutaoNativeFileSystem::CreateHutaoStringFromWideString(PCWSTR wideString
     return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE HutaoNativeFileSystem::RenameItem(PCWSTR filePath, PCWSTR newName) noexcept
+HRESULT __stdcall HutaoNativeFileSystem::RenameItem(PCWSTR filePath, PCWSTR newName) noexcept
 {
 	AssertNonNullAndReturn(filePath);
 	AssertNonNullAndReturn(newName);
@@ -94,7 +94,7 @@ HRESULT STDMETHODCALLTYPE HutaoNativeFileSystem::RenameItem(PCWSTR filePath, PCW
     return PerformFileOperation(FO_RENAME, filePath, newPath.c_str(), 0);
 }
 
-HRESULT STDMETHODCALLTYPE HutaoNativeFileSystem::RenameItemWithOptions(PCWSTR filePath, PCWSTR newName, long flags) noexcept
+HRESULT __stdcall HutaoNativeFileSystem::RenameItemWithOptions(PCWSTR filePath, PCWSTR newName, long flags) noexcept
 {
     AssertNonNullAndReturn(filePath);
     AssertNonNullAndReturn(newName);
@@ -112,7 +112,7 @@ HRESULT STDMETHODCALLTYPE HutaoNativeFileSystem::RenameItemWithOptions(PCWSTR fi
     return PerformFileOperation(FO_RENAME, filePath, newPath.c_str(), flags);
 }
 
-HRESULT STDMETHODCALLTYPE HutaoNativeFileSystem::MoveItem(PCWSTR oldPath, PCWSTR newFolder) noexcept
+HRESULT __stdcall HutaoNativeFileSystem::MoveItem(PCWSTR oldPath, PCWSTR newFolder) noexcept
 {
 	AssertNonNullAndReturn(oldPath);
 	AssertNonNullAndReturn(newFolder);
@@ -120,7 +120,7 @@ HRESULT STDMETHODCALLTYPE HutaoNativeFileSystem::MoveItem(PCWSTR oldPath, PCWSTR
     return PerformFileOperation(FO_MOVE, oldPath, newFolder, 0);
 }
 
-HRESULT STDMETHODCALLTYPE HutaoNativeFileSystem::MoveItemWithOptions(PCWSTR oldPath, PCWSTR newFolder, long flags) noexcept
+HRESULT __stdcall HutaoNativeFileSystem::MoveItemWithOptions(PCWSTR oldPath, PCWSTR newFolder, long flags) noexcept
 {
     AssertNonNullAndReturn(oldPath);
     AssertNonNullAndReturn(newFolder);
@@ -128,7 +128,7 @@ HRESULT STDMETHODCALLTYPE HutaoNativeFileSystem::MoveItemWithOptions(PCWSTR oldP
     return PerformFileOperation(FO_MOVE, oldPath, newFolder, flags);
 }
 
-HRESULT STDMETHODCALLTYPE HutaoNativeFileSystem::MoveItemWithName(PCWSTR oldPath, PCWSTR newFolder, PCWSTR name) noexcept
+HRESULT __stdcall HutaoNativeFileSystem::MoveItemWithName(PCWSTR oldPath, PCWSTR newFolder, PCWSTR name) noexcept
 {
     AssertNonNullAndReturn(oldPath);
     AssertNonNullAndReturn(newFolder);
@@ -145,7 +145,7 @@ HRESULT STDMETHODCALLTYPE HutaoNativeFileSystem::MoveItemWithName(PCWSTR oldPath
     return PerformFileOperation(FO_MOVE, oldPath, newPath.c_str(), 0);
 }
 
-HRESULT STDMETHODCALLTYPE HutaoNativeFileSystem::MoveItemWithNameAndOptions(PCWSTR oldPath, PCWSTR newFolder, PCWSTR name, long flags) noexcept
+HRESULT __stdcall HutaoNativeFileSystem::MoveItemWithNameAndOptions(PCWSTR oldPath, PCWSTR newFolder, PCWSTR name, long flags) noexcept
 {
     AssertNonNullAndReturn(oldPath);
     AssertNonNullAndReturn(newFolder);
@@ -161,7 +161,7 @@ HRESULT STDMETHODCALLTYPE HutaoNativeFileSystem::MoveItemWithNameAndOptions(PCWS
     return PerformFileOperation(FO_MOVE, oldPath, newPath.c_str(), flags);
 }
 
-HRESULT STDMETHODCALLTYPE HutaoNativeFileSystem::CopyItem(PCWSTR oldPath, PCWSTR newFolder) noexcept
+HRESULT __stdcall HutaoNativeFileSystem::CopyItem(PCWSTR oldPath, PCWSTR newFolder) noexcept
 {
     AssertNonNullAndReturn(oldPath);
     AssertNonNullAndReturn(newFolder);
@@ -169,7 +169,7 @@ HRESULT STDMETHODCALLTYPE HutaoNativeFileSystem::CopyItem(PCWSTR oldPath, PCWSTR
     return PerformFileOperation(FO_COPY, oldPath, newFolder, 0);
 }
 
-HRESULT STDMETHODCALLTYPE HutaoNativeFileSystem::CopyItemWithOptions(PCWSTR oldPath, PCWSTR newFolder, long flags) noexcept
+HRESULT __stdcall HutaoNativeFileSystem::CopyItemWithOptions(PCWSTR oldPath, PCWSTR newFolder, long flags) noexcept
 {
     AssertNonNullAndReturn(oldPath);
     AssertNonNullAndReturn(newFolder);
@@ -177,7 +177,7 @@ HRESULT STDMETHODCALLTYPE HutaoNativeFileSystem::CopyItemWithOptions(PCWSTR oldP
     return PerformFileOperation(FO_COPY, oldPath, newFolder, flags);
 }
 
-HRESULT STDMETHODCALLTYPE HutaoNativeFileSystem::CopyItemWithName(PCWSTR oldPath, PCWSTR newFolder, PCWSTR name) noexcept
+HRESULT __stdcall HutaoNativeFileSystem::CopyItemWithName(PCWSTR oldPath, PCWSTR newFolder, PCWSTR name) noexcept
 {
     AssertNonNullAndReturn(oldPath);
     AssertNonNullAndReturn(newFolder);
@@ -193,7 +193,7 @@ HRESULT STDMETHODCALLTYPE HutaoNativeFileSystem::CopyItemWithName(PCWSTR oldPath
     return PerformFileOperation(FO_COPY, oldPath, newPath.c_str(), 0);
 }
 
-HRESULT STDMETHODCALLTYPE HutaoNativeFileSystem::CopyItemWithNameAndOptions(PCWSTR oldPath, PCWSTR newFolder, PCWSTR name, long flags) noexcept
+HRESULT __stdcall HutaoNativeFileSystem::CopyItemWithNameAndOptions(PCWSTR oldPath, PCWSTR newFolder, PCWSTR name, long flags) noexcept
 {
     AssertNonNullAndReturn(oldPath);
     AssertNonNullAndReturn(newFolder);
@@ -209,14 +209,14 @@ HRESULT STDMETHODCALLTYPE HutaoNativeFileSystem::CopyItemWithNameAndOptions(PCWS
     return PerformFileOperation(FO_COPY, oldPath, newPath.c_str(), flags);
 }
 
-HRESULT STDMETHODCALLTYPE HutaoNativeFileSystem::DeleteItem(PCWSTR filePath) noexcept
+HRESULT __stdcall HutaoNativeFileSystem::DeleteItem(PCWSTR filePath) noexcept
 {
 	AssertNonNullAndReturn(filePath);
     
     return PerformFileOperation(FO_DELETE, filePath, nullptr, 0);
 }
 
-HRESULT STDMETHODCALLTYPE HutaoNativeFileSystem::DeleteItemWithOptions(PCWSTR filePath, long flags) noexcept
+HRESULT __stdcall HutaoNativeFileSystem::DeleteItemWithOptions(PCWSTR filePath, long flags) noexcept
 {
 	AssertNonNullAndReturn(filePath);
     
@@ -224,7 +224,7 @@ HRESULT STDMETHODCALLTYPE HutaoNativeFileSystem::DeleteItemWithOptions(PCWSTR fi
 }
 
 // IHutaoNativeFileSystem2 methods
-HRESULT STDMETHODCALLTYPE HutaoNativeFileSystem::CreateLink(PCWSTR fileLocation, PCWSTR arguments, PCWSTR iconLocation, PCWSTR fileName) noexcept
+HRESULT __stdcall HutaoNativeFileSystem::CreateLink(PCWSTR fileLocation, PCWSTR arguments, PCWSTR iconLocation, PCWSTR fileName) noexcept
 {
     AssertNonNullAndReturn(fileLocation);
     AssertNonNullAndReturn(fileName);
@@ -290,7 +290,7 @@ HRESULT STDMETHODCALLTYPE HutaoNativeFileSystem::CreateLink(PCWSTR fileLocation,
 }
 
 // IHutaoNativeFileSystem3 methods
-HRESULT STDMETHODCALLTYPE HutaoNativeFileSystem::PickFile(HWND hwnd, PCWSTR title, PCWSTR defaultFileName, PCWSTR fileFilterName, PCWSTR fileFilterType, BOOL* picked, IHutaoString** path) noexcept
+HRESULT __stdcall HutaoNativeFileSystem::PickFile(HWND hwnd, PCWSTR title, PCWSTR defaultFileName, PCWSTR fileFilterName, PCWSTR fileFilterType, BOOL* picked, IHutaoString** path) noexcept
 {
     AssertNonNullAndReturn(picked);
     AssertNonNullAndReturn(path);
@@ -336,8 +336,13 @@ HRESULT STDMETHODCALLTYPE HutaoNativeFileSystem::PickFile(HWND hwnd, PCWSTR titl
     if (GetOpenFileNameW(&ofn))
     {
         *picked = TRUE;
-        HRESULT hr = CreateHutaoStringFromWideString(fileBuffer, path);
-        if (FAILED(hr))
+        IHutaoString* pString = nullptr;
+        HRESULT hr = CreateHutaoStringFromWideString(fileBuffer, &pString);
+        if (SUCCEEDED(hr))
+        {
+            *path = pString;
+        }
+        else
         {
             ThrowForHR(hr, "CreateHutaoStringFromWideString failed in PickFile");
         }
@@ -357,7 +362,7 @@ HRESULT STDMETHODCALLTYPE HutaoNativeFileSystem::PickFile(HWND hwnd, PCWSTR titl
     return hrErr;
 }
 
-HRESULT STDMETHODCALLTYPE HutaoNativeFileSystem::SaveFile(HWND hwnd, PCWSTR title, PCWSTR defaultFileName, PCWSTR fileFilterName, PCWSTR fileFilterType, BOOL* picked, IHutaoString** path) noexcept
+HRESULT __stdcall HutaoNativeFileSystem::SaveFile(HWND hwnd, PCWSTR title, PCWSTR defaultFileName, PCWSTR fileFilterName, PCWSTR fileFilterType, BOOL* picked, IHutaoString** path) noexcept
 {
     AssertNonNullAndReturn(picked);
     AssertNonNullAndReturn(path);
@@ -403,8 +408,13 @@ HRESULT STDMETHODCALLTYPE HutaoNativeFileSystem::SaveFile(HWND hwnd, PCWSTR titl
     if (GetSaveFileNameW(&ofn))
     {
         *picked = TRUE;
-        HRESULT hr = CreateHutaoStringFromWideString(fileBuffer, path);
-        if (FAILED(hr))
+        IHutaoString* pString = nullptr;
+        HRESULT hr = CreateHutaoStringFromWideString(fileBuffer, &pString);
+        if (SUCCEEDED(hr))
+        {
+            *path = pString;
+        }
+        else
         {
             ThrowForHR(hr, "CreateHutaoStringFromWideString failed in SaveFile");
         }
@@ -424,7 +434,7 @@ HRESULT STDMETHODCALLTYPE HutaoNativeFileSystem::SaveFile(HWND hwnd, PCWSTR titl
     return hrErr;
 }
 
-HRESULT STDMETHODCALLTYPE HutaoNativeFileSystem::PickFolder(HWND hwnd, PCWSTR title, BOOL* picked, IHutaoString** path) noexcept
+HRESULT __stdcall HutaoNativeFileSystem::PickFolder(HWND hwnd, PCWSTR title, BOOL* picked, IHutaoString** path) noexcept
 {
     AssertNonNullAndReturn(picked);
     AssertNonNullAndReturn(path);
@@ -458,7 +468,12 @@ HRESULT STDMETHODCALLTYPE HutaoNativeFileSystem::PickFolder(HWND hwnd, PCWSTR ti
         if (SHGetPathFromIDListW(pidl, folderPath))
         {
             *picked = TRUE;
-            hr = CreateHutaoStringFromWideString(folderPath, path);
+            IHutaoString* pString = nullptr;
+            hr = CreateHutaoStringFromWideString(folderPath, &pString);
+            if (SUCCEEDED(hr))
+            {
+                *path = pString;
+            }
         }
         
         // Free PIDL
@@ -476,7 +491,7 @@ HRESULT STDMETHODCALLTYPE HutaoNativeFileSystem::PickFolder(HWND hwnd, PCWSTR ti
 }
 
 // IHutaoNativeFileSystem4 methods
-HRESULT STDMETHODCALLTYPE HutaoNativeFileSystem::CopyFileAllowDecryptedDestination(PCWSTR existingFileName, PCWSTR newFileName, BOOL overwrite) noexcept
+HRESULT __stdcall HutaoNativeFileSystem::CopyFileAllowDecryptedDestination(PCWSTR existingFileName, PCWSTR newFileName, BOOL overwrite) noexcept
 {
     AssertNonNullAndReturn(existingFileName);
     AssertNonNullAndReturn(newFileName);

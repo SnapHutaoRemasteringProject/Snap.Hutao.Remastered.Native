@@ -86,7 +86,7 @@ BOOL HutaoNativeProcess::CreateProcessInternal()
     return success;
 }
 
-HRESULT STDMETHODCALLTYPE HutaoNativeProcess::Start()
+HRESULT __stdcall HutaoNativeProcess::Start()
 {
     if (m_started)
     {
@@ -112,7 +112,7 @@ HRESULT STDMETHODCALLTYPE HutaoNativeProcess::Start()
     return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE HutaoNativeProcess::ResumeMainThread()
+HRESULT __stdcall HutaoNativeProcess::ResumeMainThread()
 {
     if (!m_started || m_processInfo.hThread == nullptr)
     {
@@ -131,7 +131,7 @@ HRESULT STDMETHODCALLTYPE HutaoNativeProcess::ResumeMainThread()
     return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE HutaoNativeProcess::WaitForExit()
+HRESULT __stdcall HutaoNativeProcess::WaitForExit()
 {
     if (!m_started || m_processInfo.hProcess == nullptr)
     {
@@ -159,7 +159,7 @@ HRESULT STDMETHODCALLTYPE HutaoNativeProcess::WaitForExit()
     return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE HutaoNativeProcess::Kill()
+HRESULT __stdcall HutaoNativeProcess::Kill()
 {
     if (!m_started || m_processInfo.hProcess == nullptr)
     {
@@ -187,7 +187,7 @@ HRESULT STDMETHODCALLTYPE HutaoNativeProcess::Kill()
     return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE HutaoNativeProcess::GetId(uint* id)
+HRESULT __stdcall HutaoNativeProcess::GetId(uint* id)
 {
     AssertNonNullAndReturn(id);
     
@@ -202,7 +202,7 @@ HRESULT STDMETHODCALLTYPE HutaoNativeProcess::GetId(uint* id)
     return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE HutaoNativeProcess::GetProcessHandle(long long* hProcess)
+HRESULT __stdcall HutaoNativeProcess::GetProcessHandle(long long* hProcess)
 {
     AssertNonNullAndReturn(hProcess);
     
@@ -233,7 +233,7 @@ HRESULT STDMETHODCALLTYPE HutaoNativeProcess::GetProcessHandle(long long* hProce
     return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE HutaoNativeProcess::GetMainWindowHandle(long long* hWnd)
+HRESULT __stdcall HutaoNativeProcess::GetMainWindowHandle(long long* hWnd)
 {
     AssertNonNullAndReturn(hWnd);
     
@@ -281,7 +281,7 @@ HRESULT STDMETHODCALLTYPE HutaoNativeProcess::GetMainWindowHandle(long long* hWn
     return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE HutaoNativeProcess::GetExitCodeProcess(BOOL* isRunning, uint* exitCode)
+HRESULT __stdcall HutaoNativeProcess::GetExitCodeProcess(BOOL* isRunning, uint* exitCode)
 {
     AssertNonNullAndReturn(isRunning);
     AssertNonNullAndReturn(exitCode);

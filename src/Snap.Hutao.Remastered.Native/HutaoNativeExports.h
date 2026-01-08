@@ -5,8 +5,8 @@
 #include "HutaoNativeLoggingCallBack.h"
 #include "HutaoNativeMessageCallback.h"
 #include "HutaoNativeHotKeyBeforeSwitchCallback.h"
-#include "IHutaoNative_h.h"
-#include "IHutaoString_h.h"
+#include "IHutaoNative.h"
+#include "IHutaoString.h"
 #include "MemoryUtils.h"
 #include <Windows.h>
 

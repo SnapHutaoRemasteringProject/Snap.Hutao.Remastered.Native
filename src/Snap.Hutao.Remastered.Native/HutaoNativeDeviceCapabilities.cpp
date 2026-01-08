@@ -1,7 +1,7 @@
 #include "HutaoNativeDeviceCapabilities.h"
 #include <Windows.h>
 
-HRESULT STDMETHODCALLTYPE HutaoNativeDeviceCapabilities::GetPrimaryScreenVerticalRefreshRate(int* refreshRate) noexcept
+HRESULT __stdcall HutaoNativeDeviceCapabilities::GetPrimaryScreenVerticalRefreshRate(int* refreshRate) noexcept
 {
     if (refreshRate == nullptr)
     {

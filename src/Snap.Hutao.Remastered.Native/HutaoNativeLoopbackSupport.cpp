@@ -18,7 +18,7 @@ HutaoNativeLoopbackSupport::~HutaoNativeLoopbackSupport()
     }
 }
 
-HRESULT STDMETHODCALLTYPE HutaoNativeLoopbackSupport::IsEnabled(PCWSTR familyName, IHutaoString* sid, boolean* enabled)
+HRESULT __stdcall HutaoNativeLoopbackSupport::IsEnabled(PCWSTR familyName, IHutaoString* sid, boolean* enabled)
 {
     AssertNonNullAndReturn(enabled);
     AssertNonNullAndReturn(familyName);
@@ -56,7 +56,7 @@ HRESULT STDMETHODCALLTYPE HutaoNativeLoopbackSupport::IsEnabled(PCWSTR familyNam
     return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE HutaoNativeLoopbackSupport::Enable(PCWSTR familyName, IHutaoString* sid)
+HRESULT __stdcall HutaoNativeLoopbackSupport::Enable(PCWSTR familyName, IHutaoString* sid)
 {
     AssertNonNullAndReturn(familyName);
 
@@ -104,7 +104,7 @@ HutaoNativeLoopbackSupport2::~HutaoNativeLoopbackSupport2()
     }
 }
 
-HRESULT STDMETHODCALLTYPE HutaoNativeLoopbackSupport2::IsPublicFirewallEnabled(boolean* enabled)
+HRESULT __stdcall HutaoNativeLoopbackSupport2::IsPublicFirewallEnabled(boolean* enabled)
 {
     AssertNonNullAndReturn(enabled);
 

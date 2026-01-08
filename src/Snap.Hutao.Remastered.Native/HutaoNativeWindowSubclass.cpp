@@ -4,7 +4,6 @@
 
 #pragma comment(lib, "Comctl32.lib")
 
-// 窗口子类化回调函数
 static LRESULT CALLBACK SubclassWndProc(
     HWND hWnd,
     UINT uMsg,
@@ -19,23 +18,25 @@ static LRESULT CALLBACK SubclassWndProc(
         return DefSubclassProc(hWnd, uMsg, wParam, lParam);
     }
 
-    // 调用用户提供的回调函数
-    if (pThis->m_callback != nullptr)
+    if (pThis->m_callback.has_value())
     {
-        // 这里需要调用用户回调，但回调签名可能不同
-        // 暂时使用默认处理
+        LRESULT lResult = 0;
+        BOOL handled = pThis->m_callback.value()(hWnd, uMsg, wParam, lParam, pThis->m_userData, &lResult);
+        if (handled)
+        {
+            return lResult;
+        }
     }
 
-    // 调用原始窗口过程
     return DefSubclassProc(hWnd, uMsg, wParam, lParam);
 }
 
-HutaoNativeWindowSubclass::HutaoNativeWindowSubclass(HWND hWnd, nint callback, LONG_PTR userData)
-    : m_hWnd(hWnd)
-    , m_callback(reinterpret_cast<WNDPROC>(callback))
+HutaoNativeWindowSubclass::HutaoNativeWindowSubclass(HWND hWnd, HutaoNativeWindowSubclassCallback callback, GCHandle userData)
+    : mWnd(hWnd)
+    , m_callback(callback)
     , m_userData(userData)
     , m_originalWndProc(nullptr)
-	, m_attached(false)
+    , m_attached(false)
 {
 }
 
@@ -47,21 +48,21 @@ HutaoNativeWindowSubclass::~HutaoNativeWindowSubclass()
     }
 }
 
-HRESULT STDMETHODCALLTYPE HutaoNativeWindowSubclass::Attach()
+HRESULT __stdcall HutaoNativeWindowSubclass::Attach()
 {
     if (m_attached)
     {
         return S_FALSE; // 已经附加
     }
 
-    if (m_hWnd == nullptr || !IsWindow(m_hWnd))
+    if (mWnd == nullptr || !IsWindow(mWnd))
     {
         return E_INVALIDARG;
     }
 
     // 使用SetWindowSubclass进行子类化
     BOOL result = SetWindowSubclass(
-        m_hWnd,
+        mWnd,
         SubclassWndProc,
         1, // 子类ID
         reinterpret_cast<DWORD_PTR>(this));
@@ -77,21 +78,21 @@ HRESULT STDMETHODCALLTYPE HutaoNativeWindowSubclass::Attach()
     }
 }
 
-HRESULT STDMETHODCALLTYPE HutaoNativeWindowSubclass::Detach()
+HRESULT __stdcall HutaoNativeWindowSubclass::Detach()
 {
     if (!m_attached)
     {
         return S_FALSE; // 已经分离
     }
 
-    if (m_hWnd == nullptr || !IsWindow(m_hWnd))
+    if (mWnd == nullptr || !IsWindow(mWnd))
     {
         return E_INVALIDARG;
     }
 
     // 移除子类化
     BOOL result = RemoveWindowSubclass(
-        m_hWnd,
+        mWnd,
         SubclassWndProc,
         1); // 子类ID
 
@@ -116,7 +117,7 @@ HutaoNativeWindowSubclass2::~HutaoNativeWindowSubclass2()
 {
 }
 
-HRESULT STDMETHODCALLTYPE HutaoNativeWindowSubclass2::InitializeTaskbarProgress()
+HRESULT __stdcall HutaoNativeWindowSubclass2::InitializeTaskbarProgress()
 {
     if (m_initialized)
     {
@@ -139,7 +140,7 @@ HRESULT STDMETHODCALLTYPE HutaoNativeWindowSubclass2::InitializeTaskbarProgress(
     }
 }
 
-HRESULT STDMETHODCALLTYPE HutaoNativeWindowSubclass2::SetTaskbarProgress(
+HRESULT __stdcall HutaoNativeWindowSubclass2::SetTaskbarProgress(
     UINT32 flags,
     ULONGLONG value,
     ULONGLONG maximum)

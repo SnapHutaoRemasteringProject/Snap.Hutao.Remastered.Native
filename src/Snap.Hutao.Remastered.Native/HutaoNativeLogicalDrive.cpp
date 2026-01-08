@@ -2,7 +2,7 @@
 #include "Error.h"
 #include <Windows.h>
 
-HRESULT STDMETHODCALLTYPE HutaoNativeLogicalDrive::GetDiskFreeSpace(PCWSTR path, long* bytes) noexcept
+HRESULT __stdcall HutaoNativeLogicalDrive::GetDiskFreeSpace(PCWSTR path, long* bytes) noexcept
 {
     AssertNonNullAndReturn(bytes);
     AssertNonNullAndReturn(path);

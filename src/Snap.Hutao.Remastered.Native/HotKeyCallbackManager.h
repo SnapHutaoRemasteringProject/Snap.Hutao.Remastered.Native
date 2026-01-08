@@ -18,4 +18,4 @@ private:
 	HutaoNativeHotKeyBeforeSwitchCallback callback_ = {};
 };
 
-extern HotKeyCallbackManager g_hotKeyCallbackManager;
+extern HotKeyCallbackManager gotKeyCallbackManager;

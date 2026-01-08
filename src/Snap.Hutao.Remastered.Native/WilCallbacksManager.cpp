@@ -42,9 +42,9 @@ bool WilCallbacksManager::InvokeLoggingCallback(FailureInfo* info)
 	failureId_++;
 	info->failureId = failureId_;
 
-	if (loggingCallback_.value != nullptr)
+	if (loggingCallback_.has_value())
 	{
-		loggingCallback_.value(info);
+		loggingCallback_.value()(info);
 		return true;
 	}
 
@@ -56,10 +56,10 @@ bool WilCallbacksManager::InvokeMessageCallback(FailureInfo* info, PWSTR pszDebu
 	failureId_++;
 	info->failureId = failureId_;
 
-	if (messageCallback_.value != nullptr)
+	if (messageCallback_.has_value())
 	{
 		OutputDebugStringW(pszDebugMessage);
-		messageCallback_.value(info, pszDebugMessage, cchDebugMessage);
+		messageCallback_.value()(info, pszDebugMessage, cchDebugMessage);
 		return true;
 	}
 	return false;

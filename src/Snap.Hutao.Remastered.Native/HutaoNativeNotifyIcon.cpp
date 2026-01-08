@@ -10,9 +10,9 @@ namespace
 }
 
 HutaoNativeNotifyIcon::HutaoNativeNotifyIcon(PCWSTR iconPath)
-    : m_hWnd(nullptr)
+    : mWnd(nullptr)
     , m_uCallbackMessage(WM_NOTIFYICON_CALLBACK)
-    , m_hIcon(nullptr)
+    , mIcon(nullptr)
     , m_created(false)
     , m_callback({ nullptr })
     , m_userData(0)
@@ -97,7 +97,7 @@ LRESULT CALLBACK HutaoNativeNotifyIcon::WndProc(HWND hWnd, UINT message, WPARAM 
 
 void HutaoNativeNotifyIcon::HandleNotifyIconMessage(UINT message, WPARAM wParam, LPARAM lParam)
 {
-    if (m_callback.value != nullptr)
+    if (m_callback.has_value())
     {
         // 将Windows消息转换为回调参数
         HutaoNativeNotifyIconCallbackKind kind = HutaoNativeNotifyIconCallbackKind::TaskbarCreated;
@@ -132,23 +132,23 @@ void HutaoNativeNotifyIcon::HandleNotifyIconMessage(UINT message, WPARAM wParam,
         rect.bottom = point.y + 8;
         
         // 调用回调函数
-        m_callback.value(kind, rect, point, m_userData);
+        m_callback.value()(kind, rect, point, m_userData);
     }
 }
 
-HRESULT STDMETHODCALLTYPE HutaoNativeNotifyIcon::Create(nint callback, nint userData, PCWSTR tip)
+HRESULT __stdcall HutaoNativeNotifyIcon::Create(HutaoNativeNotifyIconCallback callback, GCHandle userData, PCWSTR tip)
 {
     if (m_created)
     {
         return HRESULT_FROM_WIN32(ERROR_ALREADY_EXISTS);
     }
 
-    m_callback.value = reinterpret_cast<HutaoNativeNotifyIconCallbackFunc>(callback);
+    m_callback = callback;
     m_userData = userData;
 
     // 创建消息窗口
-    m_hWnd = CreateMessageWindow();
-    if (m_hWnd == nullptr)
+    mWnd = CreateMessageWindow();
+    if (mWnd == nullptr)
     {
         return HRESULT_FROM_WIN32(GetLastError());
     }
@@ -157,7 +157,7 @@ HRESULT STDMETHODCALLTYPE HutaoNativeNotifyIcon::Create(nint callback, nint user
     if (m_iconPath[0] != L'\0')
     {
         // 尝试从文件加载图标
-        m_hIcon = static_cast<HICON>(LoadImageW(
+        mIcon = static_cast<HICON>(LoadImageW(
             nullptr,                    // 使用当前模块
             m_iconPath,                 // 图标文件路径
             IMAGE_ICON,                 // 加载为图标
@@ -166,10 +166,10 @@ HRESULT STDMETHODCALLTYPE HutaoNativeNotifyIcon::Create(nint callback, nint user
         ));
         
         // 如果加载失败，尝试从资源加载
-        if (m_hIcon == nullptr)
+        if (mIcon == nullptr)
         {
             // 尝试从可执行文件资源加载
-            m_hIcon = static_cast<HICON>(LoadImageW(
+            mIcon = static_cast<HICON>(LoadImageW(
                 GetModuleHandle(nullptr), // 当前模块
                 m_iconPath,               // 资源名称
                 IMAGE_ICON,               // 加载为图标
@@ -180,15 +180,15 @@ HRESULT STDMETHODCALLTYPE HutaoNativeNotifyIcon::Create(nint callback, nint user
     }
 
     // 设置通知图标数据
-    m_notifyIconData.hWnd = m_hWnd;
+    m_notifyIconData.hWnd = mWnd;
     m_notifyIconData.uFlags = NIF_MESSAGE | NIF_TIP;
     m_notifyIconData.uCallbackMessage = m_uCallbackMessage;
     
     // 如果成功加载了图标，添加NIF_ICON标志并设置hIcon
-    if (m_hIcon != nullptr)
+    if (mIcon != nullptr)
     {
         m_notifyIconData.uFlags |= NIF_ICON;
-        m_notifyIconData.hIcon = m_hIcon;
+        m_notifyIconData.hIcon = mIcon;
     }
     
     if (tip != nullptr)
@@ -207,7 +207,7 @@ HRESULT STDMETHODCALLTYPE HutaoNativeNotifyIcon::Create(nint callback, nint user
     return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE HutaoNativeNotifyIcon::Recreate(PCWSTR tip)
+HRESULT __stdcall HutaoNativeNotifyIcon::Recreate(PCWSTR tip)
 {
     if (!m_created)
     {
@@ -236,7 +236,7 @@ HRESULT STDMETHODCALLTYPE HutaoNativeNotifyIcon::Recreate(PCWSTR tip)
     return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE HutaoNativeNotifyIcon::Destroy()
+HRESULT __stdcall HutaoNativeNotifyIcon::Destroy()
 {
     if (!m_created)
     {
@@ -250,24 +250,24 @@ HRESULT STDMETHODCALLTYPE HutaoNativeNotifyIcon::Destroy()
     }
 
     // 销毁窗口
-    if (m_hWnd != nullptr)
+    if (mWnd != nullptr)
     {
-        DestroyWindow(m_hWnd);
-        m_hWnd = nullptr;
+        DestroyWindow(mWnd);
+        mWnd = nullptr;
     }
 
     // 销毁图标
-    if (m_hIcon != nullptr)
+    if (mIcon != nullptr)
     {
-        DestroyIcon(m_hIcon);
-        m_hIcon = nullptr;
+        DestroyIcon(mIcon);
+        mIcon = nullptr;
     }
 
     m_created = false;
     return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE HutaoNativeNotifyIcon::IsPromoted(BOOL* promoted)
+HRESULT __stdcall HutaoNativeNotifyIcon::IsPromoted(BOOL* promoted)
 {
     if (promoted == nullptr)
     {
