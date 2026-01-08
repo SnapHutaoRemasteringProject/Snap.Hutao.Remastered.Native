@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "HutaoString.h"
 #include "IHutaoString.h"
 #include "Error.h"

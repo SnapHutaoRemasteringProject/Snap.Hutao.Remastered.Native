@@ -1,8 +1,8 @@
+#include "pch.h"
 #include "dllmain.h"
 #include "HutaoNativeExports.h"
 #include "WilCallbacksManager.h"
 #include "HotKeyCallbackManager.h"
-#include "Types.h"
 #include "HutaoNative.h"
 #include "HutaoString.h"
 #include "HutaoNativeRegistryNotification.h"
@@ -11,9 +11,6 @@
 #include "IHutaoNativeRegistryNotification.h"
 #include "IHutaoNative.h"
 #include "IHutaoString.h"
-#include "CustomImplements.h"
-#include "Error.h"
-#include <Windows.h>
 
 DLL_EXPORT HRESULT __stdcall HutaoCreateInstance(
     IHutaoNative** ppInstance) {

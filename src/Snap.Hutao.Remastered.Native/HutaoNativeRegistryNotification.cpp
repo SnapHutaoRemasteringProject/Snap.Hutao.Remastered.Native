@@ -1,7 +1,6 @@
+#include "pch.h"
 #include "HutaoNativeRegistryNotification.h"
 #include "HutaoNativeRegistryNotificationCallBack.h"
-#include "types.h"
-#include <string>
 
 HutaoNativeRegistryNotification::HutaoNativeRegistryNotification()
     : callback_(0)

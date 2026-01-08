@@ -1,6 +1,5 @@
+#include "pch.h"
 #include "HutaoNativeInputLowLevelKeyboardSource.h"
-#include "types.h"
-#include <Windows.h>
 
 // 全局变量来存储钩子句柄和回调函数
 static HHOOK g_keyboardHook = nullptr;

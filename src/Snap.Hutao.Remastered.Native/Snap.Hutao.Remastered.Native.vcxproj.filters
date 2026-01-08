@@ -81,9 +81,6 @@
     <ClCompile Include="HutaoNativeLoopbackSupport.cpp">
       <Filter>源文件\core\impl</Filter>
     </ClCompile>
-    <ClCompile Include="WinRTImpl.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="IHutaoString.cpp">
       <Filter>源文件\core\interfaces</Filter>
     </ClCompile>
@@ -142,6 +139,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Error.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -313,6 +313,9 @@
     </ClInclude>
     <ClInclude Include="IHutaoNativeFileSystem4.h">
       <Filter>头文件\core\interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

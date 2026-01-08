@@ -1,6 +1,6 @@
+#include "pch.h"
 #include "ProcessUtils.h"
 #include <TlHelp32.h>
-#include <Windows.h>
 #include <wchar.h>
 #include <string.h>
 

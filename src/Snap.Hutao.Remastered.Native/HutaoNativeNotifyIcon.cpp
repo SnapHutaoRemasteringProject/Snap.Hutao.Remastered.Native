@@ -1,7 +1,6 @@
+#include "pch.h"
 #include "HutaoNativeNotifyIcon.h"
-#include <Windows.h>
 #include <shellapi.h>
-#include <string>
 
 namespace
 {

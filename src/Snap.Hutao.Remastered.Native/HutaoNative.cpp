@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "HutaoNative.h"
 #include "HutaoNativeRegistryNotification.h"
 #include "IHutaoNativeLoopbackSupport.h"
@@ -16,12 +17,6 @@
 #include "HutaoNativeHotKeyAction.h"
 #include "HutaoNativeProcess.h"
 #include "HutaoNativeWindowNonRude.h"
-#include "types.h"
-#include "CustomImplements.h"
-#include "Error.h"
-#include <Windows.h>
-#include <hstring.h>
-#include <winternl.h>
 
 HRESULT __stdcall HutaoNative::MakeLoopbackSupport(IHutaoNativeLoopbackSupport** ppv)
 {

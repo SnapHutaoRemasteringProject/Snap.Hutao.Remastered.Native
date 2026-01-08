@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "HotKeyCallbackManager.h"
 #include "HutaoNativeHotKeyBeforeSwitchCallback.h"
 

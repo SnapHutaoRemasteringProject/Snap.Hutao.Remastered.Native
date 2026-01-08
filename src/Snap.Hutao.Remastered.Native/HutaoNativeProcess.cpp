@@ -1,8 +1,5 @@
+#include "pch.h"
 #include "HutaoNativeProcess.h"
-#include "Error.h"
-#include <Windows.h>
-#include <string>
-#include <vector>
 
 HutaoNativeProcess::HutaoNativeProcess()
     : m_started(false)
