@@ -10,10 +10,6 @@ typedef nint GCHandle;
 
 #define E_NOT_FOUND 0x80070490
 
-// 从Types.idl合并的类型定义
-typedef const wchar_t* LPCWSTR;
-typedef LPCWSTR PCWSTR;
-
 typedef struct HutaoPrivateWindowsVersion
 {
     UINT major;

@@ -5,6 +5,7 @@
 #include "CustomImplements.h"
 #include <Windows.h>
 #include <CommCtrl.h>
+#include <shobjidl.h>
 
 LRESULT CALLBACK SubclassWndProc(
     HWND hWnd,
@@ -59,4 +60,5 @@ public:
 
 private:
     bool m_initialized;
+    ITaskbarList3* m_pTaskbarList;
 };
