@@ -1,16 +1,14 @@
-#pragma once
-
 #include "ProcessUtils.h"
 #include <TlHelp32.h>
 #include <Windows.h>
 #include <wchar.h>
 #include <string.h>
 
-// »ñÈ¡½ø³ÌµÄÖ÷Ïß³ÌID£¨´´½¨Ê±¼ä×îÔçµÄÏß³Ì£©
+// è·å–è¿›ç¨‹çš„ä¸»çº¿ç¨‹IDï¼ˆåˆ›å»ºæ—¶é—´æœ€æ—©çš„çº¿ç¨‹ï¼‰
 DWORD GetMainThreadId(DWORD processId)
 {
     DWORD mainThreadId = 0;
-    ULONGLONG minCreateTime = ~(ULONGLONG)0; // ×î´ó¿ÉÄÜÖµ
+    ULONGLONG minCreateTime = ~(ULONGLONG)0; // æœ€å¤§å¯èƒ½å€¼
 
     HANDLE hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPTHREAD, 0);
     if (hSnapshot == INVALID_HANDLE_VALUE) {
@@ -23,7 +21,7 @@ DWORD GetMainThreadId(DWORD processId)
     if (Thread32First(hSnapshot, &te32)) {
         do {
             if (te32.th32OwnerProcessID == processId) {
-                // ´ò¿ªÏß³Ì¾ä±úÒÔ»ñÈ¡´´½¨Ê±¼ä
+                // æ‰“å¼€çº¿ç¨‹å¥æŸ„ä»¥è·å–åˆ›å»ºæ—¶é—´
                 HANDLE hThread = OpenThread(
                     THREAD_QUERY_INFORMATION,
                     FALSE,
@@ -36,7 +34,7 @@ DWORD GetMainThreadId(DWORD processId)
                         ULONGLONG createTime64 = ((ULONGLONG)createTime.dwHighDateTime << 32) |
                             createTime.dwLowDateTime;
 
-                        // ÕÒµ½´´½¨Ê±¼ä×îÔçµÄÏß³Ì£¨Í¨³£ÊÇÖ÷Ïß³Ì£©
+                        // æ‰¾åˆ°åˆ›å»ºæ—¶é—´æœ€æ—©çš„çº¿ç¨‹ï¼ˆé€šå¸¸æ˜¯ä¸»çº¿ç¨‹ï¼‰
                         if (createTime64 < minCreateTime) {
                             minCreateTime = createTime64;
                             mainThreadId = te32.th32ThreadID;
@@ -52,7 +50,7 @@ DWORD GetMainThreadId(DWORD processId)
     return mainThreadId;
 }
 
-// ²éÕÒ½ø³ÌµÄÈÎÒâÏß³ÌID
+// æŸ¥æ‰¾è¿›ç¨‹çš„ä»»æ„çº¿ç¨‹ID
 DWORD FindAnyThreadId(DWORD processId)
 {
     HANDLE hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPTHREAD, 0);
@@ -77,7 +75,7 @@ DWORD FindAnyThreadId(DWORD processId)
     return 0;
 }
 
-// »ñÈ¡Ô¶³Ì½ø³ÌÖĞµÄÄ£¿é¾ä±ú
+// è·å–è¿œç¨‹è¿›ç¨‹ä¸­çš„æ¨¡å—å¥æŸ„
 HMODULE GetRemoteModuleHandle(DWORD processId, LPCWSTR moduleName)
 {
     HANDLE hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPMODULE | TH32CS_SNAPMODULE32, processId);
@@ -92,7 +90,7 @@ HMODULE GetRemoteModuleHandle(DWORD processId, LPCWSTR moduleName)
 
     if (Module32FirstW(hSnapshot, &me32)) {
         do {
-            // ÌáÈ¡Ä£¿éÎÄ¼şÃû£¨²»º¬Â·¾¶£©
+            // æå–æ¨¡å—æ–‡ä»¶åï¼ˆä¸å«è·¯å¾„ï¼‰
             WCHAR moduleFile[MAX_PATH];
             const WCHAR* lastBackslash = wcsrchr(moduleName, L'\\');
             const WCHAR* lastSlash = wcsrchr(moduleName, L'/');
@@ -105,7 +103,7 @@ HMODULE GetRemoteModuleHandle(DWORD processId, LPCWSTR moduleName)
                 fileName = (WCHAR*)moduleName;
             }
 
-            // ±È½ÏÄ£¿éÃû£¨²»Çø·Ö´óĞ¡Ğ´£©
+            // æ¯”è¾ƒæ¨¡å—åï¼ˆä¸åŒºåˆ†å¤§å°å†™ï¼‰
             if (_wcsicmp(me32.szModule, fileName) == 0) {
                 hModule = me32.hModule;
                 break;
@@ -117,7 +115,7 @@ HMODULE GetRemoteModuleHandle(DWORD processId, LPCWSTR moduleName)
     return hModule;
 }
 
-// ¼ì²é½ø³ÌÊÇ·ñÔÚÔËĞĞ
+// æ£€æŸ¥è¿›ç¨‹æ˜¯å¦åœ¨è¿è¡Œ
 BOOL IsProcessRunning(DWORD processId)
 {
     HANDLE hProcess = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, FALSE, processId);
@@ -132,7 +130,7 @@ BOOL IsProcessRunning(DWORD processId)
     return FALSE;
 }
 
-// ¸ù¾İ½ø³ÌÃû»ñÈ¡½ø³ÌID
+// æ ¹æ®è¿›ç¨‹åè·å–è¿›ç¨‹ID
 DWORD GetProcessIdByName(LPCWSTR processName)
 {
     HANDLE hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);

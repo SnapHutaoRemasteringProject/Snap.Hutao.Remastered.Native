@@ -6,22 +6,22 @@
 #include <thread>
 
 const wchar_t* WINDOW_CLASS_NAME = L"HutaoNativeHotKeyActionWindowClass";
-const UINT WM_HOTKEY_MESSAGE = WM_APP + 2;
+const UINT WMOTKEY_MESSAGE = WM_APP + 2;
 
 UINT HutaoNativeHotKeyAction::s_nextHotKeyId = 0x4000; // 从0x4000开始，避免与系统热键冲突
 
-HutaoNativeHotKeyAction::HutaoNativeHotKeyAction(HutaoNativeHotKeyActionKind kind, HutaoNativeHotKeyActionCallback callback, nint userData)
+HutaoNativeHotKeyAction::HutaoNativeHotKeyAction(HutaoNativeHotKeyActionKind kind, HutaoNativeHotKeyActionCallback callback, GCHandle userData)
     : m_kind(kind)
     , m_callback(callback)
     , m_userData(userData)
     , m_modifiers(0)
     , m_vk(0)
     , m_enabled(false)
-    , m_hotKeyId(0)
-    , m_hWnd(nullptr)
+    , motKeyId(0)
+    , mWnd(nullptr)
     , m_isRunning(false)
 {
-    m_hotKeyId = static_cast<int>(++s_nextHotKeyId);
+    motKeyId = static_cast<int>(++s_nextHotKeyId);
 }
 
 HutaoNativeHotKeyAction::~HutaoNativeHotKeyAction()
@@ -29,10 +29,10 @@ HutaoNativeHotKeyAction::~HutaoNativeHotKeyAction()
     SetIsEnabled(FALSE);
     StopAction();
     
-    if (m_hWnd != nullptr)
+    if (mWnd != nullptr)
     {
-        DestroyWindow(m_hWnd);
-        m_hWnd = nullptr;
+        DestroyWindow(mWnd);
+        mWnd = nullptr;
     }
 }
 
@@ -84,7 +84,7 @@ LRESULT CALLBACK HutaoNativeHotKeyAction::WndProc(HWND hWnd, UINT message, WPARA
     HutaoNativeHotKeyAction* pThis = reinterpret_cast<HutaoNativeHotKeyAction*>(GetWindowLongPtrW(hWnd, GWLP_USERDATA));
     if (pThis != nullptr)
     {
-        if (message == WM_HOTKEY)
+        if (message == WMOTKEY_MESSAGE)
         {
             // 热键被触发，切换动作状态
             bool wasRunning = pThis->m_isRunning.load();
@@ -99,9 +99,9 @@ LRESULT CALLBACK HutaoNativeHotKeyAction::WndProc(HWND hWnd, UINT message, WPARA
             }
             
             // 调用回调函数通知状态变化
-            if (pThis->m_callback.value != nullptr)
+            if (pThis->m_callback.has_value())
             {
-                pThis->m_callback.value(!wasRunning ? TRUE : FALSE, pThis->m_userData);
+                pThis->m_callback.value()(!wasRunning ? TRUE : FALSE, pThis->m_userData);
             }
             
             return 0;
@@ -113,20 +113,20 @@ LRESULT CALLBACK HutaoNativeHotKeyAction::WndProc(HWND hWnd, UINT message, WPARA
 
 void HutaoNativeHotKeyAction::UnregisterHotKey()
 {
-    if (m_hWnd != nullptr && m_hotKeyId != 0)
+    if (mWnd != nullptr && motKeyId != 0)
     {
-        ::UnregisterHotKey(m_hWnd, m_hotKeyId);
+        ::UnregisterHotKey(mWnd, motKeyId);
     }
 }
 
 void HutaoNativeHotKeyAction::RegisterHotKey()
 {
-    if (m_hWnd == nullptr || m_hotKeyId == 0 || m_vk == 0)
+    if (mWnd == nullptr || motKeyId == 0 || m_vk == 0)
     {
         return;
     }
 
-    ::RegisterHotKey(m_hWnd, m_hotKeyId, m_modifiers, m_vk);
+    ::RegisterHotKey(mWnd, motKeyId, m_modifiers, m_vk);
 }
 
 void HutaoNativeHotKeyAction::ExecuteAction()
@@ -201,7 +201,7 @@ void HutaoNativeHotKeyAction::SimulateKeyPress()
     SendInput(2, inputs, sizeof(INPUT));
 }
 
-HRESULT STDMETHODCALLTYPE HutaoNativeHotKeyAction::Update(int modifiers, uint vk)
+HRESULT __stdcall HutaoNativeHotKeyAction::Update(int modifiers, uint vk)
 {
     bool wasEnabled = m_enabled;
     
@@ -221,7 +221,7 @@ HRESULT STDMETHODCALLTYPE HutaoNativeHotKeyAction::Update(int modifiers, uint vk
     return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE HutaoNativeHotKeyAction::GetIsEnabled(BOOL* isEnabled)
+HRESULT __stdcall HutaoNativeHotKeyAction::GetIsEnabled(BOOL* isEnabled)
 {
     AssertNonNullAndReturn(isEnabled);
 
@@ -229,7 +229,7 @@ HRESULT STDMETHODCALLTYPE HutaoNativeHotKeyAction::GetIsEnabled(BOOL* isEnabled)
     return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE HutaoNativeHotKeyAction::SetIsEnabled(BOOL isEnabled)
+HRESULT __stdcall HutaoNativeHotKeyAction::SetIsEnabled(BOOL isEnabled)
 {
     bool newEnabled = (isEnabled != FALSE);
 
@@ -241,10 +241,10 @@ HRESULT STDMETHODCALLTYPE HutaoNativeHotKeyAction::SetIsEnabled(BOOL isEnabled)
     if (newEnabled)
     {
         // 启用热键
-        if (m_hWnd == nullptr)
+        if (mWnd == nullptr)
         {
-            m_hWnd = CreateMessageWindow();
-            if (m_hWnd == nullptr)
+            mWnd = CreateMessageWindow();
+            if (mWnd == nullptr)
             {
                 HRESULT hr = HRESULT_FROM_WIN32(GetLastError());
                 ThrowForHR(hr, "CreateMessageWindow failed in SetIsEnabled");

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "IHutaoNativeHotKeyAction_h.h"
-#include "Types_h.h"
+#include "IHutaoNativeHotKeyAction.h"
+#include "Types.h"
 #include "CustomImplements.h"
 #include "HutaoNativeHotKeyActionCallback.h"
 #include <Windows.h>
@@ -13,23 +13,23 @@ class HutaoNativeHotKeyAction : public hutao::CustomImplements<
     IHutaoNativeHotKeyAction>
 {
 public:
-	HutaoNativeHotKeyAction(HutaoNativeHotKeyActionKind kind, HutaoNativeHotKeyActionCallback callback, nint userData);
+	HutaoNativeHotKeyAction(HutaoNativeHotKeyActionKind kind, HutaoNativeHotKeyActionCallback callback, GCHandle userData);
     ~HutaoNativeHotKeyAction();
 
     // IHutaoNativeHotKeyAction methods
-    virtual HRESULT STDMETHODCALLTYPE Update(int modifiers, uint vk) override;
-    virtual HRESULT STDMETHODCALLTYPE GetIsEnabled(BOOL* isEnabled) override;
-    virtual HRESULT STDMETHODCALLTYPE SetIsEnabled(BOOL isEnabled) override;
+    virtual HRESULT __stdcall Update(int modifiers, uint vk) override;
+    virtual HRESULT __stdcall GetIsEnabled(BOOL* isEnabled) override;
+    virtual HRESULT __stdcall SetIsEnabled(BOOL isEnabled) override;
 
 private:
     HutaoNativeHotKeyActionKind m_kind;
     HutaoNativeHotKeyActionCallback m_callback;
-    nint m_userData;
+    GCHandle m_userData;
     int m_modifiers;
     uint m_vk;
     bool m_enabled;
-    int m_hotKeyId;
-    HWND m_hWnd;
+    int motKeyId;
+    HWND mWnd;
     std::atomic<bool> m_isRunning;
     std::thread m_actionThread;
     static UINT s_nextHotKeyId;

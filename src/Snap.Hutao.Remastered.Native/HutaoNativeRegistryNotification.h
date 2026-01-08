@@ -1,6 +1,7 @@
 #pragma once
 
-#include "IHutaoNativeRegistryNotification_h.h"
+#include "IHutaoNativeRegistryNotification.h"
+#include "HutaoNativeRegistryNotificationCallBack.h"
 #include "types.h"
 #include "CustomImplements.h"
 #include <Windows.h>
@@ -13,8 +14,7 @@ public:
     HutaoNativeRegistryNotification();
     ~HutaoNativeRegistryNotification();
 
-    // Match the IDL signature: callback is a 32-bit long on Win64
-    virtual HRESULT STDMETHODCALLTYPE Start(nint callback, INT64 userData) override;
+    virtual HRESULT __stdcall Start(HutaoNativeRegistryNotificationCallBack callback, GCHandle userData) override;
 
 private:
     static DWORD WINAPI NotificationThreadProc(LPVOID lpParameter);
@@ -22,7 +22,7 @@ private:
 
     std::thread notificationThread_;
     std::atomic<bool> stopRequested_{false};
-    nint callback_ = 0;
-    INT64 userData_ = 0;
+    HutaoNativeRegistryNotificationCallBack callback_;
+    GCHandle userData_ = 0;
     HKEY hKey_ = nullptr;
 };

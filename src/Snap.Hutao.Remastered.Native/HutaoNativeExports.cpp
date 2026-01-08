@@ -8,9 +8,9 @@
 #include "HutaoNativeRegistryNotification.h"
 #include "HutaoNativeLoggingCallback.h"
 #include "HutaoNativeMessageCallback.h"
-#include "IHutaoNativeRegistryNotification_h.h"
-#include "IHutaoNative_h.h"
-#include "IHutaoString_h.h"
+#include "IHutaoNativeRegistryNotification.h"
+#include "IHutaoNative.h"
+#include "IHutaoString.h"
 #include "CustomImplements.h"
 #include "Error.h"
 #include <Windows.h>
@@ -66,6 +66,6 @@ DLL_EXPORT BOOL HutaoHResultIsWin32(HRESULT hr, WIN32_ERROR error)
 
 DLL_EXPORT HRESULT HutaoNativeHotKeyInitializeBeforeSwitchCallback(HutaoNativeHotKeyBeforeSwitchCallback callback)
 {
-	g_hotKeyCallbackManager.Initialize(callback);
+	gotKeyCallbackManager.Initialize(callback);
     return S_OK;
 }

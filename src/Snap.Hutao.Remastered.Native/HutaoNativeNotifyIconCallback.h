@@ -3,7 +3,6 @@
 #include "Types.h"
 #include <Windows.h>
 
-// 通知图标回调种类枚举
 enum class HutaoNativeNotifyIconCallbackKind : int
 {
     TaskbarCreated = 0,
@@ -12,11 +11,33 @@ enum class HutaoNativeNotifyIconCallbackKind : int
     LeftButtonDoubleClick = 3,
 };
 
-// 通知图标回调函数指针类型
-typedef void (*HutaoNativeNotifyIconCallbackFunc)(HutaoNativeNotifyIconCallbackKind kind, RECT rect, POINT point, nint userData);
+using HutaoNativeNotifyIconProc = void (*)(HutaoNativeNotifyIconCallbackKind kind, RECT rect, POINT point, GCHandle userData);
 
-// 通知图标回调结构体（模仿项目风格）
 struct HutaoNativeNotifyIconCallback
 {
-    HutaoNativeNotifyIconCallbackFunc value;
+private:
+    HutaoNativeNotifyIconProc m_value;
+    
+public:
+    HutaoNativeNotifyIconCallback() = default;
+    
+    explicit HutaoNativeNotifyIconCallback(HutaoNativeNotifyIconProc method)
+        : m_value(method)
+    {
+    }
+    
+    static HutaoNativeNotifyIconCallback Create(HutaoNativeNotifyIconProc method)
+    {
+        return HutaoNativeNotifyIconCallback(method);
+    }
+    
+    HutaoNativeNotifyIconProc value() const
+    {
+        return m_value;
+    }
+    
+    bool has_value() const
+    {
+        return m_value != nullptr;
+    }
 };

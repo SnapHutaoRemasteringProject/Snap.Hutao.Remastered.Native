@@ -111,6 +111,7 @@
       <LanguageStandard>stdcpp20</LanguageStandard>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <UseDynamicDebugging>false</UseDynamicDebugging>
+      <AdditionalOptions>/FS %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -173,6 +174,7 @@
     <ClInclude Include="CustomImplements.h" />
     <ClInclude Include="Error.h" />
     <ClInclude Include="HutaoNativeNotifyIconCallback.h" />
+    <ClInclude Include="HutaoNativeRegistryNotificationCallBack.h" />
     <ClInclude Include="WindowUtils.h" />
     <ClInclude Include="DllInjectionUtils.h" />
     <ClInclude Include="dllmain.h" />
@@ -221,26 +223,10 @@
     <ClInclude Include="Types.h" />
     <ClInclude Include="WilCallbacksManager.h" />
     <ClInclude Include="HutaoNativeInputLowLevelKeyboardSource.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <Midl Include="IHutaoNative.idl" />
-    <Midl Include="IHutaoNativeDeviceCapabilities.idl" />
-    <Midl Include="IHutaoNativeFileSystem2.idl" />
-    <Midl Include="IHutaoNativeFileSystem3.idl" />
-    <Midl Include="IHutaoNativeFileSystem4.idl" />
-    <Midl Include="IHutaoNativeLogicalDrive.idl" />
-    <Midl Include="IHutaoNativeLoopbackSupport.idl" />
-    <Midl Include="IHutaoNativePhysicalDrive.idl" />
-    <Midl Include="IHutaoNativeRegistryNotification.idl" />
-    <Midl Include="IHutaoNativeWindowNonRude.idl" />
-    <Midl Include="IHutaoNativeWindowSubclass.idl" />
-    <Midl Include="IHutaoString.idl" />
-    <Midl Include="Types.idl" />
-    <Midl Include="IHutaoNativeInputLowLevelKeyboardSource.idl" />
-    <Midl Include="IHutaoNativeFileSystem.idl" />
-    <Midl Include="IHutaoNativeNotifyIcon.idl" />
-    <Midl Include="IHutaoNativeHotKeyAction.idl" />
-    <Midl Include="IHutaoNativeProcess.idl" />
+    <ClInclude Include="IHutaoNativeFileSystem2.h" />
+    <ClInclude Include="IHutaoNativeFileSystem3.h" />
+    <ClInclude Include="IHutaoNativeFileSystem4.h" />
+    <ClInclude Include="HutaoNativeHotKeyActionCallback.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

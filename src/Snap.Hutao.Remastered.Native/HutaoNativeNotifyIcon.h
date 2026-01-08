@@ -1,8 +1,9 @@
 #pragma once
 
-#include "IHutaoNativeNotifyIcon_h.h"
+#include "IHutaoNativeNotifyIcon.h"
 #include "CustomImplements.h"
 #include "HutaoNativeNotifyIconCallback.h"
+#include "types.h"
 #include <Windows.h>
 #include <shellapi.h>
 
@@ -15,19 +16,19 @@ public:
     ~HutaoNativeNotifyIcon();
 
     // IHutaoNativeNotifyIcon methods
-    virtual HRESULT STDMETHODCALLTYPE Create(nint callback, nint userData, PCWSTR tip) override;
-    virtual HRESULT STDMETHODCALLTYPE Recreate(PCWSTR tip) override;
-    virtual HRESULT STDMETHODCALLTYPE Destroy() override;
-    virtual HRESULT STDMETHODCALLTYPE IsPromoted(BOOL* promoted) override;
+    virtual HRESULT __stdcall Create(HutaoNativeNotifyIconCallback callback, GCHandle userData, PCWSTR tip) override;
+    virtual HRESULT __stdcall Recreate(PCWSTR tip) override;
+    virtual HRESULT __stdcall Destroy() override;
+    virtual HRESULT __stdcall IsPromoted(BOOL* promoted) override;
 
 private:
     NOTIFYICONDATAW m_notifyIconData = { 0 };
-    HWND m_hWnd = nullptr;
+    HWND mWnd = nullptr;
     UINT m_uCallbackMessage = 0;
-    HICON m_hIcon = nullptr;
+    HICON mIcon = nullptr;
     bool m_created = false;
-    HutaoNativeNotifyIconCallback m_callback = { nullptr };
-    nint m_userData = 0;
+    HutaoNativeNotifyIconCallback m_callback = { };
+    intptr_t m_userData = 0;
     wchar_t m_iconPath[MAX_PATH] = { 0 };
 
     static LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);

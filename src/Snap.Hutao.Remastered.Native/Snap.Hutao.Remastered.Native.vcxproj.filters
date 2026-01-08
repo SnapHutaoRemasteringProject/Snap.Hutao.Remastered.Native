@@ -302,61 +302,8 @@
     <ClInclude Include="Error.h">
       <Filter>头文件</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <Midl Include="IHutaoString.idl">
-      <Filter>源文件\core\interfaces\idl</Filter>
-    </Midl>
-    <Midl Include="IHutaoNativeLoopbackSupport.idl">
-      <Filter>源文件\core\interfaces\idl</Filter>
-    </Midl>
-    <Midl Include="IHutaoNative.idl">
-      <Filter>源文件\core\interfaces\idl</Filter>
-    </Midl>
-    <Midl Include="IHutaoNativeDeviceCapabilities.idl">
-      <Filter>源文件\core\interfaces\idl</Filter>
-    </Midl>
-    <Midl Include="IHutaoNativeLogicalDrive.idl">
-      <Filter>源文件\core\interfaces\idl</Filter>
-    </Midl>
-    <Midl Include="IHutaoNativePhysicalDrive.idl">
-      <Filter>源文件\core\interfaces\idl</Filter>
-    </Midl>
-    <Midl Include="IHutaoNativeRegistryNotification.idl">
-      <Filter>源文件\core\interfaces\idl</Filter>
-    </Midl>
-    <Midl Include="IHutaoNativeWindowNonRude.idl">
-      <Filter>源文件\core\interfaces\idl</Filter>
-    </Midl>
-    <Midl Include="IHutaoNativeWindowSubclass.idl">
-      <Filter>源文件\core\interfaces\idl</Filter>
-    </Midl>
-    <Midl Include="Types.idl">
-      <Filter>源文件</Filter>
-    </Midl>
-    <Midl Include="IHutaoNativeProcess.idl">
-      <Filter>源文件\core\interfaces\idl</Filter>
-    </Midl>
-    <Midl Include="IHutaoNativeNotifyIcon.idl">
-      <Filter>源文件\core\interfaces\idl</Filter>
-    </Midl>
-    <Midl Include="IHutaoNativeInputLowLevelKeyboardSource.idl">
-      <Filter>源文件\core\interfaces\idl</Filter>
-    </Midl>
-    <Midl Include="IHutaoNativeFileSystem.idl">
-      <Filter>源文件\core\interfaces\idl</Filter>
-    </Midl>
-    <Midl Include="IHutaoNativeHotKeyAction.idl">
-      <Filter>源文件\core\interfaces\idl</Filter>
-    </Midl>
-    <Midl Include="IHutaoNativeFileSystem2.idl">
-      <Filter>源文件\core\interfaces\idl</Filter>
-    </Midl>
-    <Midl Include="IHutaoNativeFileSystem3.idl">
-      <Filter>源文件\core\interfaces\idl</Filter>
-    </Midl>
-    <Midl Include="IHutaoNativeFileSystem4.idl">
-      <Filter>源文件\core\interfaces\idl</Filter>
-    </Midl>
+    <ClInclude Include="HutaoNativeRegistryNotificationCallBack.h">
+      <Filter>头文件\core\struct</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
