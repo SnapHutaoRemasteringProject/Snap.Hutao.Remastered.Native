@@ -1,7 +1,6 @@
+#include "pch.h"
 #include "HutaoNativeHotKeyAction.h"
 #include "HutaoNativeHotKeyActionCallback.h"
-#include "Error.h"
-#include <Windows.h>
 #include <chrono>
 #include <thread>
 

@@ -1,5 +1,5 @@
+#include "pch.h"
 #include "HutaoNativeWindowSubclass.h"
-#include <Windows.h>
 #include <CommCtrl.h>
 #include <shobjidl.h>
 

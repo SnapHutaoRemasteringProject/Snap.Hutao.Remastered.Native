@@ -1,6 +1,5 @@
+#include "pch.h"
 #include "HutaoNativeLogicalDrive.h"
-#include "Error.h"
-#include <Windows.h>
 
 HRESULT __stdcall HutaoNativeLogicalDrive::GetDiskFreeSpace(PCWSTR path, long* bytes) noexcept
 {

@@ -1,13 +1,9 @@
+#include "pch.h"
 #include "HutaoNativeFileSystem.h"
 #include "IHutaoString.h"
 #include "HutaoString.h"
-#include "CustomImplements.h"
-#include "Error.h"
-#include <Windows.h>
 #include <ShlObj.h>
 #include <shellapi.h>
-#include <string>
-#include <vector>
 #include <comdef.h>
 
 HRESULT HutaoNativeFileSystem::PerformFileOperation(UINT operation, PCWSTR source, PCWSTR destination, long flags)

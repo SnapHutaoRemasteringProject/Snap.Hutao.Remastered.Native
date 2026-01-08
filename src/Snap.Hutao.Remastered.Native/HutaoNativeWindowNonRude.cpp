@@ -1,5 +1,5 @@
+#include "pch.h"
 #include "HutaoNativeWindowNonRude.h"
-#include <Windows.h>
 
 HutaoNativeWindowNonRude::HutaoNativeWindowNonRude(HWND hWnd)
     : mWnd(hWnd)

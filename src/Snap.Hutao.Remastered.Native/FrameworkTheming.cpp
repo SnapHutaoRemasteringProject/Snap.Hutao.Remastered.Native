@@ -1,8 +1,5 @@
+#include "pch.h"
 #include "FrameworkTheming.h"
-#include "types.h"
-#include "Error.h"
-#include <Windows.h>
-#include <cstring>
 #include <atomic>
 
 // Global function pointers

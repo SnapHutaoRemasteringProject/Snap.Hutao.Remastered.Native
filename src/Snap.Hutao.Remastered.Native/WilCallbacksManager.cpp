@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "WilCallbacksManager.h"
 #include "HutaoNativeLoggingCallback.h"
 #include "HutaoNativeMessageCallback.h"

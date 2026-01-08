@@ -1,8 +1,6 @@
+#include "pch.h"
 #include "HutaoNativeLoopbackSupport.h"
 #include "FirewallRuleManager.h"
-#include "Error.h"
-#include <Windows.h>
-#include <string>
 
 HutaoNativeLoopbackSupport::HutaoNativeLoopbackSupport()
     : m_firewallManager(new FirewallRuleManager())

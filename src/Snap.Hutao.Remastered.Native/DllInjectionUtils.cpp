@@ -1,13 +1,10 @@
+#include "pch.h"
 #include "DllInjectionUtils.h"
 #include "ProcessUtils.h"
 #include "PrivilegeUtils.h"
 #include "HookUtils.h"
 #include "MemoryUtils.h"
 #include "StringUtils.h"
-#include "Error.h"
-#include <Windows.h>
-#include <vector>
-#include <string>
 #include <tlhelp32.h>
 
 // Windows钩子注入方法1（使用WH_GETMESSAGE钩子）
