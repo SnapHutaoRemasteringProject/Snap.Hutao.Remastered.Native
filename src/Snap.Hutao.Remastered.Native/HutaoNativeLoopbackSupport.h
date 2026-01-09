@@ -8,7 +8,8 @@
 class HutaoNativeLoopbackSupport :
 	public hutao::CustomImplements<
 	HutaoNativeLoopbackSupport,
-	IHutaoNativeLoopbackSupport>
+	IHutaoNativeLoopbackSupport,
+	IHutaoNativeLoopbackSupport2>
 {
 public:
 	HutaoNativeLoopbackSupport();
@@ -16,6 +17,7 @@ public:
 
 	virtual HRESULT __stdcall IsEnabled(PCWSTR familyName, IHutaoString* sid, boolean* enabled) override;
 	virtual HRESULT __stdcall Enable(PCWSTR familyName, IHutaoString* sid) override;
+	virtual HRESULT __stdcall IsPublicFirewallEnabled(boolean* enabled) override;
 
 private:
 	class FirewallRuleManager* m_firewallManager;

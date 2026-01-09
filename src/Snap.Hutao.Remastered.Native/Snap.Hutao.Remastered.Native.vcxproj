@@ -70,6 +70,12 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(OutDir);$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(OutDir);$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -189,6 +195,7 @@
   <ItemGroup>
     <ClInclude Include="CustomImplements.h" />
     <ClInclude Include="Error.h" />
+    <ClInclude Include="HutaoNativeHotKeyActionCallback.h" />
     <ClInclude Include="HutaoNativeNotifyIconCallback.h" />
     <ClInclude Include="HutaoNativeRegistryNotificationCallBack.h" />
     <ClInclude Include="pch.h" />
@@ -243,7 +250,6 @@
     <ClInclude Include="IHutaoNativeFileSystem2.h" />
     <ClInclude Include="IHutaoNativeFileSystem3.h" />
     <ClInclude Include="IHutaoNativeFileSystem4.h" />
-    <ClInclude Include="HutaoNativeHotKeyActionCallback.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

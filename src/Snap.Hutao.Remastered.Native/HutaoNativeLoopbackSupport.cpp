@@ -88,6 +88,29 @@ HRESULT __stdcall HutaoNativeLoopbackSupport::Enable(PCWSTR familyName, IHutaoSt
     return hr;
 }
 
+HRESULT __stdcall HutaoNativeLoopbackSupport::IsPublicFirewallEnabled(boolean* enabled)
+{
+    AssertNonNullAndReturn(enabled);
+
+    if (!m_firewallManager)
+    {
+        HRESULT hr = E_FAIL;
+        ThrowForHR(hr, "Firewall manager is null in IsPublicFirewallEnabled");
+        return hr;
+    }
+
+    BOOL nativeEnabled = FALSE;
+    HRESULT hr = m_firewallManager->IsPublicFirewallEnabled(&nativeEnabled);
+    if (FAILED(hr))
+    {
+        ThrowForHR(hr, "FirewallRuleManager::IsPublicFirewallEnabled failed in IsPublicFirewallEnabled");
+        return hr;
+    }
+
+    *enabled = nativeEnabled ? true : false;
+    return S_OK;
+}
+
 HutaoNativeLoopbackSupport2::HutaoNativeLoopbackSupport2()
     : m_firewallManager(new FirewallRuleManager())
 {
