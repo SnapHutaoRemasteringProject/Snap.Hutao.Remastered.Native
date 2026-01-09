@@ -1,6 +1,6 @@
 #pragma once
 
-#include "IHutaoNativeWindowNonRude_h.h"
+#include "IHutaoNativeWindowNonRude.h"
 #include "CustomImplements.h"
 #include <Windows.h>
 
@@ -13,11 +13,11 @@ public:
     HutaoNativeWindowNonRude(HWND hWnd);
     ~HutaoNativeWindowNonRude();
 
-    virtual HRESULT STDMETHODCALLTYPE Attach() override;
-    virtual HRESULT STDMETHODCALLTYPE Detach() override;
+    virtual HRESULT __stdcall Attach() override;
+    virtual HRESULT __stdcall Detach() override;
 
 private:
-    HWND m_hWnd;
+    HWND mWnd;
     bool m_attached;
     LONG_PTR m_originalStyle;
 };

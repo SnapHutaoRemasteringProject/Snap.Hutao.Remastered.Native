@@ -1,4 +1,5 @@
-﻿#include "dllmain.h"
+﻿#include "pch.h"
+#include "dllmain.h"
 #include <Windows.h>
 
 BOOL APIENTRY DllMain( HMODULE hModule,

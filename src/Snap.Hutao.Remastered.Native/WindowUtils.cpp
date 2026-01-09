@@ -1,5 +1,5 @@
+#include "pch.h"
 #include "WindowUtils.h"
-#include <Windows.h>
 #include <ShellScalingApi.h>
 #pragma comment(lib, "Shcore.lib")
 

@@ -1,9 +1,8 @@
+#include "pch.h"
 #include "HutaoNativePhysicalDrive.h"
-#include <Windows.h>
 #include <winioctl.h>
-#include <string>
 
-HRESULT STDMETHODCALLTYPE HutaoNativePhysicalDrive::IsPathOnSolidStateDrive(PCWSTR root, BOOL* isSSD) noexcept
+HRESULT __stdcall HutaoNativePhysicalDrive::IsPathOnSolidStateDrive(PCWSTR root, BOOL* isSSD) noexcept
 {
     if (root == nullptr || isSSD == nullptr)
     {

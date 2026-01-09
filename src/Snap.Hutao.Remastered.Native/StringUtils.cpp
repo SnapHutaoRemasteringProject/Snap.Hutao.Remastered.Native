@@ -1,27 +1,27 @@
+#include "pch.h"
 #include "StringUtils.h"
 #include <malloc.h>
-#include <Windows.h>
 
-// ½«¿í×Ö·û×Ö·û´®×ª»»ÎªANSI×Ö·û´®
+// å°†å®½å­—ç¬¦å­—ç¬¦ä¸²è½¬æ¢ä¸ºANSIå­—ç¬¦ä¸²
 LPSTR WideCharToAnsi(LPCWSTR wideStr)
 {
     if (!wideStr) {
         return NULL;
     }
 
-    // »ñÈ¡ËùĞèµÄ»º³åÇø´óĞ¡
+    // è·å–æ‰€éœ€çš„ç¼“å†²åŒºå¤§å°
     int bufferSize = WideCharToMultiByte(CP_ACP, 0, wideStr, -1, NULL, 0, NULL, NULL);
     if (bufferSize == 0) {
         return NULL;
     }
 
-    // ·ÖÅä»º³åÇø
+    // åˆ†é…ç¼“å†²åŒº
     LPSTR ansiStr = (LPSTR)malloc(bufferSize);
     if (!ansiStr) {
         return NULL;
     }
 
-    // Ö´ĞĞ×ª»»
+    // æ‰§è¡Œè½¬æ¢
     if (WideCharToMultiByte(CP_ACP, 0, wideStr, -1, ansiStr, bufferSize, NULL, NULL) == 0) {
         free(ansiStr);
         return NULL;
@@ -30,26 +30,26 @@ LPSTR WideCharToAnsi(LPCWSTR wideStr)
     return ansiStr;
 }
 
-// ½«ANSI×Ö·û´®×ª»»Îª¿í×Ö·û×Ö·û´®
+// å°†ANSIå­—ç¬¦ä¸²è½¬æ¢ä¸ºå®½å­—ç¬¦å­—ç¬¦ä¸²
 LPWSTR AnsiToWideChar(LPCSTR ansiStr)
 {
     if (!ansiStr) {
         return NULL;
     }
 
-    // »ñÈ¡ËùĞèµÄ»º³åÇø´óĞ¡
+    // è·å–æ‰€éœ€çš„ç¼“å†²åŒºå¤§å°
     int bufferSize = MultiByteToWideChar(CP_ACP, 0, ansiStr, -1, NULL, 0);
     if (bufferSize == 0) {
         return NULL;
     }
 
-    // ·ÖÅä»º³åÇø
+    // åˆ†é…ç¼“å†²åŒº
     LPWSTR wideStr = (LPWSTR)malloc(bufferSize * sizeof(WCHAR));
     if (!wideStr) {
         return NULL;
     }
 
-    // Ö´ĞĞ×ª»»
+    // æ‰§è¡Œè½¬æ¢
     if (MultiByteToWideChar(CP_ACP, 0, ansiStr, -1, wideStr, bufferSize) == 0) {
         free(wideStr);
         return NULL;
@@ -58,26 +58,26 @@ LPWSTR AnsiToWideChar(LPCSTR ansiStr)
     return wideStr;
 }
 
-// ½«¿í×Ö·û×Ö·û´®×ª»»ÎªUTF-8×Ö·û´®
+// å°†å®½å­—ç¬¦å­—ç¬¦ä¸²è½¬æ¢ä¸ºUTF-8å­—ç¬¦ä¸²
 LPSTR WideCharToUtf8(LPCWSTR wideStr)
 {
     if (!wideStr) {
         return NULL;
     }
 
-    // »ñÈ¡ËùĞèµÄ»º³åÇø´óĞ¡
+    // è·å–æ‰€éœ€çš„ç¼“å†²åŒºå¤§å°
     int bufferSize = WideCharToMultiByte(CP_UTF8, 0, wideStr, -1, NULL, 0, NULL, NULL);
     if (bufferSize == 0) {
         return NULL;
     }
 
-    // ·ÖÅä»º³åÇø
+    // åˆ†é…ç¼“å†²åŒº
     LPSTR utf8Str = (LPSTR)malloc(bufferSize);
     if (!utf8Str) {
         return NULL;
     }
 
-    // Ö´ĞĞ×ª»»
+    // æ‰§è¡Œè½¬æ¢
     if (WideCharToMultiByte(CP_UTF8, 0, wideStr, -1, utf8Str, bufferSize, NULL, NULL) == 0) {
         free(utf8Str);
         return NULL;
@@ -86,26 +86,26 @@ LPSTR WideCharToUtf8(LPCWSTR wideStr)
     return utf8Str;
 }
 
-// ½«UTF-8×Ö·û´®×ª»»Îª¿í×Ö·û×Ö·û´®
+// å°†UTF-8å­—ç¬¦ä¸²è½¬æ¢ä¸ºå®½å­—ç¬¦å­—ç¬¦ä¸²
 LPWSTR Utf8ToWideChar(LPCSTR utf8Str)
 {
     if (!utf8Str) {
         return NULL;
     }
 
-    // »ñÈ¡ËùĞèµÄ»º³åÇø´óĞ¡
+    // è·å–æ‰€éœ€çš„ç¼“å†²åŒºå¤§å°
     int bufferSize = MultiByteToWideChar(CP_UTF8, 0, utf8Str, -1, NULL, 0);
     if (bufferSize == 0) {
         return NULL;
     }
 
-    // ·ÖÅä»º³åÇø
+    // åˆ†é…ç¼“å†²åŒº
     LPWSTR wideStr = (LPWSTR)malloc(bufferSize * sizeof(WCHAR));
     if (!wideStr) {
         return NULL;
     }
 
-    // Ö´ĞĞ×ª»»
+    // æ‰§è¡Œè½¬æ¢
     if (MultiByteToWideChar(CP_UTF8, 0, utf8Str, -1, wideStr, bufferSize) == 0) {
         free(wideStr);
         return NULL;
@@ -114,7 +114,7 @@ LPWSTR Utf8ToWideChar(LPCSTR utf8Str)
     return wideStr;
 }
 
-// ¼ì²é×Ö·û´®ÊÇ·ñÎª´¿Êı×Ö
+// æ£€æŸ¥å­—ç¬¦ä¸²æ˜¯å¦ä¸ºçº¯æ•°å­—
 BOOL IsStringNumeric(LPCWSTR str)
 {
     if (!str || str[0] == L'\0') {
@@ -130,7 +130,7 @@ BOOL IsStringNumeric(LPCWSTR str)
     return TRUE;
 }
 
-// ½«×Ö·û´®×ª»»ÎªĞòºÅ£¨ÓÃÓÚGetProcAddress£©
+// å°†å­—ç¬¦ä¸²è½¬æ¢ä¸ºåºå·ï¼ˆç”¨äºGetProcAddressï¼‰
 DWORD StringToOrdinal(LPCWSTR str)
 {
     if (!str) {
@@ -139,14 +139,14 @@ DWORD StringToOrdinal(LPCWSTR str)
 
     DWORD ordinal = 0;
     for (int i = 0; str[i] != L'\0'; i++) {
-        // È·±£ÊÇÊı×Ö×Ö·û
+        // ç¡®ä¿æ˜¯æ•°å­—å­—ç¬¦
         if (str[i] < L'0' || str[i] > L'9') {
             return 0;
         }
 
         ordinal = ordinal * 10 + (str[i] - L'0');
 
-        // ¼ì²éÊÇ·ñÒç³ö£¨ĞòºÅµÄµÍÎ»WORDÓĞĞ§£©
+        // æ£€æŸ¥æ˜¯å¦æº¢å‡ºï¼ˆåºå·çš„ä½ä½WORDæœ‰æ•ˆï¼‰
         if (ordinal > 0xFFFF) {
             return 0;
         }
@@ -155,31 +155,31 @@ DWORD StringToOrdinal(LPCWSTR str)
     return ordinal;
 }
 
-// »ñÈ¡ANSIº¯ÊıÃû£¨ÓÃÓÚGetProcAddress£©
+// è·å–ANSIå‡½æ•°åï¼ˆç”¨äºGetProcAddressï¼‰
 LPCSTR GetAnsiFunctionName(LPCWSTR wideFunctionName)
 {
     if (!wideFunctionName) {
         return NULL;
     }
 
-    // Ê×ÏÈ¼ì²éÊÇ·ñÊÇÊı×Ö×Ö·û´®£¨µ¼³öĞòºÅ£©
+    // é¦–å…ˆæ£€æŸ¥æ˜¯å¦æ˜¯æ•°å­—å­—ç¬¦ä¸²ï¼ˆå¯¼å‡ºåºå·ï¼‰
     if (IsStringNumeric(wideFunctionName)) {
         DWORD ordinal = StringToOrdinal(wideFunctionName);
         if (ordinal > 0) {
-            // ĞòºÅµÄµÍ16Î»ÓĞĞ§£¬¸ß16Î»±ØĞëÎª0
+            // åºå·çš„ä½16ä½æœ‰æ•ˆï¼Œé«˜16ä½å¿…é¡»ä¸º0
             return (LPCSTR)(DWORD_PTR)ordinal;
         }
     }
 
-    // Èç¹û²»ÊÇĞòºÅ£¬Ôò×ª»»ÎªANSI×Ö·û´®
+    // å¦‚æœä¸æ˜¯åºå·ï¼Œåˆ™è½¬æ¢ä¸ºANSIå­—ç¬¦ä¸²
     LPSTR ansiName = WideCharToAnsi(wideFunctionName);
 
-    // ×¢Òâ£ºµ÷ÓÃÕßĞèÒª¸ºÔğÊÍ·Å·µ»ØµÄ×Ö·û´®£¨Èç¹ûÊÇ×ª»»µÄ£©
-    // Èç¹ûÊÇĞòºÅ£¬·µ»ØµÄÊÇÊıÖµ£¬²»ĞèÒªÊÍ·Å
+    // æ³¨æ„ï¼šè°ƒç”¨è€…éœ€è¦è´Ÿè´£é‡Šæ”¾è¿”å›çš„å­—ç¬¦ä¸²ï¼ˆå¦‚æœæ˜¯è½¬æ¢çš„ï¼‰
+    // å¦‚æœæ˜¯åºå·ï¼Œè¿”å›çš„æ˜¯æ•°å€¼ï¼Œä¸éœ€è¦é‡Šæ”¾
     return ansiName;
 }
 
-// ÊÍ·Å×ª»»ºóµÄ×Ö·û´®
+// é‡Šæ”¾è½¬æ¢åçš„å­—ç¬¦ä¸²
 void FreeConvertedString(LPVOID str)
 {
     if (str) {

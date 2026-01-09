@@ -1,12 +1,8 @@
-#pragma once
-
+#include "pch.h"
 #include "FirewallRuleManager.h"
 #include <sddl.h>
-#include <vector>
 #include <icftypes.h>
 #include <netfw.h>
-#include <Windows.h>
-#include <string>
 
 FirewallRuleManager::FirewallRuleManager()
     : m_policy(nullptr)
@@ -87,13 +83,13 @@ HRESULT FirewallRuleManager::AddLoopbackExempt(const std::wstring& familyName, c
 
     std::wstring ruleName = GetRuleName(familyName, sid);
 
-    // ¼ì²é¹æÔòÊÇ·ñÒÑ´æÔÚ
+    // æ£€æŸ¥è§„åˆ™æ˜¯å¦å·²å­˜åœ¨
     INetFwRule* existingRule = nullptr;
     hr = m_rules->Item(BSTR(ruleName.c_str()), &existingRule);
 
     if (SUCCEEDED(hr) && existingRule)
     {
-        // ¹æÔòÒÑ´æÔÚ£¬ÆôÓÃËü
+        // è§„åˆ™å·²å­˜åœ¨ï¼Œå¯ç”¨å®ƒ
         hr = existingRule->put_Enabled(VARIANT_TRUE);
         SafeRelease(existingRule);
         return hr;
@@ -101,7 +97,7 @@ HRESULT FirewallRuleManager::AddLoopbackExempt(const std::wstring& familyName, c
 
     SafeRelease(existingRule);
 
-    // ´´½¨ĞÂ¹æÔò
+    // åˆ›å»ºæ–°è§„åˆ™
     return CreateFirewallRule(
         ruleName,
         L"loopback",
@@ -152,7 +148,7 @@ HRESULT FirewallRuleManager::CreateFirewallRule(const std::wstring& ruleName, co
     if (FAILED(hr))
         return hr;
 
-    // ÉèÖÃ¹æÔòÊôĞÔ
+    // è®¾ç½®è§„åˆ™å±æ€§
     hr = rule->put_Name(BSTR(ruleName.c_str()));
     if (FAILED(hr)) goto cleanup;
 
@@ -186,7 +182,7 @@ HRESULT FirewallRuleManager::CreateFirewallRule(const std::wstring& ruleName, co
     }
     rule->put_Grouping(BSTR(groupName.c_str()));
 
-    // ½«¹æÔòÌí¼Óµ½¼¯ºÏÖĞ
+    // å°†è§„åˆ™æ·»åŠ åˆ°é›†åˆä¸­
     hr = m_rules->Add(rule);
 
 cleanup:
@@ -214,7 +210,7 @@ std::wstring FirewallRuleManager::GetCurrentUserSid()
     if (!OpenProcessToken(GetCurrentProcess(), TOKEN_QUERY, &hToken))
         return sidString;
 
-    // »ñÈ¡ËùĞè»º³åÇø´óĞ¡
+    // è·å–æ‰€éœ€ç¼“å†²åŒºå¤§å°
     DWORD tokenSize = 0;
     GetTokenInformation(hToken, TokenUser, nullptr, 0, &tokenSize);
 

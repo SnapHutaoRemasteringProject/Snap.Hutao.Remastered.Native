@@ -1,3 +1,4 @@
+#include "pch.h"
 #include "MemoryUtils.h"
 
 // 向目标进程写入字符串并返回远程内存地址

@@ -1,7 +1,6 @@
+#include "pch.h"
 #include "HutaoNativeRegistryNotification.h"
-#include "types.h"
-#include <string>
-#include <vector>
+#include "HutaoNativeRegistryNotificationCallBack.h"
 
 HutaoNativeRegistryNotification::HutaoNativeRegistryNotification()
     : callback_(0)
@@ -89,17 +88,9 @@ void HutaoNativeRegistryNotification::NotificationThread()
         if (waitResult == WAIT_OBJECT_0)
         {
             // Registry changed, call the callback
-            if (callback_ != 0)
+            if (callback_.has_value())
             {
-                // The callback is a function pointer with signature: void (__stdcall *)(nint userData)
-                using CallbackType = void(__stdcall*)(nint);
-                CallbackType callbackFunc = reinterpret_cast<CallbackType>(callback_);
-                
-                // Call the callback function
-                if (callbackFunc != nullptr)
-                {
-                    callbackFunc((nint)userData_);
-                }
+				callback_.value()(userData_);
             }
         }
         else if (waitResult == WAIT_TIMEOUT)
@@ -124,8 +115,8 @@ void HutaoNativeRegistryNotification::NotificationThread()
     }
 }
 
-HRESULT STDMETHODCALLTYPE HutaoNativeRegistryNotification::Start(nint callback, INT64 userData) {
-    if (!callback)
+HRESULT __stdcall HutaoNativeRegistryNotification::Start(HutaoNativeRegistryNotificationCallBack callback, GCHandle userData) {
+    if (!callback.has_value())
     {
         return E_INVALIDARG;
     }

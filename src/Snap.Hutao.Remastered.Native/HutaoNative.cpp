@@ -1,9 +1,10 @@
+#include "pch.h"
 #include "HutaoNative.h"
 #include "HutaoNativeRegistryNotification.h"
-#include "IHutaoNativeLoopbackSupport_h.h"
-#include "IHutaoNativeRegistryNotification_h.h"
-#include "IHutaoNativeWindowNonRude_h.h"
-#include "IHutaoNativeWindowSubclass_h.h"
+#include "IHutaoNativeLoopbackSupport.h"
+#include "IHutaoNativeRegistryNotification.h"
+#include "IHutaoNativeWindowNonRude.h"
+#include "IHutaoNativeWindowSubclass.h"
 #include "HutaoNativeLoopbackSupport.h"
 #include "HutaoNativeWindowSubclass.h"
 #include "HutaoNativeWindowSubclassCallback.h"
@@ -16,15 +17,8 @@
 #include "HutaoNativeHotKeyAction.h"
 #include "HutaoNativeProcess.h"
 #include "HutaoNativeWindowNonRude.h"
-#include "types.h"
-#include "CustomImplements.h"
-#include "Error.h"
-#include "HutaoNativeHotKeyActionCallback.h"
-#include <Windows.h>
-#include <hstring.h>
-#include <winternl.h>
 
-HRESULT STDMETHODCALLTYPE HutaoNative::MakeLoopbackSupport(IHutaoNativeLoopbackSupport** ppv)
+HRESULT __stdcall HutaoNative::MakeLoopbackSupport(IHutaoNativeLoopbackSupport** ppv)
 {
     AssertNonNullAndReturn(ppv);
 
@@ -34,7 +28,7 @@ HRESULT STDMETHODCALLTYPE HutaoNative::MakeLoopbackSupport(IHutaoNativeLoopbackS
     return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE HutaoNative::MakeRegistryNotification(PCWSTR keyPath, IHutaoNativeRegistryNotification** ppv)
+HRESULT __stdcall HutaoNative::MakeRegistryNotification(PCWSTR keyPath, IHutaoNativeRegistryNotification** ppv)
 {
     AssertNonNullAndReturn(ppv);
 
@@ -47,40 +41,32 @@ HRESULT STDMETHODCALLTYPE HutaoNative::MakeRegistryNotification(PCWSTR keyPath, 
     return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE HutaoNative::MakeWindowSubclass(INT64 hWnd, nint callback, INT64 userData, IHutaoNativeWindowSubclass** ppv)
+HRESULT __stdcall HutaoNative::MakeWindowSubclass(HWND hWnd, HutaoNativeWindowSubclassCallback callback, GCHandle userData, IHutaoNativeWindowSubclass** ppv)
 {
     AssertNonNullAndReturn(ppv);
 
-    // Convert INT64 to HWND
-    HWND hwnd = reinterpret_cast<HWND>(hWnd);
-    
-    // Convert nint to LONG_PTR for constructor
-    LONG_PTR callbackPtr = static_cast<LONG_PTR>(callback);
-    
-    // Convert INT64 to LONG_PTR
+    // Convert GCHandle to LONG_PTR for constructor
     LONG_PTR userDataPtr = static_cast<LONG_PTR>(userData);
-
-    hutao::com_ptr<IHutaoNativeWindowSubclass> subclass = hutao::make_com_ptr<HutaoNativeWindowSubclass>(hwnd, callbackPtr, userDataPtr);
+    
+    // Pass the callback structure directly, not the function pointer
+    hutao::com_ptr<IHutaoNativeWindowSubclass> subclass = hutao::make_com_ptr<HutaoNativeWindowSubclass>(hWnd, callback, userDataPtr);
     *ppv = subclass.detach();
 
     return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE HutaoNative::MakeWindowNonRude(INT64 hWnd, IHutaoNativeWindowNonRude** ppv)
+HRESULT __stdcall HutaoNative::MakeWindowNonRude(HWND hWnd, IHutaoNativeWindowNonRude** ppv)
 {
     AssertNonNullAndReturn(ppv);
 
-    // Convert INT64 to HWND
-    HWND hwnd = reinterpret_cast<HWND>(hWnd);
-
-    hutao::com_ptr<IHutaoNativeWindowNonRude> nonRude = hutao::make_com_ptr<HutaoNativeWindowNonRude>(hwnd);
+    hutao::com_ptr<IHutaoNativeWindowNonRude> nonRude = hutao::make_com_ptr<HutaoNativeWindowNonRude>(hWnd);
     *ppv = nonRude.detach();
 
     return S_OK;
 }
 
 // IHutaoNative2 methods
-HRESULT STDMETHODCALLTYPE HutaoNative::MakeDeviceCapabilities(IHutaoNativeDeviceCapabilities** ppv)
+HRESULT __stdcall HutaoNative::MakeDeviceCapabilities(IHutaoNativeDeviceCapabilities** ppv)
 {
     AssertNonNullAndReturn(ppv);
 
@@ -90,7 +76,7 @@ HRESULT STDMETHODCALLTYPE HutaoNative::MakeDeviceCapabilities(IHutaoNativeDevice
     return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE HutaoNative::MakePhysicalDrive(IHutaoNativePhysicalDrive** ppv)
+HRESULT __stdcall HutaoNative::MakePhysicalDrive(IHutaoNativePhysicalDrive** ppv)
 {
     AssertNonNullAndReturn(ppv);
 
@@ -100,7 +86,7 @@ HRESULT STDMETHODCALLTYPE HutaoNative::MakePhysicalDrive(IHutaoNativePhysicalDri
     return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE HutaoNative::MakeLogicalDrive(IHutaoNativeLogicalDrive** ppv)
+HRESULT __stdcall HutaoNative::MakeLogicalDrive(IHutaoNativeLogicalDrive** ppv)
 {
     AssertNonNullAndReturn(ppv);
 
@@ -111,7 +97,7 @@ HRESULT STDMETHODCALLTYPE HutaoNative::MakeLogicalDrive(IHutaoNativeLogicalDrive
 }
 
 // IHutaoNative3 methods
-HRESULT STDMETHODCALLTYPE HutaoNative::MakeInputLowLevelKeyboardSource(IHutaoNativeInputLowLevelKeyboardSource** ppv)
+HRESULT __stdcall HutaoNative::MakeInputLowLevelKeyboardSource(IHutaoNativeInputLowLevelKeyboardSource** ppv)
 {
     AssertNonNullAndReturn(ppv);
 
@@ -122,7 +108,7 @@ HRESULT STDMETHODCALLTYPE HutaoNative::MakeInputLowLevelKeyboardSource(IHutaoNat
 }
 
 // IHutaoNative4 methods
-HRESULT STDMETHODCALLTYPE HutaoNative::MakeFileSystem(IHutaoNativeFileSystem** ppv)
+HRESULT __stdcall HutaoNative::MakeFileSystem(IHutaoNativeFileSystem** ppv)
 {
     AssertNonNullAndReturn(ppv);
 
@@ -133,7 +119,7 @@ HRESULT STDMETHODCALLTYPE HutaoNative::MakeFileSystem(IHutaoNativeFileSystem** p
 }
 
 // IHutaoNative5 methods
-HRESULT STDMETHODCALLTYPE HutaoNative::MakeNotifyIcon(PCWSTR iconPath, GUID* id, IHutaoNativeNotifyIcon** ppv)
+HRESULT __stdcall HutaoNative::MakeNotifyIcon(PCWSTR iconPath, GUID* id, IHutaoNativeNotifyIcon** ppv)
 {
     AssertNonNullAndReturn(ppv);
 
@@ -148,23 +134,18 @@ HRESULT STDMETHODCALLTYPE HutaoNative::MakeNotifyIcon(PCWSTR iconPath, GUID* id,
 }
 
 // IHutaoNative6 methods
-HRESULT STDMETHODCALLTYPE HutaoNative::MakeHotKeyAction(HutaoNativeHotKeyActionKind kind, nint callback, nint userData, IHutaoNativeHotKeyAction** ppv)
+HRESULT __stdcall HutaoNative::MakeHotKeyAction(HutaoNativeHotKeyActionKind kind, HutaoNativeHotKeyActionCallback callback, GCHandle userData, IHutaoNativeHotKeyAction** ppv)
 {
     AssertNonNullAndReturn(ppv);
 
-    // Convert nint to appropriate types
-    HutaoNativeHotKeyActionCallback actionCallback;
-    actionCallback.value = reinterpret_cast<void (__stdcall *)(BOOL, LONG_PTR)>(callback);
-    LONG_PTR userDataPtr = static_cast<LONG_PTR>(userData);
-
-    hutao::com_ptr<IHutaoNativeHotKeyAction> hotKeyAction = hutao::make_com_ptr<HutaoNativeHotKeyAction>(kind, actionCallback, userDataPtr);
+    hutao::com_ptr<IHutaoNativeHotKeyAction> hotKeyAction = hutao::make_com_ptr<HutaoNativeHotKeyAction>(kind, callback, userData);
     *ppv = hotKeyAction.detach();
 
     return S_OK;
 }
 
 // IHutaoNative7 methods
-HRESULT STDMETHODCALLTYPE HutaoNative::MakeProcess(HutaoNativeProcessStartInfo info, IHutaoNativeProcess** ppv)
+HRESULT __stdcall HutaoNative::MakeProcess(HutaoNativeProcessStartInfo info, IHutaoNativeProcess** ppv)
 {
     AssertNonNullAndReturn(ppv);
 
@@ -178,7 +159,7 @@ HRESULT STDMETHODCALLTYPE HutaoNative::MakeProcess(HutaoNativeProcessStartInfo i
 }
 
 // IHutaoNativePrivate methods
-HRESULT STDMETHODCALLTYPE HutaoNative::IsCurrentWindowsVersionSupported(BOOL* isSupported)
+HRESULT __stdcall HutaoNative::IsCurrentWindowsVersionSupported(BOOL* isSupported)
 {
     AssertNonNullAndReturn(isSupported);
 
@@ -188,7 +169,7 @@ HRESULT STDMETHODCALLTYPE HutaoNative::IsCurrentWindowsVersionSupported(BOOL* is
     return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE HutaoNative::GetWindowsVersion(HutaoPrivateWindowsVersion* pv)
+HRESULT __stdcall HutaoNative::GetWindowsVersion(HutaoPrivateWindowsVersion* pv)
 {
     AssertNonNullAndReturn(pv);
 
@@ -232,7 +213,7 @@ HRESULT STDMETHODCALLTYPE HutaoNative::GetWindowsVersion(HutaoPrivateWindowsVers
     return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE HutaoNative::ShowErrorMessage(PCWSTR title, PCWSTR message)
+HRESULT __stdcall HutaoNative::ShowErrorMessage(PCWSTR title, PCWSTR message)
 {
     AssertNonNullAndReturn(title);
     AssertNonNullAndReturn(message);
@@ -251,7 +232,7 @@ HRESULT STDMETHODCALLTYPE HutaoNative::ShowErrorMessage(PCWSTR title, PCWSTR mes
 }
 
 // IHutaoPrivate2 methods
-HRESULT STDMETHODCALLTYPE HutaoNative::ExchangeGameUidForIdentifier1820(PCWSTR gameUid, byte* identifier)
+HRESULT __stdcall HutaoNative::ExchangeGameUidForIdentifier1820(PCWSTR gameUid, byte* identifier)
 {
     AssertNonNullAndReturn(gameUid);
     AssertNonNullAndReturn(identifier);

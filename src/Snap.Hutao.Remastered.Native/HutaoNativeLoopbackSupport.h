@@ -1,6 +1,6 @@
 #pragma once
 
-#include "IHutaoNativeLoopbackSupport_h.h"
+#include "IHutaoNativeLoopbackSupport.h"
 #include "FirewallRuleManager.h"
 #include "CustomImplements.h"
 #include <Windows.h>
@@ -15,9 +15,23 @@ public:
 	HutaoNativeLoopbackSupport();
 	~HutaoNativeLoopbackSupport();
 
-	virtual HRESULT STDMETHODCALLTYPE IsEnabled(PCWSTR familyName, IHutaoString* sid, boolean* enabled) override;
-	virtual HRESULT STDMETHODCALLTYPE Enable(PCWSTR familyName, IHutaoString* sid) override;
-	virtual HRESULT STDMETHODCALLTYPE IsPublicFirewallEnabled(boolean* enabled) override;
+	virtual HRESULT __stdcall IsEnabled(PCWSTR familyName, IHutaoString* sid, boolean* enabled) override;
+	virtual HRESULT __stdcall Enable(PCWSTR familyName, IHutaoString* sid) override;
+
+private:
+	class FirewallRuleManager* m_firewallManager;
+};
+
+class HutaoNativeLoopbackSupport2 :
+	public hutao::CustomImplements<
+	HutaoNativeLoopbackSupport2,
+	IHutaoNativeLoopbackSupport2>
+{
+public:
+	HutaoNativeLoopbackSupport2();
+	~HutaoNativeLoopbackSupport2();
+
+	virtual HRESULT __stdcall IsPublicFirewallEnabled(boolean* enabled) override;
 
 private:
 	class FirewallRuleManager* m_firewallManager;

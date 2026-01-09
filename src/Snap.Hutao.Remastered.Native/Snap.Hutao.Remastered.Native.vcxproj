@@ -83,12 +83,17 @@
       <PreprocessorDefinitions>WINRT_IMPL_NO_RO_ORIGINATE_LANGUAGE_EXCEPTION;WIN32;_DEBUG;SNAPHUTAOREMASTEREDNATIVE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <LinkIncremental>true</LinkIncremental>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -100,7 +105,9 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;SNAPHUTAOREMASTEREDNATIVE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -115,13 +122,19 @@
       <PreprocessorDefinitions>_DEBUG;SNAPHUTAOREMASTEREDNATIVE_EXPORTS;_WINDOWS;_USRDLL;WINRT_IMPL_NO_RO_ORIGINATE_LANGUAGE_EXCEPTION;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <UseDynamicDebugging>false</UseDynamicDebugging>
+      <AdditionalOptions>/FS %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <LinkIncremental>true</LinkIncremental>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -133,7 +146,9 @@
       <PreprocessorDefinitions>NDEBUG;SNAPHUTAOREMASTEREDNATIVE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -142,6 +157,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="pch.cpp">
+      <PrecompiledHeader>Create</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="DllInjectionUtils.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="Error.cpp" />
@@ -171,7 +189,6 @@
     <ClCompile Include="StringUtils.cpp" />
     <ClCompile Include="WilCallbacksManager.cpp" />
     <ClCompile Include="HotKeyCallbackManager.cpp" />
-    <ClCompile Include="WinRTImpl.cpp" />
     <ClCompile Include="HutaoNativeInputLowLevelKeyboardSource.cpp" />
     <ClCompile Include="WindowUtils.cpp" />
   </ItemGroup>
@@ -180,6 +197,8 @@
     <ClInclude Include="Error.h" />
     <ClInclude Include="HutaoNativeHotKeyActionCallback.h" />
     <ClInclude Include="HutaoNativeNotifyIconCallback.h" />
+    <ClInclude Include="HutaoNativeRegistryNotificationCallBack.h" />
+    <ClInclude Include="pch.h" />
     <ClInclude Include="WindowUtils.h" />
     <ClInclude Include="DllInjectionUtils.h" />
     <ClInclude Include="dllmain.h" />
@@ -228,26 +247,10 @@
     <ClInclude Include="Types.h" />
     <ClInclude Include="WilCallbacksManager.h" />
     <ClInclude Include="HutaoNativeInputLowLevelKeyboardSource.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <Midl Include="IHutaoNative.idl" />
-    <Midl Include="IHutaoNativeDeviceCapabilities.idl" />
-    <Midl Include="IHutaoNativeFileSystem2.idl" />
-    <Midl Include="IHutaoNativeFileSystem3.idl" />
-    <Midl Include="IHutaoNativeFileSystem4.idl" />
-    <Midl Include="IHutaoNativeLogicalDrive.idl" />
-    <Midl Include="IHutaoNativeLoopbackSupport.idl" />
-    <Midl Include="IHutaoNativePhysicalDrive.idl" />
-    <Midl Include="IHutaoNativeRegistryNotification.idl" />
-    <Midl Include="IHutaoNativeWindowNonRude.idl" />
-    <Midl Include="IHutaoNativeWindowSubclass.idl" />
-    <Midl Include="IHutaoString.idl" />
-    <Midl Include="Types.idl" />
-    <Midl Include="IHutaoNativeInputLowLevelKeyboardSource.idl" />
-    <Midl Include="IHutaoNativeFileSystem.idl" />
-    <Midl Include="IHutaoNativeNotifyIcon.idl" />
-    <Midl Include="IHutaoNativeHotKeyAction.idl" />
-    <Midl Include="IHutaoNativeProcess.idl" />
+    <ClInclude Include="IHutaoNativeFileSystem2.h" />
+    <ClInclude Include="IHutaoNativeFileSystem3.h" />
+    <ClInclude Include="IHutaoNativeFileSystem4.h" />
+    <ClInclude Include="HutaoNativeHotKeyActionCallback.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

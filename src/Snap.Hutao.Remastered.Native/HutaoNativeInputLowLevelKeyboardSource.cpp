@@ -1,5 +1,5 @@
+#include "pch.h"
 #include "HutaoNativeInputLowLevelKeyboardSource.h"
-#include <Windows.h>
 
 // 全局变量来存储钩子句柄和回调函数
 static HHOOK g_keyboardHook = nullptr;
@@ -29,7 +29,7 @@ static LRESULT CALLBACK LowLevelKeyboardProc(int nCode, WPARAM wParam, LPARAM lP
     return CallNextHookEx(g_keyboardHook, nCode, wParam, lParam);
 }
 
-HRESULT STDMETHODCALLTYPE HutaoNativeInputLowLevelKeyboardSource::Attach(nint callback) noexcept
+HRESULT __stdcall HutaoNativeInputLowLevelKeyboardSource::Attach(intptr_t callback) noexcept
 {
     if (callback == 0)
     {
@@ -64,7 +64,7 @@ HRESULT STDMETHODCALLTYPE HutaoNativeInputLowLevelKeyboardSource::Attach(nint ca
     return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE HutaoNativeInputLowLevelKeyboardSource::Detach(nint callback) noexcept
+HRESULT __stdcall HutaoNativeInputLowLevelKeyboardSource::Detach(intptr_t callback) noexcept
 {
     // 验证回调函数是否匹配
     if (reinterpret_cast<void*>(callback) != g_callback)

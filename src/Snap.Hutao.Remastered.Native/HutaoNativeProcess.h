@@ -1,7 +1,7 @@
 #pragma once
 
-#include "IHutaoNativeProcess_h.h"
-#include "Types_h.h"
+#include "IHutaoNativeProcess.h"
+#include "Types.h"
 #include "CustomImplements.h"
 #include <Windows.h>
 
@@ -15,14 +15,14 @@ public:
     ~HutaoNativeProcess();
 
     // IHutaoNativeProcess methods
-    virtual HRESULT STDMETHODCALLTYPE Start() override;
-    virtual HRESULT STDMETHODCALLTYPE ResumeMainThread() override;
-    virtual HRESULT STDMETHODCALLTYPE WaitForExit() override;
-    virtual HRESULT STDMETHODCALLTYPE Kill() override;
-    virtual HRESULT STDMETHODCALLTYPE GetId(uint* id) override;
-    virtual HRESULT STDMETHODCALLTYPE GetProcessHandle(long long* hProcess) override;
-    virtual HRESULT STDMETHODCALLTYPE GetMainWindowHandle(long long* hWnd) override;
-    virtual HRESULT STDMETHODCALLTYPE GetExitCodeProcess(BOOL* isRunning, uint* exitCode) override;
+    virtual HRESULT __stdcall Start() override;
+    virtual HRESULT __stdcall ResumeMainThread() override;
+    virtual HRESULT __stdcall WaitForExit() override;
+    virtual HRESULT __stdcall Kill() override;
+    virtual HRESULT __stdcall GetId(uint* id) override;
+    virtual HRESULT __stdcall GetProcessHandle(long long* hProcess) override;
+    virtual HRESULT __stdcall GetMainWindowHandle(long long* hWnd) override;
+    virtual HRESULT __stdcall GetExitCodeProcess(BOOL* isRunning, uint* exitCode) override;
 
     // 设置启动信息
     void SetStartInfo(const HutaoNativeProcessStartInfo& startInfo);

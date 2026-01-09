@@ -11,9 +11,33 @@ enum class HutaoNativeNotifyIconCallbackKind : int
     LeftButtonDoubleClick = 3,
 };
 
-typedef void (*HutaoNativeNotifyIconCallbackFunc)(HutaoNativeNotifyIconCallbackKind kind, RECT rect, POINT point, nint userData);
+using HutaoNativeNotifyIconProc = void (*)(HutaoNativeNotifyIconCallbackKind kind, RECT rect, POINT point, GCHandle userData);
 
 struct HutaoNativeNotifyIconCallback
 {
-    HutaoNativeNotifyIconCallbackFunc value;
+private:
+    HutaoNativeNotifyIconProc m_value;
+    
+public:
+    HutaoNativeNotifyIconCallback() = default;
+    
+    explicit HutaoNativeNotifyIconCallback(HutaoNativeNotifyIconProc method)
+        : m_value(method)
+    {
+    }
+    
+    static HutaoNativeNotifyIconCallback Create(HutaoNativeNotifyIconProc method)
+    {
+        return HutaoNativeNotifyIconCallback(method);
+    }
+    
+    HutaoNativeNotifyIconProc value() const
+    {
+        return m_value;
+    }
+    
+    bool has_value() const
+    {
+        return m_value != nullptr;
+    }
 };

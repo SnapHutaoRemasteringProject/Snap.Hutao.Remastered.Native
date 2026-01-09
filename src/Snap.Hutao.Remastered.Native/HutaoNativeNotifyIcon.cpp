@@ -1,7 +1,6 @@
+#include "pch.h"
 #include "HutaoNativeNotifyIcon.h"
-#include <Windows.h>
 #include <shellapi.h>
-#include <string>
 
 namespace
 {
@@ -10,9 +9,9 @@ namespace
 }
 
 HutaoNativeNotifyIcon::HutaoNativeNotifyIcon(PCWSTR iconPath)
-    : m_hWnd(nullptr)
+    : mWnd(nullptr)
     , m_uCallbackMessage(WM_NOTIFYICON_CALLBACK)
-    , m_hIcon(nullptr)
+    , mIcon(nullptr)
     , m_created(false)
     , m_callback({ nullptr })
     , m_userData(0)
@@ -97,98 +96,96 @@ LRESULT CALLBACK HutaoNativeNotifyIcon::WndProc(HWND hWnd, UINT message, WPARAM 
 
 void HutaoNativeNotifyIcon::HandleNotifyIconMessage(UINT message, WPARAM wParam, LPARAM lParam)
 {
-    if (m_callback.value != nullptr)
-    {
-        // 将Windows消息转换为回调参数
-        HutaoNativeNotifyIconCallbackKind kind = HutaoNativeNotifyIconCallbackKind::TaskbarCreated;
-        RECT rect = { 0 };
-        POINT point = { 0 };
-        
-        // 根据消息类型设置回调种类
-        switch (lParam)
-        {
-        case WM_RBUTTONUP:
-            kind = HutaoNativeNotifyIconCallbackKind::ContextMenu;
-            break;
-        case WM_LBUTTONDOWN:
-            kind = HutaoNativeNotifyIconCallbackKind::LeftButtonDown;
-            break;
-        case WM_LBUTTONDBLCLK:
-            kind = HutaoNativeNotifyIconCallbackKind::LeftButtonDoubleClick;
-            break;
-        default:
-            // 其他消息使用默认值
-            break;
-        }
-        
-        // 获取鼠标位置
-        GetCursorPos(&point);
-        
-        // 设置图标矩形：以鼠标位置为中心，16x16像素的矩形
-        // 这是通知图标的典型大小
-        rect.left = point.x - 8;
-        rect.top = point.y - 8;
-        rect.right = point.x + 8;
-        rect.bottom = point.y + 8;
-        
-        // 调用回调函数
-        m_callback.value(kind, rect, point, m_userData);
+	UINT WM_TASKBARCREATED = RegisterWindowMessageW(L"TaskbarCreated");
+    if (!m_callback.has_value()) {
+        return;
     }
+
+    HutaoNativeNotifyIconCallbackKind kind;
+    bool hasKind = false;
+    RECT rect = { 0 };
+    POINT point = { 0 };
+
+    if (lParam == WM_TASKBARCREATED) {
+        kind = HutaoNativeNotifyIconCallbackKind::TaskbarCreated;
+		hasKind = true;
+    }
+    else if (lParam == WM_RBUTTONUP) {
+		kind = HutaoNativeNotifyIconCallbackKind::ContextMenu;
+        hasKind = true;
+    }
+    else if (lParam == WM_LBUTTONDOWN) {
+        kind = HutaoNativeNotifyIconCallbackKind::LeftButtonDown;
+        hasKind = true;
+    }
+    else if (lParam == WM_LBUTTONDBLCLK)
+    {
+        kind = HutaoNativeNotifyIconCallbackKind::LeftButtonDoubleClick;
+        hasKind = true;
+    }
+
+	if (!hasKind)
+    {
+        return;
+    }
+
+    GetCursorPos(&point);
+
+    rect.left = point.x - 8;
+    rect.top = point.y - 8;
+    rect.right = point.x + 8;
+    rect.bottom = point.y + 8;
+
+    m_callback.value()(kind, rect, point, m_userData);
 }
 
-HRESULT STDMETHODCALLTYPE HutaoNativeNotifyIcon::Create(nint callback, nint userData, PCWSTR tip)
+HRESULT __stdcall HutaoNativeNotifyIcon::Create(HutaoNativeNotifyIconCallback callback, GCHandle userData, PCWSTR tip)
 {
     if (m_created)
     {
         return HRESULT_FROM_WIN32(ERROR_ALREADY_EXISTS);
     }
 
-    m_callback.value = reinterpret_cast<HutaoNativeNotifyIconCallbackFunc>(callback);
+    m_callback = callback;
     m_userData = userData;
 
     // 创建消息窗口
-    m_hWnd = CreateMessageWindow();
-    if (m_hWnd == nullptr)
+    mWnd = CreateMessageWindow();
+    if (mWnd == nullptr)
     {
         return HRESULT_FROM_WIN32(GetLastError());
     }
 
-    // 加载图标（如果提供了图标路径）
     if (m_iconPath[0] != L'\0')
     {
-        // 尝试从文件加载图标
-        m_hIcon = static_cast<HICON>(LoadImageW(
-            nullptr,                    // 使用当前模块
-            m_iconPath,                 // 图标文件路径
-            IMAGE_ICON,                 // 加载为图标
-            0, 0,                       // 使用默认大小
+        mIcon = static_cast<HICON>(LoadImageW(
+            nullptr,
+            m_iconPath,
+            IMAGE_ICON,
+            0, 0,
             LR_LOADFROMFILE | LR_DEFAULTSIZE | LR_SHARED
         ));
         
-        // 如果加载失败，尝试从资源加载
-        if (m_hIcon == nullptr)
+        if (mIcon == nullptr)
         {
-            // 尝试从可执行文件资源加载
-            m_hIcon = static_cast<HICON>(LoadImageW(
-                GetModuleHandle(nullptr), // 当前模块
-                m_iconPath,               // 资源名称
-                IMAGE_ICON,               // 加载为图标
-                0, 0,                     // 使用默认大小
+            mIcon = static_cast<HICON>(LoadImageW(
+                GetModuleHandle(nullptr),
+                m_iconPath,
+                IMAGE_ICON,
+                0, 0,
                 LR_DEFAULTSIZE | LR_SHARED
             ));
         }
     }
 
-    // 设置通知图标数据
-    m_notifyIconData.hWnd = m_hWnd;
+    m_notifyIconData.hWnd = mWnd;
     m_notifyIconData.uFlags = NIF_MESSAGE | NIF_TIP;
     m_notifyIconData.uCallbackMessage = m_uCallbackMessage;
     
-    // 如果成功加载了图标，添加NIF_ICON标志并设置hIcon
-    if (m_hIcon != nullptr)
+    if (mIcon != nullptr)
     {
         m_notifyIconData.uFlags |= NIF_ICON;
-        m_notifyIconData.hIcon = m_hIcon;
+        m_notifyIconData.hIcon = mIcon;
     }
     
     if (tip != nullptr)
@@ -197,7 +194,6 @@ HRESULT STDMETHODCALLTYPE HutaoNativeNotifyIcon::Create(nint callback, nint user
         m_notifyIconData.szTip[_countof(m_notifyIconData.szTip) - 1] = L'\0';
     }
 
-    // 添加通知图标
     if (!Shell_NotifyIconW(NIM_ADD, &m_notifyIconData))
     {
         return HRESULT_FROM_WIN32(GetLastError());
@@ -207,27 +203,24 @@ HRESULT STDMETHODCALLTYPE HutaoNativeNotifyIcon::Create(nint callback, nint user
     return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE HutaoNativeNotifyIcon::Recreate(PCWSTR tip)
+HRESULT __stdcall HutaoNativeNotifyIcon::Recreate(PCWSTR tip)
 {
     if (!m_created)
     {
         return HRESULT_FROM_WIN32(ERROR_NOT_FOUND);
     }
 
-    // 先删除现有的通知图标
     if (!Shell_NotifyIconW(NIM_DELETE, &m_notifyIconData))
     {
         return HRESULT_FROM_WIN32(GetLastError());
     }
 
-    // 更新提示文本
     if (tip != nullptr)
     {
         wcsncpy_s(m_notifyIconData.szTip, tip, _countof(m_notifyIconData.szTip) - 1);
         m_notifyIconData.szTip[_countof(m_notifyIconData.szTip) - 1] = L'\0';
     }
 
-    // 重新添加通知图标
     if (!Shell_NotifyIconW(NIM_ADD, &m_notifyIconData))
     {
         return HRESULT_FROM_WIN32(GetLastError());
@@ -236,38 +229,35 @@ HRESULT STDMETHODCALLTYPE HutaoNativeNotifyIcon::Recreate(PCWSTR tip)
     return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE HutaoNativeNotifyIcon::Destroy()
+HRESULT __stdcall HutaoNativeNotifyIcon::Destroy()
 {
     if (!m_created)
     {
         return S_OK;
     }
 
-    // 删除通知图标
     if (!Shell_NotifyIconW(NIM_DELETE, &m_notifyIconData))
     {
         // 即使删除失败，我们也继续清理
     }
 
-    // 销毁窗口
-    if (m_hWnd != nullptr)
+    if (mWnd != nullptr)
     {
-        DestroyWindow(m_hWnd);
-        m_hWnd = nullptr;
+        DestroyWindow(mWnd);
+        mWnd = nullptr;
     }
 
-    // 销毁图标
-    if (m_hIcon != nullptr)
+    if (mIcon != nullptr)
     {
-        DestroyIcon(m_hIcon);
-        m_hIcon = nullptr;
+        DestroyIcon(mIcon);
+        mIcon = nullptr;
     }
 
     m_created = false;
     return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE HutaoNativeNotifyIcon::IsPromoted(BOOL* promoted)
+HRESULT __stdcall HutaoNativeNotifyIcon::IsPromoted(BOOL* promoted)
 {
     if (promoted == nullptr)
     {

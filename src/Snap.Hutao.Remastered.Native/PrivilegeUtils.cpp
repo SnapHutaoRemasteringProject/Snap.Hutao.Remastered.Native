@@ -1,6 +1,7 @@
+#include "pch.h"
 #include "PrivilegeUtils.h"
 
-// ÆôÓÃµ÷ÊÔÈ¨ÏŞ£¨SeDebugPrivilege£©
+// å¯ç”¨è°ƒè¯•æƒé™ï¼ˆSeDebugPrivilegeï¼‰
 BOOL EnableDebugPrivilege()
 {
     HANDLE hToken;
@@ -31,7 +32,7 @@ BOOL EnableDebugPrivilege()
     return result && (lastError == ERROR_SUCCESS);
 }
 
-// ÆôÓÃÖ¸¶¨È¨ÏŞ
+// å¯ç”¨æŒ‡å®šæƒé™
 BOOL EnablePrivilege(LPCWSTR privilegeName)
 {
     HANDLE hToken;
@@ -61,7 +62,7 @@ BOOL EnablePrivilege(LPCWSTR privilegeName)
     return result && (GetLastError() == ERROR_SUCCESS);
 }
 
-// ¼ì²éµ±Ç°½ø³ÌÊÇ·ñ¾ßÓĞ¹ÜÀíÔ±È¨ÏŞ
+// æ£€æŸ¥å½“å‰è¿›ç¨‹æ˜¯å¦å…·æœ‰ç®¡ç†å‘˜æƒé™
 BOOL IsRunningAsAdministrator()
 {
     BOOL isAdmin = FALSE;
