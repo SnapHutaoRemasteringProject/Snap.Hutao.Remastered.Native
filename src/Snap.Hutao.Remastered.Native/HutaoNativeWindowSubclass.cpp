@@ -2,9 +2,11 @@
 #include "HutaoNativeWindowSubclass.h"
 #include <CommCtrl.h>
 #include <shobjidl.h>
+#include <dwmapi.h> 
 
 #pragma comment(lib, "Comctl32.lib")
 #pragma comment(lib, "Ole32.lib")
+#pragma comment(lib, "dwmapi.lib")
 
 static LRESULT CALLBACK SubclassWndProc(
     HWND hWnd,
@@ -14,6 +16,11 @@ static LRESULT CALLBACK SubclassWndProc(
     UINT_PTR uIdSubclass,
     DWORD_PTR dwRefData)
 {
+    if (uMsg == WM_PAINT)
+    {
+		ThrowForHR(DwmFlush(), "Failed to perform DwmFlush in WM_PAINT");
+	}
+
     HutaoNativeWindowSubclass* pThis = reinterpret_cast<HutaoNativeWindowSubclass*>(dwRefData);
     if (pThis == nullptr)
     {
@@ -23,8 +30,8 @@ static LRESULT CALLBACK SubclassWndProc(
     if (pThis->m_callback.has_value())
     {
         LRESULT lResult = 0;
-        BOOL handled = pThis->m_callback.value()(hWnd, uMsg, wParam, lParam, pThis->m_userData, &lResult);
-        if (handled)
+        BOOL kontinue = pThis->m_callback.value()(hWnd, uMsg, wParam, lParam, pThis->m_userData, &lResult);
+        if (!kontinue)
         {
             return lResult;
         }
@@ -34,7 +41,7 @@ static LRESULT CALLBACK SubclassWndProc(
 }
 
 HutaoNativeWindowSubclass::HutaoNativeWindowSubclass(HWND hWnd, HutaoNativeWindowSubclassCallback callback, GCHandle userData)
-    : mWnd(hWnd)
+    : m_hWnd(hWnd)
     , m_callback(callback)
     , m_userData(userData)
     , m_originalWndProc(nullptr)
@@ -54,19 +61,26 @@ HRESULT __stdcall HutaoNativeWindowSubclass::Attach()
 {
     if (m_attached)
     {
-        return S_FALSE; // 已经附加
+        return S_FALSE;
     }
 
-    if (mWnd == nullptr || !IsWindow(mWnd))
+    if (m_hWnd == nullptr || !IsWindow(m_hWnd))
     {
         return E_INVALIDARG;
     }
 
-    // 使用SetWindowSubclass进行子类化
+    BOOL IsCompositionEnabled;
+	ThrowForHRAndReturn(DwmIsCompositionEnabled(&IsCompositionEnabled), "Failed to determine whether desktop composition is enabled");
+
+    if (!IsCompositionEnabled)
+    {
+        ThrowForHRAndReturn(E_UNEXPECTED, "Failed to determine whether desktop composition is enabled");
+	}
+
     BOOL result = SetWindowSubclass(
-        mWnd,
+        m_hWnd,
         SubclassWndProc,
-        1, // 子类ID
+        WINDOW_SUBCLASS_ID,
         reinterpret_cast<DWORD_PTR>(this));
 
     if (result)
@@ -84,19 +98,18 @@ HRESULT __stdcall HutaoNativeWindowSubclass::Detach()
 {
     if (!m_attached)
     {
-        return S_FALSE; // 已经分离
+        return S_FALSE;
     }
 
-    if (mWnd == nullptr || !IsWindow(mWnd))
+    if (m_hWnd == nullptr || !IsWindow(m_hWnd))
     {
         return E_INVALIDARG;
     }
 
-    // 移除子类化
     BOOL result = RemoveWindowSubclass(
-        mWnd,
+        m_hWnd,
         SubclassWndProc,
-        1); // 子类ID
+        WINDOW_SUBCLASS_ID);
 
     if (result)
     {
@@ -109,7 +122,6 @@ HRESULT __stdcall HutaoNativeWindowSubclass::Detach()
     }
 }
 
-// HutaoNativeWindowSubclass2 实现
 HutaoNativeWindowSubclass2::HutaoNativeWindowSubclass2()
     : m_initialized(false)
     , m_pTaskbarList(nullptr)
@@ -129,10 +141,9 @@ HRESULT __stdcall HutaoNativeWindowSubclass2::InitializeTaskbarProgress()
 {
     if (m_initialized)
     {
-        return S_FALSE; // 已经初始化
+        return S_FALSE;
     }
 
-    // 初始化通用控件
     INITCOMMONCONTROLSEX icex;
     icex.dwSize = sizeof(INITCOMMONCONTROLSEX);
     icex.dwICC = ICC_PROGRESS_CLASS;

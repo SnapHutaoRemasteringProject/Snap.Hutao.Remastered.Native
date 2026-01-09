@@ -7,6 +7,8 @@
 #include <CommCtrl.h>
 #include <shobjidl.h>
 
+#define WINDOW_SUBCLASS_ID 0x65
+
 LRESULT CALLBACK SubclassWndProc(
     HWND hWnd,
     UINT uMsg,
@@ -28,7 +30,7 @@ public:
     virtual HRESULT __stdcall Detach() override;
     
 private:
-    HWND mWnd;
+    HWND m_hWnd;
     HutaoNativeWindowSubclassCallback m_callback;
     GCHandle m_userData;
     WNDPROC m_originalWndProc;
