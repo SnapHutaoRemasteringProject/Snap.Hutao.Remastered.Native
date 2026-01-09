@@ -1,6 +1,6 @@
 #pragma once
 
-#include "IHutaoNativeDeviceCapabilities_h.h"
+#include "IHutaoNativeDeviceCapabilities.h"
 #include "CustomImplements.h"
 #include <Windows.h>
 
@@ -11,5 +11,5 @@ public:
     ~HutaoNativeDeviceCapabilities() = default;
 
     // IHutaoNativeDeviceCapabilities methods
-    HRESULT STDMETHODCALLTYPE GetPrimaryScreenVerticalRefreshRate(int* refreshRate) noexcept;
+    HRESULT __stdcall GetPrimaryScreenVerticalRefreshRate(int* refreshRate) noexcept;
 };

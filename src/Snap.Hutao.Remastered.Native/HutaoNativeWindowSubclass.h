@@ -1,10 +1,19 @@
 #pragma once
 
-#include "IHutaoNativeWindowSubclass_h.h"
+#include "IHutaoNativeWindowSubclass.h"
 #include "HutaoNativeWindowSubclassCallback.h"
 #include "CustomImplements.h"
 #include <Windows.h>
 #include <CommCtrl.h>
+#include <shobjidl.h>
+
+LRESULT CALLBACK SubclassWndProc(
+    HWND hWnd,
+    UINT uMsg,
+    WPARAM wParam,
+    LPARAM lParam,
+    UINT_PTR uIdSubclass,
+    DWORD_PTR dwRefData);
 
 class HutaoNativeWindowSubclass :
     public hutao::CustomImplements<
@@ -12,17 +21,26 @@ class HutaoNativeWindowSubclass :
     IHutaoNativeWindowSubclass>
 {
 public:
-    HutaoNativeWindowSubclass(HWND hWnd, nint callback, LONG_PTR userData);
+    HutaoNativeWindowSubclass(HWND hWnd, HutaoNativeWindowSubclassCallback callback, GCHandle userData);
     ~HutaoNativeWindowSubclass();
 
-    virtual HRESULT STDMETHODCALLTYPE Attach() override;
-    virtual HRESULT STDMETHODCALLTYPE Detach() override;
-    WNDPROC m_callback;
+    virtual HRESULT __stdcall Attach() override;
+    virtual HRESULT __stdcall Detach() override;
+    
 private:
-    HWND m_hWnd;
-    LONG_PTR m_userData;
+    HWND mWnd;
+    HutaoNativeWindowSubclassCallback m_callback;
+    GCHandle m_userData;
     WNDPROC m_originalWndProc;
     bool m_attached;
+
+    friend LRESULT CALLBACK SubclassWndProc(
+        HWND hWnd,
+        UINT uMsg,
+        WPARAM wParam,
+        LPARAM lParam,
+        UINT_PTR uIdSubclass,
+		DWORD_PTR dwRefData);
 };
 
 class HutaoNativeWindowSubclass2 :
@@ -34,12 +52,13 @@ public:
     HutaoNativeWindowSubclass2();
     ~HutaoNativeWindowSubclass2();
 
-    virtual HRESULT STDMETHODCALLTYPE InitializeTaskbarProgress() override;
-    virtual HRESULT STDMETHODCALLTYPE SetTaskbarProgress(
+    virtual HRESULT __stdcall InitializeTaskbarProgress() override;
+    virtual HRESULT __stdcall SetTaskbarProgress(
         UINT32 flags,
         ULONGLONG value,
         ULONGLONG maximum) override;
 
 private:
     bool m_initialized;
+    ITaskbarList3* m_pTaskbarList;
 };

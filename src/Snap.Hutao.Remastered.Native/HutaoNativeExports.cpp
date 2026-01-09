@@ -1,19 +1,16 @@
+#include "pch.h"
 #include "dllmain.h"
 #include "HutaoNativeExports.h"
 #include "WilCallbacksManager.h"
 #include "HotKeyCallbackManager.h"
-#include "Types.h"
 #include "HutaoNative.h"
 #include "HutaoString.h"
 #include "HutaoNativeRegistryNotification.h"
 #include "HutaoNativeLoggingCallback.h"
 #include "HutaoNativeMessageCallback.h"
-#include "IHutaoNativeRegistryNotification_h.h"
-#include "IHutaoNative_h.h"
-#include "IHutaoString_h.h"
-#include "CustomImplements.h"
-#include "Error.h"
-#include <Windows.h>
+#include "IHutaoNativeRegistryNotification.h"
+#include "IHutaoNative.h"
+#include "IHutaoString.h"
 
 DLL_EXPORT HRESULT __stdcall HutaoCreateInstance(
     IHutaoNative** ppInstance) {
@@ -66,6 +63,6 @@ DLL_EXPORT BOOL HutaoHResultIsWin32(HRESULT hr, WIN32_ERROR error)
 
 DLL_EXPORT HRESULT HutaoNativeHotKeyInitializeBeforeSwitchCallback(HutaoNativeHotKeyBeforeSwitchCallback callback)
 {
-	g_hotKeyCallbackManager.Initialize(callback);
+	gotKeyCallbackManager.Initialize(callback);
     return S_OK;
 }

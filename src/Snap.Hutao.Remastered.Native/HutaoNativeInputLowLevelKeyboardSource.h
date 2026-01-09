@@ -1,6 +1,6 @@
 #pragma once
 
-#include "IHutaoNativeInputLowLevelKeyboardSource_h.h"
+#include "IHutaoNativeInputLowLevelKeyboardSource.h"
 #include "CustomImplements.h"
 #include <Windows.h>
 
@@ -11,6 +11,6 @@ public:
     ~HutaoNativeInputLowLevelKeyboardSource() = default;
 
     // IHutaoNativeInputLowLevelKeyboardSource methods
-    HRESULT STDMETHODCALLTYPE Attach(nint callback) noexcept;
-    HRESULT STDMETHODCALLTYPE Detach(nint callback) noexcept;
+    HRESULT __stdcall Attach(intptr_t callback) noexcept;
+    HRESULT __stdcall Detach(intptr_t callback) noexcept;
 };

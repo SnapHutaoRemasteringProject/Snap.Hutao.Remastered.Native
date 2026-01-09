@@ -1,10 +1,8 @@
-#pragma once
-
+#include "pch.h"
 #include "HookUtils.h"
 #include "StringUtils.h"
-#include <Windows.h>
 
-// Ê¹ÓÃWindows¹³×Ó×¢ÈëDLL
+// ä½¿ç”¨Windowsé’©å­æ³¨å…¥DLL
 HRESULT InjectUsingHook(LPCWSTR dllPath, LPCWSTR functionName, DWORD threadId, int hookType)
 {
     if (!dllPath || !functionName) {
@@ -25,14 +23,14 @@ HRESULT InjectUsingHook(LPCWSTR dllPath, LPCWSTR functionName, DWORD threadId, i
     HOOKPROC hookProc = NULL;
 
     if ((DWORD_PTR)ansiFunctionName <= 0xFFFF) {
-        // ÊÇĞòºÅ
+        // æ˜¯åºå·
         hookProc = (HOOKPROC)GetProcAddress(hHookDll, ansiFunctionName);
     }
     else {
-        // ÊÇ×Ö·û´®Ö¸Õë
+        // æ˜¯å­—ç¬¦ä¸²æŒ‡é’ˆ
         hookProc = (HOOKPROC)GetProcAddress(hHookDll, ansiFunctionName);
 
-        // ÊÍ·Å×ª»»µÄ×Ö·û´®
+        // é‡Šæ”¾è½¬æ¢çš„å­—ç¬¦ä¸²
         FreeConvertedString((LPVOID)ansiFunctionName);
     }
 
@@ -41,12 +39,12 @@ HRESULT InjectUsingHook(LPCWSTR dllPath, LPCWSTR functionName, DWORD threadId, i
         return HRESULT_FROM_WIN32(ERROR_PROC_NOT_FOUND);
     }
 
-    // ÉèÖÃWindows¹³×Ó
+    // è®¾ç½®Windowsé’©å­
     HHOOK hHook = SetWindowsHookExW(
-        hookType,           // ¹³×ÓÀàĞÍ
-        hookProc,           // ¹³×Ó¹ı³Ì
-        hHookDll,           // °üº¬¹³×Ó¹ı³ÌµÄDLL
-        threadId            // Ä¿±êÏß³ÌID£¨0±íÊ¾È«¾Ö¹³×Ó£©
+        hookType,           // é’©å­ç±»å‹
+        hookProc,           // é’©å­è¿‡ç¨‹
+        hHookDll,           // åŒ…å«é’©å­è¿‡ç¨‹çš„DLL
+        threadId            // ç›®æ ‡çº¿ç¨‹IDï¼ˆ0è¡¨ç¤ºå…¨å±€é’©å­ï¼‰
     );
 
     if (!hHook) {
@@ -55,37 +53,37 @@ HRESULT InjectUsingHook(LPCWSTR dllPath, LPCWSTR functionName, DWORD threadId, i
         return HRESULT_FROM_WIN32(lastError);
     }
 
-    // ´¥·¢¹³×Ó - ·¢ËÍÏûÏ¢µ½Ä¿±êÏß³ÌµÄÏûÏ¢¶ÓÁĞ
+    // è§¦å‘é’©å­ - å‘é€æ¶ˆæ¯åˆ°ç›®æ ‡çº¿ç¨‹çš„æ¶ˆæ¯é˜Ÿåˆ—
     if (threadId != 0) {
-        // Ïß³ÌÌØ¶¨µÄ¹³×Ó£¬·¢ËÍÏß³ÌÏûÏ¢
+        // çº¿ç¨‹ç‰¹å®šçš„é’©å­ï¼Œå‘é€çº¿ç¨‹æ¶ˆæ¯
         PostThreadMessageW(threadId, WM_NULL, 0, 0);
     }
     else {
-        // È«¾Ö¹³×Ó£¬·¢ËÍ¹ã²¥ÏûÏ¢
+        // å…¨å±€é’©å­ï¼Œå‘é€å¹¿æ’­æ¶ˆæ¯
         PostMessageW(HWND_BROADCAST, WM_NULL, 0, 0);
     }
 
-    // µÈ´ıÒ»¶ÎÊ±¼äÈ·±£DLL±»¼ÓÔØ
+    // ç­‰å¾…ä¸€æ®µæ—¶é—´ç¡®ä¿DLLè¢«åŠ è½½
     Sleep(100);
 
-    // Ğ¶ÔØ¹³×Ó£¨DLLÒÑ×¢Èë£¬²»ĞèÒª±£³Ö¹³×Ó£©
+    // å¸è½½é’©å­ï¼ˆDLLå·²æ³¨å…¥ï¼Œä¸éœ€è¦ä¿æŒé’©å­ï¼‰
     UnhookWindowsHookEx(hHook);
 
-    // ÊÍ·Åµ±Ç°½ø³ÌÖĞµÄDLL£¨²»Ó°ÏìÒÑ×¢Èëµ½Ä¿±ê½ø³ÌµÄDLL£©
+    // é‡Šæ”¾å½“å‰è¿›ç¨‹ä¸­çš„DLLï¼ˆä¸å½±å“å·²æ³¨å…¥åˆ°ç›®æ ‡è¿›ç¨‹çš„DLLï¼‰
     FreeLibrary(hHookDll);
 
     return S_OK;
 }
 
-// ¼ì²é¹³×ÓÊÇ·ñ¿ÉÓÃ
+// æ£€æŸ¥é’©å­æ˜¯å¦å¯ç”¨
 BOOL IsHookAvailable(int hookType)
 {
-    // ÁÙÊ±¹³×Ó¹ı³Ì
+    // ä¸´æ—¶é’©å­è¿‡ç¨‹
     HOOKPROC tempProc = [](int nCode, WPARAM wParam, LPARAM lParam) -> LRESULT {
         return CallNextHookEx(NULL, nCode, wParam, lParam);
         };
 
-    // ³¢ÊÔÉèÖÃÒ»¸öÁÙÊ±¹³×ÓÀ´¼ì²éÊÇ·ñ¿ÉÓÃ
+    // å°è¯•è®¾ç½®ä¸€ä¸ªä¸´æ—¶é’©å­æ¥æ£€æŸ¥æ˜¯å¦å¯ç”¨
     HHOOK hHook = SetWindowsHookExW(hookType, tempProc, NULL, 0);
 
     if (hHook) {
@@ -96,7 +94,7 @@ BOOL IsHookAvailable(int hookType)
     return FALSE;
 }
 
-// »ñÈ¡¹³×ÓÀàĞÍÃû³Æ
+// è·å–é’©å­ç±»å‹åç§°
 LPCWSTR GetHookTypeName(int hookType)
 {
     switch (hookType) {

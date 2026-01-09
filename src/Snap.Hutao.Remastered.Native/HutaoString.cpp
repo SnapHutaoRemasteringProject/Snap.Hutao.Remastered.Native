@@ -1,5 +1,6 @@
+#include "pch.h"
 #include "HutaoString.h"
-#include "IHutaoString_h.h"
+#include "IHutaoString.h"
 #include "Error.h"
 #include <algorithm>
 #include <Windows.h>

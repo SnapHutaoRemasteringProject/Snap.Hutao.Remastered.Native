@@ -1,6 +1,6 @@
 #pragma once
 
-#include "IHutaoNativeLogicalDrive_h.h"
+#include "IHutaoNativeLogicalDrive.h"
 #include "CustomImplements.h"
 #include <Windows.h>
 
@@ -11,5 +11,5 @@ public:
     ~HutaoNativeLogicalDrive() = default;
 
     // IHutaoNativeLogicalDrive methods
-    HRESULT STDMETHODCALLTYPE GetDiskFreeSpace(PCWSTR path, long* bytes) noexcept;
+    HRESULT __stdcall GetDiskFreeSpace(PCWSTR path, long* bytes) noexcept;
 };

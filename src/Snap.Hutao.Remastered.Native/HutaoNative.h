@@ -1,18 +1,18 @@
 #pragma once
 
-#include "IHutaoNative_h.h"
-#include "IHutaoNativeLoopbackSupport_h.h"
-#include "IHutaoNativeRegistryNotification_h.h"
-#include "IHutaoNativeWindowNonRude_h.h"
-#include "IHutaoNativeWindowSubclass_h.h"
-#include "IHutaoNativeDeviceCapabilities_h.h"
-#include "IHutaoNativePhysicalDrive_h.h"
-#include "IHutaoNativeLogicalDrive_h.h"
-#include "IHutaoNativeInputLowLevelKeyboardSource_h.h"
-#include "IHutaoNativeFileSystem_h.h"
-#include "IHutaoNativeNotifyIcon_h.h"
-#include "IHutaoNativeHotKeyAction_h.h"
-#include "IHutaoNativeProcess_h.h"
+#include "IHutaoNative.h"
+#include "IHutaoNativeLoopbackSupport.h"
+#include "IHutaoNativeRegistryNotification.h"
+#include "IHutaoNativeWindowNonRude.h"
+#include "IHutaoNativeWindowSubclass.h"
+#include "IHutaoNativeDeviceCapabilities.h"
+#include "IHutaoNativePhysicalDrive.h"
+#include "IHutaoNativeLogicalDrive.h"
+#include "IHutaoNativeInputLowLevelKeyboardSource.h"
+#include "IHutaoNativeFileSystem.h"
+#include "IHutaoNativeNotifyIcon.h"
+#include "IHutaoNativeHotKeyAction.h"
+#include "IHutaoNativeProcess.h"
 #include "HutaoNativeWindowSubclassCallback.h"
 #include "Types.h"
 #include "CustomImplements.h"
@@ -36,36 +36,36 @@ public:
     ~HutaoNative() = default;
 
     // IHutaoNative methods
-    virtual HRESULT STDMETHODCALLTYPE MakeLoopbackSupport(IHutaoNativeLoopbackSupport** ppv) override;
-    virtual HRESULT STDMETHODCALLTYPE MakeRegistryNotification(PCWSTR keyPath, IHutaoNativeRegistryNotification** ppv) override;
-    virtual HRESULT STDMETHODCALLTYPE MakeWindowSubclass(INT64 hWnd, nint callback, INT64 userData, IHutaoNativeWindowSubclass** ppv) override;
-    virtual HRESULT STDMETHODCALLTYPE MakeWindowNonRude(INT64 hWnd, IHutaoNativeWindowNonRude** ppv) override;
+    virtual HRESULT __stdcall MakeLoopbackSupport(IHutaoNativeLoopbackSupport** ppv) override;
+    virtual HRESULT __stdcall MakeRegistryNotification(PCWSTR keyPath, IHutaoNativeRegistryNotification** ppv) override;
+    virtual HRESULT __stdcall MakeWindowSubclass(HWND hWnd, HutaoNativeWindowSubclassCallback callback, GCHandle userData, IHutaoNativeWindowSubclass** ppv) override;
+    virtual HRESULT __stdcall MakeWindowNonRude(HWND hWnd, IHutaoNativeWindowNonRude** ppv) override;
     
     // IHutaoNative2 methods
-    virtual HRESULT STDMETHODCALLTYPE MakeDeviceCapabilities(IHutaoNativeDeviceCapabilities** ppv) override;
-    virtual HRESULT STDMETHODCALLTYPE MakePhysicalDrive(IHutaoNativePhysicalDrive** ppv) override;
-    virtual HRESULT STDMETHODCALLTYPE MakeLogicalDrive(IHutaoNativeLogicalDrive** ppv) override;
+    virtual HRESULT __stdcall MakeDeviceCapabilities(IHutaoNativeDeviceCapabilities** ppv) override;
+    virtual HRESULT __stdcall MakePhysicalDrive(IHutaoNativePhysicalDrive** ppv) override;
+    virtual HRESULT __stdcall MakeLogicalDrive(IHutaoNativeLogicalDrive** ppv) override;
     
     // IHutaoNative3 methods
-    virtual HRESULT STDMETHODCALLTYPE MakeInputLowLevelKeyboardSource(IHutaoNativeInputLowLevelKeyboardSource** ppv) override;
+    virtual HRESULT __stdcall MakeInputLowLevelKeyboardSource(IHutaoNativeInputLowLevelKeyboardSource** ppv) override;
     
     // IHutaoNative4 methods
-    virtual HRESULT STDMETHODCALLTYPE MakeFileSystem(IHutaoNativeFileSystem** ppv) override;
+    virtual HRESULT __stdcall MakeFileSystem(IHutaoNativeFileSystem** ppv) override;
     
     // IHutaoNative5 methods
-    virtual HRESULT STDMETHODCALLTYPE MakeNotifyIcon(PCWSTR iconPath, GUID* id, IHutaoNativeNotifyIcon** ppv) override;
+    virtual HRESULT __stdcall MakeNotifyIcon(PCWSTR iconPath, GUID* id, IHutaoNativeNotifyIcon** ppv) override;
     
     // IHutaoNative6 methods
-    virtual HRESULT STDMETHODCALLTYPE MakeHotKeyAction(HutaoNativeHotKeyActionKind kind, nint callback, nint userData, IHutaoNativeHotKeyAction** ppv) override;
+    virtual HRESULT __stdcall MakeHotKeyAction(HutaoNativeHotKeyActionKind kind, HutaoNativeHotKeyActionCallback callback, GCHandle userData, IHutaoNativeHotKeyAction** ppv) override;
     
     // IHutaoNative7 methods
-    virtual HRESULT STDMETHODCALLTYPE MakeProcess(HutaoNativeProcessStartInfo info, IHutaoNativeProcess** ppv) override;
+    virtual HRESULT __stdcall MakeProcess(HutaoNativeProcessStartInfo info, IHutaoNativeProcess** ppv) override;
     
     // IHutaoNativePrivate methods
-    virtual HRESULT STDMETHODCALLTYPE IsCurrentWindowsVersionSupported(BOOL* isSupported) override;
-    virtual HRESULT STDMETHODCALLTYPE GetWindowsVersion(HutaoPrivateWindowsVersion* pv) override;
-    virtual HRESULT STDMETHODCALLTYPE ShowErrorMessage(PCWSTR title, PCWSTR message) override;
+    virtual HRESULT __stdcall IsCurrentWindowsVersionSupported(BOOL* isSupported) override;
+    virtual HRESULT __stdcall GetWindowsVersion(HutaoPrivateWindowsVersion* pv) override;
+    virtual HRESULT __stdcall ShowErrorMessage(PCWSTR title, PCWSTR message) override;
     
     // IHutaoPrivate2 methods
-    virtual HRESULT STDMETHODCALLTYPE ExchangeGameUidForIdentifier1820(PCWSTR gameUid, byte* identifier) override;
+    virtual HRESULT __stdcall ExchangeGameUidForIdentifier1820(PCWSTR gameUid, byte* identifier) override;
 };

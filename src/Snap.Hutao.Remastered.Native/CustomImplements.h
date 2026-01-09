@@ -47,7 +47,7 @@ class CustomImplements : public Interfaces... {
 
 public:
     // IUnknown methods
-    HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, void** ppvObject) override {
+    HRESULT __stdcall QueryInterface(REFIID riid, void** ppvObject) override {
         if (ppvObject == nullptr) {
             return E_POINTER;
         }
@@ -72,11 +72,11 @@ public:
         return E_NOINTERFACE;
     }
 
-    ULONG STDMETHODCALLTYPE AddRef() override {
+    ULONG __stdcall AddRef() override {
         return InterlockedIncrement(&m_refCount);
     }
 
-    ULONG STDMETHODCALLTYPE Release() override {
+    ULONG __stdcall Release() override {
         ULONG refCount = InterlockedDecrement(&m_refCount);
         if (refCount == 0) {
             delete static_cast<Derived*>(this);

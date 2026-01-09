@@ -1,8 +1,6 @@
+#include "pch.h"
 #include "HutaoNativeLoopbackSupport.h"
 #include "FirewallRuleManager.h"
-#include "Error.h"
-#include <Windows.h>
-#include <string>
 
 HutaoNativeLoopbackSupport::HutaoNativeLoopbackSupport()
     : m_firewallManager(new FirewallRuleManager())
@@ -18,7 +16,7 @@ HutaoNativeLoopbackSupport::~HutaoNativeLoopbackSupport()
     }
 }
 
-HRESULT STDMETHODCALLTYPE HutaoNativeLoopbackSupport::IsEnabled(PCWSTR familyName, IHutaoString* sid, boolean* enabled)
+HRESULT __stdcall HutaoNativeLoopbackSupport::IsEnabled(PCWSTR familyName, IHutaoString* sid, boolean* enabled)
 {
     AssertNonNullAndReturn(enabled);
     AssertNonNullAndReturn(familyName);
@@ -56,7 +54,7 @@ HRESULT STDMETHODCALLTYPE HutaoNativeLoopbackSupport::IsEnabled(PCWSTR familyNam
     return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE HutaoNativeLoopbackSupport::Enable(PCWSTR familyName, IHutaoString* sid)
+HRESULT __stdcall HutaoNativeLoopbackSupport::Enable(PCWSTR familyName, IHutaoString* sid)
 {
     AssertNonNullAndReturn(familyName);
 
@@ -90,7 +88,21 @@ HRESULT STDMETHODCALLTYPE HutaoNativeLoopbackSupport::Enable(PCWSTR familyName, 
     return hr;
 }
 
-HRESULT STDMETHODCALLTYPE HutaoNativeLoopbackSupport::IsPublicFirewallEnabled(boolean* enabled)
+HutaoNativeLoopbackSupport2::HutaoNativeLoopbackSupport2()
+    : m_firewallManager(new FirewallRuleManager())
+{
+}
+
+HutaoNativeLoopbackSupport2::~HutaoNativeLoopbackSupport2()
+{
+    if (m_firewallManager)
+    {
+        delete m_firewallManager;
+        m_firewallManager = nullptr;
+    }
+}
+
+HRESULT __stdcall HutaoNativeLoopbackSupport2::IsPublicFirewallEnabled(boolean* enabled)
 {
     AssertNonNullAndReturn(enabled);
 
