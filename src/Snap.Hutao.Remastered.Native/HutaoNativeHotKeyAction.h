@@ -34,9 +34,14 @@ private:
     std::thread m_actionThread;
     static UINT s_nextHotKeyId;
 
-    static LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+    // running state toggled by WM_HOTKEY
+    std::atomic<bool> m_active;
+
+    // Window helpers
     static ATOM RegisterWindowClass();
     HWND CreateMessageWindow();
+    static LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+    
     void UnregisterHotKey();
     void RegisterHotKey();
     

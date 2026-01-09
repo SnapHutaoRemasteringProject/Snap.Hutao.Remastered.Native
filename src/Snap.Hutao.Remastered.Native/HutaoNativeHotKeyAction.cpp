@@ -65,7 +65,7 @@ HWND HutaoNativeHotKeyAction::CreateMessageWindow()
         nullptr,
         nullptr,
         GetModuleHandle(nullptr),
-        this // 将this指针传递给窗口
+        reinterpret_cast<LPVOID>(this)
     );
 
     return hWnd;
@@ -264,5 +264,6 @@ HRESULT __stdcall HutaoNativeHotKeyAction::SetIsEnabled(BOOL isEnabled)
     }
 
     m_enabled = newEnabled;
+
     return S_OK;
 }
