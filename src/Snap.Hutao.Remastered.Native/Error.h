@@ -4,7 +4,14 @@
 #include <intrin.h>
 
 #define ThrowForHR(hr, message) \
-    ThrowForHRCore(_ReturnAddress(), __LINE__, __FUNCTION__, __FILE__, hr, L##message)
+    if (FAILED(hr)) \
+        ThrowForHRCore(_ReturnAddress(), __LINE__, __FUNCTION__, __FILE__, hr, L##message)
+#define ThrowForHRAndReturn(hr, message) \
+    if (FAILED(hr)) \
+    { \
+        ThrowForHRCore(_ReturnAddress(), __LINE__, __FUNCTION__, __FILE__, hr, L##message); \
+        return hr; \
+	}
 #define LogForHR(hr) \
     LogForHRCore(_ReturnAddress(), __LINE__, __FUNCTION__, __FILE__, hr)
 #define LogMessageForHR(hr, message) \
