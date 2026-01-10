@@ -39,8 +39,8 @@ HRESULT __stdcall HutaoNativeLoopbackSupport::IsEnabled(PCWSTR familyName, IHuta
         }
     }
 
-    std::wstring familyNameStr = familyName;
-    std::wstring sidStr = sidBuffer ? sidBuffer : L"";
+    HutaoString familyNameStr = familyName;
+    HutaoString sidStr = sidBuffer ? sidBuffer : L"";
 
     BOOL nativeEnabled = FALSE;
     HRESULT hr = m_firewallManager->IsLoopbackExempt(familyNameStr, sidStr, &nativeEnabled);
@@ -76,8 +76,8 @@ HRESULT __stdcall HutaoNativeLoopbackSupport::Enable(PCWSTR familyName, IHutaoSt
         }
     }
 
-    std::wstring familyNameStr = familyName;
-    std::wstring sidStr = sidBuffer ? sidBuffer : L"";
+    HutaoString familyNameStr = familyName;
+    HutaoString sidStr = sidBuffer ? sidBuffer : L"";
 
     HRESULT hr = m_firewallManager->AddLoopbackExempt(familyNameStr, sidStr);
     if (FAILED(hr))

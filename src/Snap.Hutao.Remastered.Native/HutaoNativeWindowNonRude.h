@@ -17,7 +17,7 @@ public:
     virtual HRESULT __stdcall Detach() override;
 
 private:
-    HWND mWnd;
+    HWND m_hWnd;
     bool m_attached;
     LONG_PTR m_originalStyle;
 };

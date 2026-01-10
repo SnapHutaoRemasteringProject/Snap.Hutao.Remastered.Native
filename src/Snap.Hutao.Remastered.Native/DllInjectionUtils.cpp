@@ -139,15 +139,18 @@ HRESULT __stdcall InjectUsingRemoteThreadWithFunctionCore(
     HANDLE hRemoteThread = NULL;
     LPCSTR ansiFunctionName = NULL;
     DWORD exitCode = 0;
-    std::wstring wDllPath;
+    HutaoString wDllPath;
     size_t lastSlash = 0;
-    std::wstring wDllName;
+    HutaoString wDllName;
     HANDLE hSnapshot = INVALID_HANDLE_VALUE;
     MODULEENTRY32W me32 = { 0 };
     bool found = false;
     ULONG_PTR localBase = 0;
     ULONG_PTR remoteBase = 0;
     ULONG_PTR localFunctionAddr = 0;
+    int lastBackslash = 0;
+    int lastForwardSlash = 0;
+    int lastSeparator = 0;
 
     // 在目标进程中分配内存并写入DLL路径
     if (!WriteProcessStringW(hProcess, dllPath, &pRemoteDllPath)) {
@@ -193,10 +196,16 @@ HRESULT __stdcall InjectUsingRemoteThreadWithFunctionCore(
     // 等待DLL加载完成
     Sleep(200);
 
-    wDllPath = std::wstring(dllPath);
-    lastSlash = wDllPath.find_last_of(L"\\/");
-    wDllName = (lastSlash != std::wstring::npos) ?
-        wDllPath.substr(lastSlash + 1) : wDllPath;
+    wDllPath = HutaoString(dllPath);
+    // 查找最后一个反斜杠或斜杠
+    lastBackslash = wDllPath.LastIndexOf(L'\\');
+    lastForwardSlash = wDllPath.LastIndexOf(L'/');
+    lastSeparator = (lastBackslash > lastForwardSlash) ? lastBackslash : lastForwardSlash;
+    if (lastSeparator != -1) {
+        wDllName = wDllPath.Substring(lastSeparator + 1, wDllPath.Length() - (lastSeparator + 1));
+    } else {
+        wDllName = wDllPath;
+    }
 
     // 枚举远程进程模块
     hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPMODULE | TH32CS_SNAPMODULE32, processId);
@@ -215,8 +224,8 @@ HRESULT __stdcall InjectUsingRemoteThreadWithFunctionCore(
 
     found = false;
     do {
-        if (_wcsicmp(me32.szModule, wDllName.c_str()) == 0 ||
-            _wcsicmp(me32.szExePath, wDllPath.c_str()) == 0) {
+        if (_wcsicmp(me32.szModule, wDllName.Data()) == 0 ||
+            _wcsicmp(me32.szExePath, wDllPath.Data()) == 0) {
             hRemoteModule = me32.hModule;
             found = true;
             break;

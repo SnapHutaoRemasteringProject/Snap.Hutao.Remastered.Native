@@ -118,6 +118,7 @@
     </ClCompile>
     <ClCompile Include="SimpleTestFramework.cpp" />
     <ClCompile Include="TestBase.cpp" />
+    <ClCompile Include="TestHutaoString.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -10,10 +10,11 @@
 #include <cstdint>
 #include <cstring>
 #include <memory>
-#include <string>
 #include <vector>
 
 // Project common headers
 #include "types.h"
 #include "Error.h"
 #include "CustomImplements.h"
+#include "HutaoString.h"
+#include "HutaoAString.h"

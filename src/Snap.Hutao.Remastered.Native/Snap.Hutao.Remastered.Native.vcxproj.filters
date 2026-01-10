@@ -144,6 +144,9 @@
     <ClCompile Include="pch.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="HutaoAString.cpp">
+      <Filter>源文件\core\impl</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Theme.h">
@@ -316,6 +319,9 @@
     </ClInclude>
     <ClInclude Include="pch.h">
       <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="HutaoAString.h">
+      <Filter>头文件\core\impl</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

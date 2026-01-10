@@ -9,15 +9,15 @@ namespace
 }
 
 HutaoNativeNotifyIcon::HutaoNativeNotifyIcon(PCWSTR iconPath)
-    : mWnd(nullptr)
+    : m_hWnd(nullptr)
     , m_uCallbackMessage(WM_NOTIFYICON_CALLBACK)
     , mIcon(nullptr)
     , m_created(false)
     , m_callback({ nullptr })
     , m_userData(0)
 {
-    ZeroMemory(&m_notifyIconData, sizeof(m_notifyIconData));
-    m_notifyIconData.cbSize = sizeof(m_notifyIconData);
+    ZeroMemory(&m_notifyIcoData, sizeof(m_notifyIcoData));
+    m_notifyIcoData.cbSize = sizeof(m_notifyIcoData);
     
     // 存储图标路径
     if (iconPath != nullptr)
@@ -150,8 +150,8 @@ HRESULT __stdcall HutaoNativeNotifyIcon::Create(HutaoNativeNotifyIconCallback ca
     m_userData = userData;
 
     // 创建消息窗口
-    mWnd = CreateMessageWindow();
-    if (mWnd == nullptr)
+    m_hWnd = CreateMessageWindow();
+    if (m_hWnd == nullptr)
     {
         return HRESULT_FROM_WIN32(GetLastError());
     }
@@ -178,23 +178,23 @@ HRESULT __stdcall HutaoNativeNotifyIcon::Create(HutaoNativeNotifyIconCallback ca
         }
     }
 
-    m_notifyIconData.hWnd = mWnd;
-    m_notifyIconData.uFlags = NIF_MESSAGE | NIF_TIP;
-    m_notifyIconData.uCallbackMessage = m_uCallbackMessage;
+    m_notifyIcoData.hWnd = m_hWnd;
+    m_notifyIcoData.uFlags = NIF_MESSAGE | NIF_TIP;
+    m_notifyIcoData.uCallbackMessage = m_uCallbackMessage;
     
     if (mIcon != nullptr)
     {
-        m_notifyIconData.uFlags |= NIF_ICON;
-        m_notifyIconData.hIcon = mIcon;
+        m_notifyIcoData.uFlags |= NIF_ICON;
+        m_notifyIcoData.hIcon = mIcon;
     }
     
     if (tip != nullptr)
     {
-        wcsncpy_s(m_notifyIconData.szTip, tip, _countof(m_notifyIconData.szTip) - 1);
-        m_notifyIconData.szTip[_countof(m_notifyIconData.szTip) - 1] = L'\0';
+        wcsncpy_s(m_notifyIcoData.szTip, tip, _countof(m_notifyIcoData.szTip) - 1);
+        m_notifyIcoData.szTip[_countof(m_notifyIcoData.szTip) - 1] = L'\0';
     }
 
-    if (!Shell_NotifyIconW(NIM_ADD, &m_notifyIconData))
+    if (!Shell_NotifyIconW(NIM_ADD, &m_notifyIcoData))
     {
         return HRESULT_FROM_WIN32(GetLastError());
     }
@@ -210,18 +210,18 @@ HRESULT __stdcall HutaoNativeNotifyIcon::Recreate(PCWSTR tip)
         return HRESULT_FROM_WIN32(ERROR_NOT_FOUND);
     }
 
-    if (!Shell_NotifyIconW(NIM_DELETE, &m_notifyIconData))
+    if (!Shell_NotifyIconW(NIM_DELETE, &m_notifyIcoData))
     {
         return HRESULT_FROM_WIN32(GetLastError());
     }
 
     if (tip != nullptr)
     {
-        wcsncpy_s(m_notifyIconData.szTip, tip, _countof(m_notifyIconData.szTip) - 1);
-        m_notifyIconData.szTip[_countof(m_notifyIconData.szTip) - 1] = L'\0';
+        wcsncpy_s(m_notifyIcoData.szTip, tip, _countof(m_notifyIcoData.szTip) - 1);
+        m_notifyIcoData.szTip[_countof(m_notifyIcoData.szTip) - 1] = L'\0';
     }
 
-    if (!Shell_NotifyIconW(NIM_ADD, &m_notifyIconData))
+    if (!Shell_NotifyIconW(NIM_ADD, &m_notifyIcoData))
     {
         return HRESULT_FROM_WIN32(GetLastError());
     }
@@ -236,15 +236,15 @@ HRESULT __stdcall HutaoNativeNotifyIcon::Destroy()
         return S_OK;
     }
 
-    if (!Shell_NotifyIconW(NIM_DELETE, &m_notifyIconData))
+    if (!Shell_NotifyIconW(NIM_DELETE, &m_notifyIcoData))
     {
         // 即使删除失败，我们也继续清理
     }
 
-    if (mWnd != nullptr)
+    if (m_hWnd != nullptr)
     {
-        DestroyWindow(mWnd);
-        mWnd = nullptr;
+        DestroyWindow(m_hWnd);
+        m_hWnd = nullptr;
     }
 
     if (mIcon != nullptr)

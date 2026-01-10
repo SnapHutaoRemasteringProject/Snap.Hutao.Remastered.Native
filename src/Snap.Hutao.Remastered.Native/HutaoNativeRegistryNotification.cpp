@@ -44,9 +44,9 @@ void HutaoNativeRegistryNotification::NotificationThread()
     // and watch for changes in the Connections subkey
     
     HKEY hRootKey = HKEY_CURRENT_USER;
-    std::wstring subKey = L"Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings";
+    HutaoString subKey = L"Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings";
     
-    LONG result = RegOpenKeyExW(hRootKey, subKey.c_str(), 0, KEY_NOTIFY | KEY_READ, &hKey_);
+    LONG result = RegOpenKeyExW(hRootKey, subKey.Data(), 0, KEY_NOTIFY | KEY_READ, &hKey_);
     if (result != ERROR_SUCCESS)
     {
         // Failed to open registry key

@@ -77,17 +77,19 @@ HRESULT __stdcall HutaoNativeFileSystem::RenameItem(PCWSTR filePath, PCWSTR newN
 	AssertNonNullAndReturn(newName);
     
     // For rename, we need to construct the new path
-    std::wstring filePathStr(filePath);
-    size_t lastSlash = filePathStr.find_last_of(L"\\/");
-    if (lastSlash == std::wstring::npos)
+    HutaoString filePathStr(filePath);
+    int lastSlashBack = filePathStr.LastIndexOf(L'\\');
+    int lastSlashForward = filePathStr.LastIndexOf(L'/');
+    int lastSlash = (lastSlashBack > lastSlashForward) ? lastSlashBack : lastSlashForward;
+    if (lastSlash == -1)
     {
 		ThrowForHR(E_INVALIDARG, "Invalid file path for rename operation");
         return E_INVALIDARG;
     }
     
-    std::wstring newPath = filePathStr.substr(0, lastSlash + 1) + newName;
+    HutaoString newPath = filePathStr.Substring(0, lastSlash + 1) + newName;
     
-    return PerformFileOperation(FO_RENAME, filePath, newPath.c_str(), 0);
+    return PerformFileOperation(FO_RENAME, filePath, newPath.Data(), 0);
 }
 
 HRESULT __stdcall HutaoNativeFileSystem::RenameItemWithOptions(PCWSTR filePath, PCWSTR newName, long flags) noexcept
@@ -95,17 +97,19 @@ HRESULT __stdcall HutaoNativeFileSystem::RenameItemWithOptions(PCWSTR filePath, 
     AssertNonNullAndReturn(filePath);
     AssertNonNullAndReturn(newName);
     
-    std::wstring filePathStr(filePath);
-    size_t lastSlash = filePathStr.find_last_of(L"\\/");
-    if (lastSlash == std::wstring::npos)
+    HutaoString filePathStr(filePath);
+    int lastSlashBack = filePathStr.LastIndexOf(L'\\');
+    int lastSlashForward = filePathStr.LastIndexOf(L'/');
+    int lastSlash = (lastSlashBack > lastSlashForward) ? lastSlashBack : lastSlashForward;
+    if (lastSlash == -1)
     {
 		ThrowForHR(E_INVALIDARG, "Invalid file path for rename operation");
         return E_INVALIDARG;
     }
     
-    std::wstring newPath = filePathStr.substr(0, lastSlash + 1) + newName;
+    HutaoString newPath = filePathStr.Substring(0, lastSlash + 1) + newName;
     
-    return PerformFileOperation(FO_RENAME, filePath, newPath.c_str(), flags);
+    return PerformFileOperation(FO_RENAME, filePath, newPath.Data(), flags);
 }
 
 HRESULT __stdcall HutaoNativeFileSystem::MoveItem(PCWSTR oldPath, PCWSTR newFolder) noexcept
@@ -131,14 +135,14 @@ HRESULT __stdcall HutaoNativeFileSystem::MoveItemWithName(PCWSTR oldPath, PCWSTR
 	AssertNonNullAndReturn(name);
     
     // Construct new path with new name
-    std::wstring newPath = std::wstring(newFolder);
-    if (!newPath.empty() && newPath.back() != L'\\' && newPath.back() != L'/')
+    HutaoString newPath = HutaoString(newFolder);
+    if (!newPath.IsEmpty() && newPath[newPath.Length() - 1] != L'\\' && newPath[newPath.Length() - 1] != L'/')
     {
-        newPath += L'\\';
+        newPath += L"\\";
     }
     newPath += name;
     
-    return PerformFileOperation(FO_MOVE, oldPath, newPath.c_str(), 0);
+    return PerformFileOperation(FO_MOVE, oldPath, newPath.Data(), 0);
 }
 
 HRESULT __stdcall HutaoNativeFileSystem::MoveItemWithNameAndOptions(PCWSTR oldPath, PCWSTR newFolder, PCWSTR name, long flags) noexcept
@@ -147,14 +151,14 @@ HRESULT __stdcall HutaoNativeFileSystem::MoveItemWithNameAndOptions(PCWSTR oldPa
     AssertNonNullAndReturn(newFolder);
     AssertNonNullAndReturn(name);
     
-    std::wstring newPath = std::wstring(newFolder);
-    if (!newPath.empty() && newPath.back() != L'\\' && newPath.back() != L'/')
+    HutaoString newPath = HutaoString(newFolder);
+    if (!newPath.IsEmpty() && newPath[newPath.Length() - 1] != L'\\' && newPath[newPath.Length() - 1] != L'/')
     {
-        newPath += L'\\';
+        newPath += L"\\";
     }
     newPath += name;
     
-    return PerformFileOperation(FO_MOVE, oldPath, newPath.c_str(), flags);
+    return PerformFileOperation(FO_MOVE, oldPath, newPath.Data(), flags);
 }
 
 HRESULT __stdcall HutaoNativeFileSystem::CopyItem(PCWSTR oldPath, PCWSTR newFolder) noexcept
@@ -179,14 +183,14 @@ HRESULT __stdcall HutaoNativeFileSystem::CopyItemWithName(PCWSTR oldPath, PCWSTR
     AssertNonNullAndReturn(newFolder);
     AssertNonNullAndReturn(name);
     
-    std::wstring newPath = std::wstring(newFolder);
-    if (!newPath.empty() && newPath.back() != L'\\' && newPath.back() != L'/')
+    HutaoString newPath = HutaoString(newFolder);
+    if (!newPath.IsEmpty() && newPath[newPath.Length() - 1] != L'\\' && newPath[newPath.Length() - 1] != L'/')
     {
-        newPath += L'\\';
+        newPath += L"\\";
     }
     newPath += name;
     
-    return PerformFileOperation(FO_COPY, oldPath, newPath.c_str(), 0);
+    return PerformFileOperation(FO_COPY, oldPath, newPath.Data(), 0);
 }
 
 HRESULT __stdcall HutaoNativeFileSystem::CopyItemWithNameAndOptions(PCWSTR oldPath, PCWSTR newFolder, PCWSTR name, long flags) noexcept
@@ -195,14 +199,14 @@ HRESULT __stdcall HutaoNativeFileSystem::CopyItemWithNameAndOptions(PCWSTR oldPa
     AssertNonNullAndReturn(newFolder);
     AssertNonNullAndReturn(name);
     
-    std::wstring newPath = std::wstring(newFolder);
-    if (!newPath.empty() && newPath.back() != L'\\' && newPath.back() != L'/')
+    HutaoString newPath = HutaoString(newFolder);
+    if (!newPath.IsEmpty() && newPath[newPath.Length() - 1] != L'\\' && newPath[newPath.Length() - 1] != L'/')
     {
-        newPath += L'\\';
+        newPath += L"\\";
     }
     newPath += name;
     
-    return PerformFileOperation(FO_COPY, oldPath, newPath.c_str(), flags);
+    return PerformFileOperation(FO_COPY, oldPath, newPath.Data(), flags);
 }
 
 HRESULT __stdcall HutaoNativeFileSystem::DeleteItem(PCWSTR filePath) noexcept
@@ -314,17 +318,21 @@ HRESULT __stdcall HutaoNativeFileSystem::PickFile(HWND hwnd, PCWSTR title, PCWST
     }
     
     // Prepare filter string
-    std::wstring filterStr;
+    HutaoString filterStr;
     if (fileFilterName != nullptr && fileFilterType != nullptr)
     {
-        filterStr = std::wstring(fileFilterName) + L'\0' + std::wstring(fileFilterType) + L'\0';
+        // 构建过滤器字符串：名称 + null + 类型 + null
+        filterStr = HutaoString(fileFilterName);
+        filterStr.Append(L"\0", 1);
+        filterStr.Append(fileFilterType);
+        filterStr.Append(L"\0", 1);
     }
     else
     {
         filterStr = L"All Files\0*.*\0";
     }
     
-    ofn.lpstrFilter = filterStr.c_str();
+    ofn.lpstrFilter = filterStr.Data();
     ofn.nFilterIndex = 1;
     ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_NOCHANGEDIR;
     
@@ -386,17 +394,21 @@ HRESULT __stdcall HutaoNativeFileSystem::SaveFile(HWND hwnd, PCWSTR title, PCWST
     }
     
     // Prepare filter string
-    std::wstring filterStr;
+    HutaoString filterStr;
     if (fileFilterName != nullptr && fileFilterType != nullptr)
     {
-        filterStr = std::wstring(fileFilterName) + L'\0' + std::wstring(fileFilterType) + L'\0';
+        // 构建过滤器字符串：名称 + null + 类型 + null
+        filterStr = HutaoString(fileFilterName);
+        filterStr.Append(L"\0", 1);
+        filterStr.Append(fileFilterType);
+        filterStr.Append(L"\0", 1);
     }
     else
     {
         filterStr = L"All Files\0*.*\0";
     }
     
-    ofn.lpstrFilter = filterStr.c_str();
+    ofn.lpstrFilter = filterStr.Data();
     ofn.nFilterIndex = 1;
     ofn.Flags = OFN_PATHMUSTEXIST | OFN_OVERWRITEPROMPT | OFN_NOCHANGEDIR;
     

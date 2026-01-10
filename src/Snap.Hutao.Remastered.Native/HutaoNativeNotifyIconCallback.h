@@ -12,7 +12,6 @@ enum class HutaoNativeNotifyIconCallbackKind : int
 };
 
 using HutaoNativeNotifyIconProc = void (*)(HutaoNativeNotifyIconCallbackKind kind, RECT rect, POINT point, GCHandle userData);
-
 struct HutaoNativeNotifyIconCallback
 {
 private:

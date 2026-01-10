@@ -180,6 +180,7 @@
     <ClCompile Include="HutaoNativeWindowNonRude.cpp" />
     <ClCompile Include="HutaoNativeWindowSubclass.cpp" />
     <ClCompile Include="HutaoString.cpp" />
+    <ClCompile Include="HutaoAString.cpp" />
     <ClCompile Include="IHutaoNative.cpp" />
     <ClCompile Include="IHutaoNativeLoopbackSupport.cpp" />
     <ClCompile Include="IHutaoString.cpp" />
@@ -195,6 +196,7 @@
   <ItemGroup>
     <ClInclude Include="CustomImplements.h" />
     <ClInclude Include="Error.h" />
+    <ClInclude Include="HutaoAString.h" />
     <ClInclude Include="HutaoNativeHotKeyActionCallback.h" />
     <ClInclude Include="HutaoNativeNotifyIconCallback.h" />
     <ClInclude Include="HutaoNativeRegistryNotificationCallBack.h" />

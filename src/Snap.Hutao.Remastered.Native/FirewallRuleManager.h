@@ -2,8 +2,9 @@
 
 #include <Windows.h>
 #include <netfw.h>
-#include <string>
 #include <icftypes.h>
+#include "HutaoString.h"
+#include "Array.h"
 
 #pragma comment(lib, "ole32.lib")
 #pragma comment(lib, "oleaut32.lib")
@@ -16,21 +17,21 @@ public:
     ~FirewallRuleManager();
 
     HRESULT Initialize();
-    HRESULT IsLoopbackExempt(const std::wstring& familyName, const std::wstring& sid, BOOL* enabled);
-    HRESULT AddLoopbackExempt(const std::wstring& familyName, const std::wstring& sid);
+    HRESULT IsLoopbackExempt(const HutaoString& familyName, const HutaoString& sid, BOOL* enabled);
+    HRESULT AddLoopbackExempt(const HutaoString& familyName, const HutaoString& sid);
     HRESULT IsPublicFirewallEnabled(BOOL* enabled);
 
 private:
     INetFwPolicy2* m_policy;
     INetFwRules* m_rules;
     bool m_initialized;
-    HRESULT CreateFirewallRule(const std::wstring& ruleName, const std::wstring& appPath,
-        const std::wstring& sid, NET_FW_RULE_DIRECTION direction,
+    HRESULT CreateFirewallRule(const HutaoString& ruleName, const HutaoString& appPath,
+        const HutaoString& sid, NET_FW_RULE_DIRECTION direction,
         NET_FW_ACTION action);
-    std::wstring GetRuleName(const std::wstring& familyName, const std::wstring& sid);
-    std::wstring GetCurrentUserSid();
+    HutaoString GetRuleName(const HutaoString& familyName, const HutaoString& sid);
+    HutaoString GetCurrentUserSid();
 
-    // 安全释放COM对象
+    // 瀹夊叏閲婃斁COM瀵硅薄
     template<typename T>
     void SafeRelease(T*& p)
     {

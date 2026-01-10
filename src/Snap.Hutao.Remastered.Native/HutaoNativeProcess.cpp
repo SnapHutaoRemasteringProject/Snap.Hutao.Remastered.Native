@@ -53,7 +53,7 @@ BOOL HutaoNativeProcess::CreateProcessInternal()
     startupInfo.cb = sizeof(startupInfo);
     
     // 准备命令行
-    std::wstring commandLine;
+    HutaoString commandLine;
     if (m_startInfo.CommandLine != nullptr)
     {
         commandLine = m_startInfo.CommandLine;
@@ -69,7 +69,7 @@ BOOL HutaoNativeProcess::CreateProcessInternal()
     // 创建进程
     BOOL success = CreateProcessW(
         m_startInfo.ApplicationName,           // 应用程序名称
-        commandLine.empty() ? nullptr : &commandLine[0], // 命令行
+        commandLine.IsEmpty() ? nullptr : &commandLine[0], // 命令行
         nullptr,                               // 进程安全属性
         nullptr,                               // 线程安全属性
         m_startInfo.InheritHandles,            // 继承句柄
@@ -246,7 +246,7 @@ HRESULT __stdcall HutaoNativeProcess::GetMainWindowHandle(long long* hWnd)
     DWORD processId = m_processInfo.dwProcessId;
     
     // 枚举所有窗口，查找属于该进程的窗口
-    struct EnumWindowsData
+    struct EnumWindowData
     {
         DWORD processId;
         HWND hWnd;
@@ -254,17 +254,17 @@ HRESULT __stdcall HutaoNativeProcess::GetMainWindowHandle(long long* hWnd)
     
     auto enumProc = [](HWND hWnd, LPARAM lParam) -> BOOL
     {
-        EnumWindowsData* pData = reinterpret_cast<EnumWindowsData*>(lParam);
+        EnumWindowData* data = reinterpret_cast<EnumWindowData*>(lParam);
         
         DWORD windowProcessId;
         GetWindowThreadProcessId(hWnd, &windowProcessId);
         
-        if (windowProcessId == pData->processId)
+        if (windowProcessId == data->processId)
         {
             // 检查窗口是否可见且不是子窗口
             if (IsWindowVisible(hWnd) && GetParent(hWnd) == nullptr)
             {
-                pData->hWnd = hWnd;
+                data->hWnd = hWnd;
                 return FALSE; // 停止枚举
             }
         }

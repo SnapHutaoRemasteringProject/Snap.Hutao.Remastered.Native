@@ -2,7 +2,7 @@
 #include "HutaoNativeWindowNonRude.h"
 
 HutaoNativeWindowNonRude::HutaoNativeWindowNonRude(HWND hWnd)
-    : mWnd(hWnd)
+    : m_hWnd(hWnd)
     , m_attached(false)
     , m_originalStyle(0)
 {
@@ -23,12 +23,12 @@ HRESULT __stdcall HutaoNativeWindowNonRude::Attach()
         return S_FALSE;
     }
 
-    if (mWnd == nullptr || !IsWindow(mWnd))
+    if (m_hWnd == nullptr || !IsWindow(m_hWnd))
     {
         return E_INVALIDARG;
     }
 
-    SetPropW(mWnd, L"NonRudeHWND", (HANDLE)TRUE);
+    SetPropW(m_hWnd, L"NonRudeHWND", (HANDLE)TRUE);
 
     m_attached = true;
     return S_OK;
@@ -41,12 +41,12 @@ HRESULT __stdcall HutaoNativeWindowNonRude::Detach()
         return S_FALSE;
     }
 
-    if (mWnd == nullptr || !IsWindow(mWnd))
+    if (m_hWnd == nullptr || !IsWindow(m_hWnd))
     {
         return E_INVALIDARG;
     }
 
-    SetPropW(mWnd, L"NonRudeHWND", (HANDLE)FALSE);
+    SetPropW(m_hWnd, L"NonRudeHWND", (HANDLE)FALSE);
 
     m_attached = false;
     return S_OK;
