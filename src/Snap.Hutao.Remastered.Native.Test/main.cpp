@@ -6,6 +6,9 @@
 #include <iostream>
 #include <sstream>
 
+// HutaoString测试函数声明
+void RunHutaoStringTests();
+
 // Empty window subclass callback
 static BOOL __stdcall EmptyWindowSubclassCallback(HWND, UINT, WPARAM, LPARAM, GCHandle, LRESULT*) { return TRUE; }
 
@@ -277,7 +280,13 @@ int main()
     WriteToConsole(L"测试套件:\n");
     WriteToConsole(L"  1. 基础功能测试套件 (2个测试用例)\n");
     WriteToConsole(L"  2. 接口功能测试套件 (5个接口测试用例)\n");
-    WriteToConsole(L"  总计: 7个测试用例\n\n");
+    WriteToConsole(L"  3. HutaoString测试套件 (10个测试类别)\n");
+    WriteToConsole(L"  总计: 7个测试用例 + HutaoString综合测试\n\n");
+
+    // 运行HutaoString单元测试
+    WriteToConsole(L"\n=== 运行HutaoString单元测试 ===\n");
+    RunHutaoStringTests();
+    WriteToConsole(L"=== HutaoString单元测试完成 ===\n\n");
 
     // 配置测试运行器
     TestRunner& runner = TestRunner::GetInstance();

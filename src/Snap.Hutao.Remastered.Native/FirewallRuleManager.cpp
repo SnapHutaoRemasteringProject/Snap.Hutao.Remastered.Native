@@ -46,7 +46,7 @@ HRESULT FirewallRuleManager::Initialize()
     return S_OK;
 }
 
-HRESULT FirewallRuleManager::IsLoopbackExempt(const std::wstring& familyName, const std::wstring& sid, BOOL* enabled)
+HRESULT FirewallRuleManager::IsLoopbackExempt(const HutaoString& familyName, const HutaoString& sid, BOOL* enabled)
 {
     if (!enabled)
         return E_INVALIDARG;
@@ -57,9 +57,9 @@ HRESULT FirewallRuleManager::IsLoopbackExempt(const std::wstring& familyName, co
     if (FAILED(hr))
         return hr;
 
-    std::wstring ruleName = GetRuleName(familyName, sid);
+    HutaoString ruleName = GetRuleName(familyName, sid);
     INetFwRule* rule = nullptr;
-    hr = m_rules->Item(BSTR(ruleName.c_str()), &rule);
+    hr = m_rules->Item(BSTR(ruleName.Data()), &rule);
 
     if (SUCCEEDED(hr) && rule)
     {
@@ -75,17 +75,17 @@ HRESULT FirewallRuleManager::IsLoopbackExempt(const std::wstring& familyName, co
     return S_OK;
 }
 
-HRESULT FirewallRuleManager::AddLoopbackExempt(const std::wstring& familyName, const std::wstring& sid)
+HRESULT FirewallRuleManager::AddLoopbackExempt(const HutaoString& familyName, const HutaoString& sid)
 {
     HRESULT hr = Initialize();
     if (FAILED(hr))
         return hr;
 
-    std::wstring ruleName = GetRuleName(familyName, sid);
+    HutaoString ruleName = GetRuleName(familyName, sid);
 
     // 检查规则是否已存在
     INetFwRule* existingRule = nullptr;
-    hr = m_rules->Item(BSTR(ruleName.c_str()), &existingRule);
+    hr = m_rules->Item(BSTR(ruleName.Data()), &existingRule);
 
     if (SUCCEEDED(hr) && existingRule)
     {
@@ -130,12 +130,12 @@ HRESULT FirewallRuleManager::IsPublicFirewallEnabled(BOOL* enabled)
     return hr;
 }
 
-HRESULT FirewallRuleManager::CreateFirewallRule(const std::wstring& ruleName, const std::wstring& appPath,
-    const std::wstring& sid, NET_FW_RULE_DIRECTION direction,
+HRESULT FirewallRuleManager::CreateFirewallRule(const HutaoString& ruleName, const HutaoString& appPath,
+    const HutaoString& sid, NET_FW_RULE_DIRECTION direction,
     NET_FW_ACTION action)
 {
     INetFwRule* rule = nullptr;
-    std::wstring groupName = L"HutaoLoopback";
+    HutaoString groupName = L"HutaoLoopback";
 
     HRESULT hr = CoCreateInstance(
         __uuidof(NetFwRule),
@@ -149,13 +149,13 @@ HRESULT FirewallRuleManager::CreateFirewallRule(const std::wstring& ruleName, co
         return hr;
 
     // 设置规则属性
-    hr = rule->put_Name(BSTR(ruleName.c_str()));
+    hr = rule->put_Name(BSTR(ruleName.Data()));
     if (FAILED(hr)) goto cleanup;
 
     hr = rule->put_Description(BSTR(L"Hutao Game Launcher Loopback Exemption"));
     if (FAILED(hr)) goto cleanup;
 
-    hr = rule->put_ApplicationName(BSTR(appPath.c_str()));
+    hr = rule->put_ApplicationName(BSTR(appPath.Data()));
     if (FAILED(hr)) goto cleanup;
 
     hr = rule->put_Protocol(NET_FW_IP_PROTOCOL_ANY);
@@ -176,11 +176,11 @@ HRESULT FirewallRuleManager::CreateFirewallRule(const std::wstring& ruleName, co
     hr = rule->put_LocalPorts(BSTR(L"*"));
     if (FAILED(hr)) goto cleanup;
 
-    if (!sid.empty())
+    if (!sid.IsEmpty())
     {
-        groupName += L"_" + sid;
+        groupName += HutaoString(L"_") + sid;
     }
-    rule->put_Grouping(BSTR(groupName.c_str()));
+    rule->put_Grouping(BSTR(groupName.Data()));
 
     // 将规则添加到集合中
     hr = m_rules->Add(rule);
@@ -190,21 +190,21 @@ cleanup:
     return hr;
 }
 
-std::wstring FirewallRuleManager::GetRuleName(const std::wstring& familyName, const std::wstring& sid)
+HutaoString FirewallRuleManager::GetRuleName(const HutaoString& familyName, const HutaoString& sid)
 {
-    std::wstring ruleName = L"Hutao_Loopback_" + familyName;
+    HutaoString ruleName = HutaoString(L"Hutao_Loopback_") + familyName;
 
-    if (!sid.empty())
+    if (!sid.IsEmpty())
     {
-        ruleName += L"_" + sid;
+        ruleName += HutaoString(L"_") + sid;
     }
 
     return ruleName;
 }
 
-std::wstring FirewallRuleManager::GetCurrentUserSid()
+HutaoString FirewallRuleManager::GetCurrentUserSid()
 {
-    std::wstring sidString;
+    HutaoString sidString;
     HANDLE hToken = nullptr;
 
     if (!OpenProcessToken(GetCurrentProcess(), TOKEN_QUERY, &hToken))
@@ -216,8 +216,8 @@ std::wstring FirewallRuleManager::GetCurrentUserSid()
 
     if (GetLastError() == ERROR_INSUFFICIENT_BUFFER)
     {
-        std::vector<BYTE> buffer(tokenSize);
-        PTOKEN_USER tokenUser = reinterpret_cast<PTOKEN_USER>(buffer.data());
+        hutao::Array<BYTE> buffer(tokenSize);
+        PTOKEN_USER tokenUser = reinterpret_cast<PTOKEN_USER>(buffer.Data());
 
         if (GetTokenInformation(hToken, TokenUser, tokenUser, tokenSize, &tokenSize))
         {

@@ -29,7 +29,7 @@ private:
     uint m_vk;
     bool m_enabled;
     int motKeyId;
-    HWND mWnd;
+    HWND m_hWnd;
     std::atomic<bool> m_isRunning;
     std::thread m_actionThread;
     static UINT s_nextHotKeyId;

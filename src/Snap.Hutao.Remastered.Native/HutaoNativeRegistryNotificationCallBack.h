@@ -31,4 +31,3 @@ public:
         return m_value != nullptr;
     }
 };
-

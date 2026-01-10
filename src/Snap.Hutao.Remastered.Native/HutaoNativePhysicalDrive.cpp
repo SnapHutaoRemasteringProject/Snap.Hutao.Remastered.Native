@@ -28,13 +28,15 @@ HRESULT __stdcall HutaoNativePhysicalDrive::IsPathOnSolidStateDrive(PCWSTR root,
     }
 
     // Create drive path
-    std::wstring drivePath = L"\\\\.\\";
-    drivePath += drive[0];
+    HutaoString drivePath = L"\\\\.\\";
+    // 创建一个包含单个字符的字符串
+    wchar_t driveChar[2] = { drive[0], L'\0' };
+    drivePath += driveChar;
     drivePath += L":";
 
     // Open drive
     HANDLE hDrive = CreateFileW(
-        drivePath.c_str(),
+        drivePath.Data(),
         0,
         FILE_SHARE_READ | FILE_SHARE_WRITE,
         nullptr,

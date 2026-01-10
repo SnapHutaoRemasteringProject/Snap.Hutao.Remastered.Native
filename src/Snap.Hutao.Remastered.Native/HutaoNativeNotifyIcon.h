@@ -22,8 +22,8 @@ public:
     virtual HRESULT __stdcall IsPromoted(BOOL* promoted) override;
 
 private:
-    NOTIFYICONDATAW m_notifyIconData = { 0 };
-    HWND mWnd = nullptr;
+    NOTIFYICONDATAW m_notifyIcoData = { 0 };
+    HWND m_hWnd = nullptr;
     UINT m_uCallbackMessage = 0;
     HICON mIcon = nullptr;
     bool m_created = false;

@@ -17,7 +17,7 @@ HutaoNativeHotKeyAction::HutaoNativeHotKeyAction(HutaoNativeHotKeyActionKind kin
     , m_vk(0)
     , m_enabled(false)
     , motKeyId(0)
-    , mWnd(nullptr)
+    , m_hWnd(nullptr)
     , m_isRunning(false)
 {
     motKeyId = static_cast<int>(++s_nextHotKeyId);
@@ -28,10 +28,10 @@ HutaoNativeHotKeyAction::~HutaoNativeHotKeyAction()
     SetIsEnabled(FALSE);
     StopAction();
     
-    if (mWnd != nullptr)
+    if (m_hWnd != nullptr)
     {
-        DestroyWindow(mWnd);
-        mWnd = nullptr;
+        DestroyWindow(m_hWnd);
+        m_hWnd = nullptr;
     }
 }
 
@@ -112,20 +112,20 @@ LRESULT CALLBACK HutaoNativeHotKeyAction::WndProc(HWND hWnd, UINT message, WPARA
 
 void HutaoNativeHotKeyAction::UnregisterHotKey()
 {
-    if (mWnd != nullptr && motKeyId != 0)
+    if (m_hWnd != nullptr && motKeyId != 0)
     {
-        ::UnregisterHotKey(mWnd, motKeyId);
+        ::UnregisterHotKey(m_hWnd, motKeyId);
     }
 }
 
 void HutaoNativeHotKeyAction::RegisterHotKey()
 {
-    if (mWnd == nullptr || motKeyId == 0 || m_vk == 0)
+    if (m_hWnd == nullptr || motKeyId == 0 || m_vk == 0)
     {
         return;
     }
 
-    ::RegisterHotKey(mWnd, motKeyId, m_modifiers, m_vk);
+    ::RegisterHotKey(m_hWnd, motKeyId, m_modifiers, m_vk);
 }
 
 void HutaoNativeHotKeyAction::ExecuteAction()
@@ -240,10 +240,10 @@ HRESULT __stdcall HutaoNativeHotKeyAction::SetIsEnabled(BOOL isEnabled)
     if (newEnabled)
     {
         // 启用热键
-        if (mWnd == nullptr)
+        if (m_hWnd == nullptr)
         {
-            mWnd = CreateMessageWindow();
-            if (mWnd == nullptr)
+            m_hWnd = CreateMessageWindow();
+            if (m_hWnd == nullptr)
             {
                 HRESULT hr = HRESULT_FROM_WIN32(GetLastError());
                 ThrowForHR(hr, "CreateMessageWindow failed in SetIsEnabled");

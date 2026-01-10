@@ -10,10 +10,10 @@ typedef struct _INJECTION_DATA {
 } INJECTION_DATA, * PINJECTION_DATA;
 
 BOOL WriteProcessStringW(HANDLE hProcess, LPCWSTR str, LPVOID* ppRemoteMem);
-BOOL WriteProcessData(HANDLE hProcess, LPVOID pRemoteAddress, LPCVOID pData, SIZE_T dataSize);
+BOOL WriteProcessData(HANDLE hProcess, LPVOID pRemoteAddress, LPCVOID data, SIZE_T dataSize);
 BOOL ReadProcessData(HANDLE hProcess, LPCVOID pRemoteAddress, LPVOID pBuffer, SIZE_T bufferSize);
 PINJECTION_DATA CreateInjectionData(LPCWSTR dllPath, LPCWSTR functionName);
-VOID FreeInjectionData(PINJECTION_DATA pData);
+VOID FreeInjectionData(PINJECTION_DATA data);
 
 typedef HRESULT (__stdcall* PatchCallbackFunc)(byte* ptr, int size, GCHandle state);
 

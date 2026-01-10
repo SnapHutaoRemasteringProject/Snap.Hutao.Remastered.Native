@@ -3,6 +3,7 @@
 #include "pch.h"
 #include "HutaoNativeImports.h"
 #include "../Snap.Hutao.Remastered.Native/CustomImplements.h"
+#include "../Snap.Hutao.Remastered.Native/HutaoString.h"
 
 using namespace winrt;
 using namespace Windows::Foundation;
@@ -44,19 +45,25 @@ inline void TestAssert(bool condition, const wchar_t* message = nullptr)
     }
 }
 
-inline std::wstring FormatString(const wchar_t* format, ...)
+inline HutaoString FormatString(const wchar_t* format, ...)
 {
     va_list args;
     va_start(args, format);
     
     int len = _vscwprintf(format, args) + 1;
-    std::wstring buffer(len, L'\0');
-    _vsnwprintf_s(&buffer[0], len, _TRUNCATE, format, args);
+    HutaoString buffer;
+    buffer.EnsureCapacity(len);
     
+    // 临时缓冲区用于格式化
+    wchar_t* tempBuffer = new wchar_t[len];
+    _vsnwprintf_s(tempBuffer, len, _TRUNCATE, format, args);
+    
+    // 将格式化后的字符串设置到HutaoString
+    buffer = tempBuffer;
+    
+    delete[] tempBuffer;
     va_end(args);
     
-    // Remove trailing null character
-    buffer.resize(wcslen(buffer.c_str()));
     return buffer;
 }
 
@@ -140,29 +147,30 @@ public:
 class TestDataGenerator
 {
 public:
-    static std::wstring GenerateRandomString(size_t length)
+    static HutaoString GenerateRandomString(size_t length)
     {
         static const wchar_t charset[] = L"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
         static const size_t charsetSize = sizeof(charset) / sizeof(charset[0]) - 1;
         
-        std::wstring result;
-        result.reserve(length);
+        HutaoString result;
+        result.EnsureCapacity(length);
         
         for (size_t i = 0; i < length; ++i)
         {
-            result.push_back(charset[rand() % charsetSize]);
+            result.Append(&charset[rand() % charsetSize], 1);
         }
         
         return result;
     }
     
-    static std::wstring GenerateTestFilePath()
+    static HutaoString GenerateTestFilePath()
     {
         wchar_t tempPath[MAX_PATH];
         GetTempPathW(MAX_PATH, tempPath);
         
-        std::wstring fileName = L"hutao_test_" + GenerateRandomString(8) + L".tmp";
-        return std::wstring(tempPath) + fileName;
+        // 修复：避免使用 const wchar_t* + HutaoString 运算符
+        HutaoString fileName = HutaoString(L"hutao_test_") + GenerateRandomString(8) + L".tmp";
+        return HutaoString(tempPath) + fileName;
     }
 };
 

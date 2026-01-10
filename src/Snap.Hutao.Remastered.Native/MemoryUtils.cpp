@@ -33,14 +33,14 @@ BOOL WriteProcessStringW(HANDLE hProcess, LPCWSTR str, LPVOID* ppRemoteMem)
 }
 
 // 向目标进程写入数据
-BOOL WriteProcessData(HANDLE hProcess, LPVOID pRemoteAddress, LPCVOID pData, SIZE_T dataSize)
+BOOL WriteProcessData(HANDLE hProcess, LPVOID pRemoteAddress, LPCVOID data, SIZE_T dataSize)
 {
-    if (!hProcess || !pRemoteAddress || !pData || dataSize == 0) {
+    if (!hProcess || !pRemoteAddress || !data || dataSize == 0) {
         return FALSE;
     }
 
     SIZE_T bytesWritten = 0;
-    return WriteProcessMemory(hProcess, pRemoteAddress, pData, dataSize, &bytesWritten) &&
+    return WriteProcessMemory(hProcess, pRemoteAddress, data, dataSize, &bytesWritten) &&
         bytesWritten == dataSize;
 }
 
@@ -59,22 +59,22 @@ BOOL ReadProcessData(HANDLE hProcess, LPCVOID pRemoteAddress, LPVOID pBuffer, SI
 // 创建注入数据结构
 PINJECTION_DATA CreateInjectionData(LPCWSTR dllPath, LPCWSTR functionName)
 {
-    PINJECTION_DATA pData = (PINJECTION_DATA)malloc(sizeof(INJECTION_DATA));
-    if (!pData) {
+    PINJECTION_DATA data = (PINJECTION_DATA)malloc(sizeof(INJECTION_DATA));
+    if (!data) {
         return NULL;
     }
 
-    wcsncpy_s(pData->dllPath, MAX_PATH, dllPath, _TRUNCATE);
-    wcsncpy_s(pData->functionName, 256, functionName, _TRUNCATE);
+    wcsncpy_s(data->dllPath, MAX_PATH, dllPath, _TRUNCATE);
+    wcsncpy_s(data->functionName, 256, functionName, _TRUNCATE);
 
-    return pData;
+    return data;
 }
 
 // 释放注入数据结构
-VOID FreeInjectionData(PINJECTION_DATA pData)
+VOID FreeInjectionData(PINJECTION_DATA data)
 {
-    if (pData) {
-        free(pData);
+    if (data) {
+        free(data);
     }
 }
 

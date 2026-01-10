@@ -62,65 +62,65 @@ void InitializeTestCallbacks()
 // Here you can add non-inline helper function implementations
 
 // Example: Helper function to create test directory
-bool CreateTestDirectory(const std::wstring& path)
+bool CreateTestDirectory(const HutaoString& path)
 {
-    if (CreateDirectoryW(path.c_str(), nullptr) || GetLastError() == ERROR_ALREADY_EXISTS)
+    if (CreateDirectoryW(path.Data(), nullptr) || GetLastError() == ERROR_ALREADY_EXISTS)
     {
-        wprintf(L"Created test directory: %s\n", path.c_str());
+        wprintf(L"Created test directory: %s\n", path.Data());
         return true;
     }
     else
     {
-        wprintf(L"Failed to create test directory: %s, error code: %d\n", path.c_str(), GetLastError());
+        wprintf(L"Failed to create test directory: %s, error code: %d\n", path.Data(), GetLastError());
         return false;
     }
 }
 
 // Example: Helper function to delete test file
-bool DeleteTestFile(const std::wstring& path)
+bool DeleteTestFile(const HutaoString& path)
 {
-    if (DeleteFileW(path.c_str()) || GetLastError() == ERROR_FILE_NOT_FOUND)
+    if (DeleteFileW(path.Data()) || GetLastError() == ERROR_FILE_NOT_FOUND)
     {
-        wprintf(L"Deleted test file: %s\n", path.c_str());
+        wprintf(L"Deleted test file: %s\n", path.Data());
         return true;
     }
     else
     {
-        wprintf(L"Failed to delete test file: %s, error code: %d\n", path.c_str(), GetLastError());
+        wprintf(L"Failed to delete test file: %s, error code: %d\n", path.Data(), GetLastError());
         return false;
     }
 }
 
 // Example: Helper function to verify file existence
-bool VerifyFileExists(const std::wstring& path)
+bool VerifyFileExists(const HutaoString& path)
 {
-    DWORD attributes = GetFileAttributesW(path.c_str());
+    DWORD attributes = GetFileAttributesW(path.Data());
     if (attributes != INVALID_FILE_ATTRIBUTES && !(attributes & FILE_ATTRIBUTE_DIRECTORY))
     {
-        wprintf(L"File exists: %s\n", path.c_str());
+        wprintf(L"File exists: %s\n", path.Data());
         return true;
     }
     else
     {
-        wprintf(L"File does not exist: %s\n", path.c_str());
+        wprintf(L"File does not exist: %s\n", path.Data());
         return false;
     }
 }
 
 // Example: Helper function to get file size
-uint64_t GetFileSizeHelper(const std::wstring& path)
+uint64_t GetFileSizeHelper(const HutaoString& path)
 {
-    HANDLE hFile = CreateFileW(path.c_str(), GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+    HANDLE hFile = CreateFileW(path.Data(), GENERIC_READ, FILE_SHARE_READ, nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
     if (hFile == INVALID_HANDLE_VALUE)
     {
-        wprintf(L"Cannot open file to get size: %s, error code: %d\n", path.c_str(), GetLastError());
+        wprintf(L"Cannot open file to get size: %s, error code: %d\n", path.Data(), GetLastError());
         return 0;
     }
     
     LARGE_INTEGER fileSize;
     if (!GetFileSizeEx(hFile, &fileSize))
     {
-        wprintf(L"Failed to get file size: %s, error code: %d\n", path.c_str(), GetLastError());
+        wprintf(L"Failed to get file size: %s, error code: %d\n", path.Data(), GetLastError());
         CloseHandle(hFile);
         return 0;
     }

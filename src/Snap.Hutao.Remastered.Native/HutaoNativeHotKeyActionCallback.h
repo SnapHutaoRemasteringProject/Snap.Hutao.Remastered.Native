@@ -4,7 +4,6 @@
 #include <Windows.h>
 
 using HutaoNativeHotKeyActionProc = void (__stdcall *)(BOOL isOn, GCHandle userData);
-
 struct HutaoNativeHotKeyActionCallback
 {
 private:

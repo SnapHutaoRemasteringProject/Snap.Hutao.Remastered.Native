@@ -181,7 +181,7 @@ HRESULT InitializeFrameworkThemingFunctions()
     // Patterns and constants (grouped for readability)
     static const uint8_t patternInternalDebugInteropGetCore[] = { 0x48, 0x89, 0x4C, 0x24, 0x08 };
 
-    // FrameworkTheming::OnThemeChanged pattern (derived from reverse data)
+    // FrameworkTheming::OnThemeChanged pattern (derived from reverse.Data())
     static const uint8_t patternFrameworkThemingOnThemeChangedV15[] = {
         0x48, 0x89, 0x5C, 0x24, 0x10, 0x48, 0x89, 0x6C, 0x24, 0x18,
         0x48, 0x89, 0x74, 0x24, 0x20, 0x57, 0x41, 0x56, 0x41, 0x57,
