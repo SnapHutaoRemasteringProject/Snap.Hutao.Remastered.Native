@@ -1,11 +1,13 @@
 #include "pch.h"
 #include "HutaoNativeRegistryNotification.h"
 #include "HutaoNativeRegistryNotificationCallBack.h"
+#include <algorithm>
 
-HutaoNativeRegistryNotification::HutaoNativeRegistryNotification()
+HutaoNativeRegistryNotification::HutaoNativeRegistryNotification(HutaoString keyPath)
     : callback_(0)
     , userData_(0)
     , hKey_(nullptr)
+    , keyPath_(keyPath)
 {
 }
 
@@ -37,16 +39,73 @@ DWORD WINAPI HutaoNativeRegistryNotification::NotificationThreadProc(LPVOID lpPa
     return 0;
 }
 
+bool HutaoNativeRegistryNotification::ParseRegistryPath(const HutaoString& path, HKEY& outRootKey, HutaoString& outSubKey)
+{
+    outRootKey = nullptr;
+    outSubKey = HutaoString();
+
+    // Trim and normalize case using HutaoString methods
+    HutaoString trimmed = path.Trim();
+    if (trimmed.IsEmpty())
+    {
+        return false;
+    }
+
+    // Find separator
+    int idx = trimmed.IndexOf(L'\\');
+    HutaoString hiveName;
+    if (idx < 0)
+    {
+        hiveName = trimmed;
+        outSubKey = HutaoString();
+    }
+    else
+    {
+        hiveName = trimmed.Substring(0, static_cast<size_t>(idx));
+        outSubKey = trimmed.Substring(static_cast<size_t>(idx + 1));
+    }
+
+    HutaoString hiveUpper = hiveName.ToUpper();
+
+    if (hiveUpper == L"HKEY_CLASSES_ROOT" || hiveUpper == L"HKCR")
+    {
+        outRootKey = HKEY_CLASSES_ROOT;
+    }
+    else if (hiveUpper == L"HKEY_CURRENT_USER" || hiveUpper == L"HKCU")
+    {
+        outRootKey = HKEY_CURRENT_USER;
+    }
+    else if (hiveUpper == L"HKEY_LOCAL_MACHINE" || hiveUpper == L"HKLM")
+    {
+        outRootKey = HKEY_LOCAL_MACHINE;
+    }
+    else if (hiveUpper == L"HKEY_USERS" || hiveUpper == L"HKU")
+    {
+        outRootKey = HKEY_USERS;
+    }
+    else if (hiveUpper == L"HKEY_CURRENT_CONFIG" || hiveUpper == L"HKCC")
+    {
+        outRootKey = HKEY_CURRENT_CONFIG;
+    }
+    else
+    {
+        return false;
+    }
+
+    return true;
+}
+
 void HutaoNativeRegistryNotification::NotificationThread()
 {
-    // Parse registry path from C# code: HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Internet Settings\Connections
-    // We need to open HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Internet Settings
-    // and watch for changes in the Connections subkey
-    
-    HKEY hRootKey = HKEY_CURRENT_USER;
-    HutaoString subKey = L"Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings";
-    
-    LONG result = RegOpenKeyExW(hRootKey, subKey.Data(), 0, KEY_NOTIFY | KEY_READ, &hKey_);
+    HKEY root = HKEY_CURRENT_USER;
+    HutaoString subKey;
+    if (!ParseRegistryPath(keyPath_, root, subKey))
+    {
+        return;
+    }
+
+    // Open the target key (subKey may be empty meaning the root hive)
+    LONG result = RegOpenKeyExW(root, subKey.IsEmpty() ? nullptr : subKey.Data(), 0, KEY_NOTIFY | KEY_READ, &hKey_);
     if (result != ERROR_SUCCESS)
     {
         // Failed to open registry key
@@ -64,10 +123,7 @@ void HutaoNativeRegistryNotification::NotificationThread()
     
     while (!stopRequested_)
     {
-        // Watch for changes in the Connections subkey
-        // We use REG_NOTIFY_CHANGE_LAST_SET to detect value changes
-        // and REG_NOTIFY_CHANGE_NAME to detect subkey changes
-        // Set bWatchSubtree to TRUE to monitor the Connections subkey as well
+        // Watch for changes in the key and its subkeys
         result = RegNotifyChangeKeyValue(
             hKey_,                     // hKey
             TRUE,                      // bWatchSubtree (TRUE = this key and all subkeys)
@@ -90,7 +146,7 @@ void HutaoNativeRegistryNotification::NotificationThread()
             // Registry changed, call the callback
             if (callback_.has_value())
             {
-				callback_.value()(userData_);
+                callback_.value()(userData_);
             }
         }
         else if (waitResult == WAIT_TIMEOUT)
