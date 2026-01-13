@@ -69,7 +69,7 @@ BOOL HutaoNativeProcess::CreateProcessInternal()
     // 创建进程
     BOOL success = CreateProcessW(
         m_startInfo.ApplicationName,           // 应用程序名称
-        commandLine.IsEmpty() ? nullptr : &commandLine[0], // 命令行
+        commandLine.IsEmpty() ? nullptr : commandLine.Data(), // 命令行
         nullptr,                               // 进程安全属性
         nullptr,                               // 线程安全属性
         m_startInfo.InheritHandles,            // 继承句柄
@@ -89,11 +89,9 @@ HRESULT __stdcall HutaoNativeProcess::Start()
     {
         return HRESULT_FROM_WIN32(ERROR_ALREADY_EXISTS);
     }
-    
-    if (m_startInfo.ApplicationName == nullptr && m_startInfo.CommandLine == nullptr)
-    {
-        return E_INVALIDARG;
-    }
+
+	AssertNonNullAndReturn(m_startInfo.ApplicationName);
+	AssertNonNullAndReturn(m_startInfo.CommandLine);
     
     if (!CreateProcessInternal())
     {
