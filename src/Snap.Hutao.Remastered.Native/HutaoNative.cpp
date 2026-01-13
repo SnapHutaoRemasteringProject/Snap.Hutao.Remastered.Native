@@ -32,11 +32,8 @@ HRESULT __stdcall HutaoNative::MakeRegistryNotification(PCWSTR keyPath, IHutaoNa
 {
     AssertNonNullAndReturn(ppv);
 
-    hutao::com_ptr<IHutaoNativeRegistryNotification> notify = hutao::make_com_ptr<HutaoNativeRegistryNotification>();
+    hutao::com_ptr<IHutaoNativeRegistryNotification> notify = hutao::make_com_ptr<HutaoNativeRegistryNotification>(keyPath);
     *ppv = notify.detach();
-
-    // Mark unused parameter to avoid warning
-    (void)keyPath;
 
     return S_OK;
 }
