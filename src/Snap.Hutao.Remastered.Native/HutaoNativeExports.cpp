@@ -34,16 +34,6 @@ DLL_EXPORT HRESULT __stdcall HutaoStringCreateInstance(
     return S_OK;
 }
 
-DLL_EXPORT HRESULT __stdcall HutaoNativeRegistryNotificationCreateInstance(IHutaoNativeRegistryNotification** ppInstance)
-{
-    AssertNonNullAndReturn(ppInstance);
-
-    hutao::com_ptr<IHutaoNativeRegistryNotification> instance = hutao::make_com_ptr<HutaoNativeRegistryNotification>();
-    *ppInstance = instance.detach();
-
-    return S_OK;
-}
-
 DLL_EXPORT HRESULT HutaoInitializeWilCallbacks(HutaoNativeLoggingCallback loggingCallback, HutaoNativeMessageCallback messageCallback)
 {
 	g_wilCallbacksManager.Initialize(loggingCallback, messageCallback);
