@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="pch.cpp" />
+    <ClCompile Include="SimpleTestFramework.cpp" />
+    <ClCompile Include="TestBase.cpp" />
+    <ClCompile Include="TestHutaoString.cpp" />
+    <ClCompile Include="..\Snap.Hutao.Remastered.Native\HutaoString.cpp">
+      <Filter>imports</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Snap.Hutao.Remastered.Native\HutaoAString.cpp">
+      <Filter>imports</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Snap.Hutao.Remastered.Native\Error.cpp">
+      <Filter>imports</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Snap.Hutao.Remastered.Native\WilCallbacksManager.cpp">
+      <Filter>imports</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="SimpleTestFramework.h" />
+    <ClInclude Include="TestBase.h" />
+    <ClInclude Include="HutaoNativeImports.h">
+      <Filter>imports</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+    <None Include="PropertySheet.props" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="readme.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="imports">
+      <UniqueIdentifier>{8d3f5036-aad4-42b6-96de-7842f5d229ae}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

@@ -16,10 +16,11 @@ HutaoNativeLoopbackSupport::~HutaoNativeLoopbackSupport()
     }
 }
 
-HRESULT __stdcall HutaoNativeLoopbackSupport::IsEnabled(PCWSTR familyName, IHutaoString* sid, boolean* enabled)
+HRESULT __stdcall HutaoNativeLoopbackSupport::IsEnabled(PCWSTR familyName, IHutaoString** sid, boolean* enabled)
 {
     AssertNonNullAndReturn(enabled);
     AssertNonNullAndReturn(familyName);
+    AssertNonNullAndReturn(sid);
 
     if (!m_firewallManager)
     {
@@ -28,35 +29,27 @@ HRESULT __stdcall HutaoNativeLoopbackSupport::IsEnabled(PCWSTR familyName, IHuta
         return hr;
     }
 
-    LPCWSTR sidBuffer = nullptr;
-    if (sid)
-    {
-        HRESULT hr = sid->GetBuffer(&sidBuffer);
-        if (FAILED(hr))
-        {
-            ThrowForHR(hr, "IHutaoString::GetBuffer failed in IsEnabled");
-            return hr;
-        }
-    }
-
     HutaoString familyNameStr = familyName;
-    HutaoString sidStr = sidBuffer ? sidBuffer : L"";
 
     BOOL nativeEnabled = FALSE;
-    HRESULT hr = m_firewallManager->IsLoopbackExempt(familyNameStr, sidStr, &nativeEnabled);
+	HutaoString* sidStr = new HutaoString();
+
+    HRESULT hr = m_firewallManager->IsLoopbackExempt(familyNameStr, *sidStr, &nativeEnabled);
     if (FAILED(hr))
     {
         ThrowForHR(hr, "FirewallRuleManager::IsLoopbackExempt failed in IsEnabled");
         return hr;
     }
 
+    *sid = sidStr;
     *enabled = nativeEnabled ? true : false;
     return S_OK;
 }
 
-HRESULT __stdcall HutaoNativeLoopbackSupport::Enable(PCWSTR familyName, IHutaoString* sid)
+HRESULT __stdcall HutaoNativeLoopbackSupport::Enable(PCWSTR familyName, IHutaoString** sid)
 {
     AssertNonNullAndReturn(familyName);
+    AssertNonNullAndReturn(sid);
 
     if (!m_firewallManager)
     {
@@ -65,25 +58,16 @@ HRESULT __stdcall HutaoNativeLoopbackSupport::Enable(PCWSTR familyName, IHutaoSt
         return hr;
     }
 
-    LPCWSTR sidBuffer = nullptr;
-    if (sid)
-    {
-        HRESULT hr = sid->GetBuffer(&sidBuffer);
-        if (FAILED(hr))
-        {
-            ThrowForHR(hr, "IHutaoString::GetBuffer failed in Enable");
-            return hr;
-        }
-    }
-
     HutaoString familyNameStr = familyName;
-    HutaoString sidStr = sidBuffer ? sidBuffer : L"";
+    HutaoString* sidStr = new HutaoString();
 
-    HRESULT hr = m_firewallManager->AddLoopbackExempt(familyNameStr, sidStr);
+    HRESULT hr = m_firewallManager->AddLoopbackExempt(familyNameStr, *sidStr);
     if (FAILED(hr))
     {
         ThrowForHR(hr, "FirewallRuleManager::AddLoopbackExempt failed in Enable");
     }
+
+    *sid = sidStr;
 
     return hr;
 }
