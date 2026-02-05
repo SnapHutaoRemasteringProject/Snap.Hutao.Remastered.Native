@@ -53,6 +53,6 @@ DLL_EXPORT BOOL HutaoHResultIsWin32(HRESULT hr, WIN32_ERROR error)
 
 DLL_EXPORT HRESULT HutaoNativeHotKeyInitializeBeforeSwitchCallback(HutaoNativeHotKeyBeforeSwitchCallback callback)
 {
-	gotKeyCallbackManager.Initialize(callback);
+	hotKeyCallbackManager.Initialize(callback);
     return S_OK;
 }
