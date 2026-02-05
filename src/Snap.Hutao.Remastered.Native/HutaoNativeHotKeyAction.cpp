@@ -1,11 +1,11 @@
 #include "pch.h"
 #include "HutaoNativeHotKeyAction.h"
 #include "HutaoNativeHotKeyActionCallback.h"
+#include "HotKeyCallbackManager.h"
 #include <chrono>
 #include <thread>
 
 const wchar_t* WINDOW_CLASS_NAME = L"HutaoNativeHotKeyActionWindowClass";
-const UINT WMOTKEY_MESSAGE = WM_APP + 2;
 
 UINT HutaoNativeHotKeyAction::s_nextHotKeyId = 0x4000; // 从0x4000开始，避免与系统热键冲突
 
@@ -83,27 +83,34 @@ LRESULT CALLBACK HutaoNativeHotKeyAction::WndProc(HWND hWnd, UINT message, WPARA
     HutaoNativeHotKeyAction* pThis = reinterpret_cast<HutaoNativeHotKeyAction*>(GetWindowLongPtrW(hWnd, GWLP_USERDATA));
     if (pThis != nullptr)
     {
-        if (message == WMOTKEY_MESSAGE)
+        if (message == WM_HOTKEY)
         {
-            // 热键被触发，切换动作状态
-            bool wasRunning = pThis->m_isRunning.load();
-            
-            if (wasRunning)
+            if (static_cast<int>(wParam) == pThis->motKeyId)
             {
-                pThis->StopAction();
+                if (hotKeyCallbackManager.InvokeCallback())
+                {
+                    return 0;
+                }
+                
+                bool wasRunning = pThis->m_isRunning.load();
+                
+                if (wasRunning)
+                {
+                    pThis->StopAction();
+                }
+                else
+                {
+                    pThis->ExecuteAction();
+                }
+                
+                // 调用回调函数通知状态变化
+                if (pThis->m_callback.has_value())
+                {
+                    pThis->m_callback.value()(!wasRunning ? TRUE : FALSE, pThis->m_userData);
+                }
+                
+                return 0;
             }
-            else
-            {
-                pThis->ExecuteAction();
-            }
-            
-            // 调用回调函数通知状态变化
-            if (pThis->m_callback.has_value())
-            {
-                pThis->m_callback.value()(!wasRunning ? TRUE : FALSE, pThis->m_userData);
-            }
-            
-            return 0;
         }
     }
 

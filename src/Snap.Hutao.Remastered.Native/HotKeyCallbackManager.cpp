@@ -34,4 +34,4 @@ void HotKeyCallbackManager::ClearCallback()
 	callback_ = {};
 }
 
-HotKeyCallbackManager gotKeyCallbackManager = HotKeyCallbackManager();
+HotKeyCallbackManager hotKeyCallbackManager = HotKeyCallbackManager();
