@@ -142,7 +142,6 @@ HRESULT __stdcall HutaoNativeProcess::WaitForExit()
         return hr;
     }
     
-    // 获取退出码
     if (!::GetExitCodeProcess(m_processInfo.hProcess, &m_exitCode))
     {
         HRESULT hr = HRESULT_FROM_WIN32(GetLastError());
@@ -169,10 +168,8 @@ HRESULT __stdcall HutaoNativeProcess::Kill()
         return hr;
     }
     
-    // 等待进程结束
     WaitForSingleObject(m_processInfo.hProcess, 5000);
     
-    // 获取退出码
     if (!::GetExitCodeProcess(m_processInfo.hProcess, &m_exitCode))
     {
         m_exitCode = 1;
@@ -296,7 +293,6 @@ HRESULT __stdcall HutaoNativeProcess::GetExitCodeProcess(BOOL* isRunning, uint* 
         return S_OK;
     }
     
-    // 检查进程是否还在运行
     DWORD currentExitCode;
     if (!::GetExitCodeProcess(m_processInfo.hProcess, &currentExitCode))
     {
