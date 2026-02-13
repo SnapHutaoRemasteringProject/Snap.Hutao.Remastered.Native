@@ -446,55 +446,58 @@ HRESULT __stdcall HutaoNativeFileSystem::PickFolder(HWND hwnd, PCWSTR title, BOO
 {
     AssertNonNullAndReturn(picked);
     AssertNonNullAndReturn(path);
-    
+
     *picked = FALSE;
-    *path = nullptr;
-    
-    // Initialize COM for BROWSEINFO
-    HRESULT hr = CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED | COINIT_DISABLE_OLE1DDE);
-    if (FAILED(hr) && hr != RPC_E_CHANGED_MODE)
+    *path = &HutaoString::Empty;
+
+    IFileOpenDialog* pFileDialog = nullptr;
+    HRESULT hr = CoCreateInstance(CLSID_FileOpenDialog, nullptr, CLSCTX_ALL,
+        IID_IFileOpenDialog, reinterpret_cast<void**>(&pFileDialog));
+
+    DWORD dwOptions;
+    hr = pFileDialog->GetOptions(&dwOptions);
+    if (SUCCEEDED(hr))
     {
-        ThrowForHR(hr, "CoInitializeEx failed in PickFolder");
-        return hr;
+        hr = pFileDialog->SetOptions(dwOptions | FOS_PICKFOLDERS);
     }
-    
-    // Prepare BROWSEINFOW structure
-    BROWSEINFOW bi = { 0 };
-    bi.hwndOwner = hwnd;
-    bi.ulFlags = BIF_RETURNONLYFSDIRS | BIF_NEWDIALOGSTYLE;
-    
-    if (title != nullptr)
+
+    if (SUCCEEDED(hr) && title != nullptr)
     {
-        bi.lpszTitle = title;
+        pFileDialog->SetTitle(title);
     }
-    
-    // Show folder dialog
-    PIDLIST_ABSOLUTE pidl = SHBrowseForFolderW(&bi);
-    if (pidl != nullptr)
+
+    if (SUCCEEDED(hr))
     {
-        wchar_t folderPath[MAX_PATH];
-        if (SHGetPathFromIDListW(pidl, folderPath))
+        hr = pFileDialog->Show(hwnd);
+        if (SUCCEEDED(hr))
         {
-            *picked = TRUE;
-            IHutaoString* pString = nullptr;
-            hr = CreateHutaoStringFromWideString(folderPath, &pString);
+            IShellItem* pItem = nullptr;
+            hr = pFileDialog->GetResult(&pItem);
             if (SUCCEEDED(hr))
             {
-                *path = pString;
+                wchar_t* folderPath = nullptr;
+                hr = pItem->GetDisplayName(SIGDN_FILESYSPATH, &folderPath);
+                if (SUCCEEDED(hr))
+                {
+                    *picked = TRUE;
+                    IHutaoString* pString = nullptr;
+                    hr = CreateHutaoStringFromWideString(folderPath, &pString);
+                    if (SUCCEEDED(hr))
+                    {
+                        *path = pString;
+                    }
+                    CoTaskMemFree(folderPath);
+                }
+                pItem->Release();
             }
         }
-        
-        // Free PIDL
-        CoTaskMemFree(pidl);
+        else if (hr == HRESULT_FROM_WIN32(ERROR_CANCELLED))
+        {
+            hr = S_OK;
+        }
     }
-    
-    CoUninitialize();
-    
-    if (FAILED(hr))
-    {
-        ThrowForHR(hr, "PickFolder failed");
-    }
-    
+    pFileDialog->Release();
+
     return hr;
 }
 
