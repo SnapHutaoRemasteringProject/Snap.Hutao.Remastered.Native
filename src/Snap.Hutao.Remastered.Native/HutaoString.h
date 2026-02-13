@@ -91,6 +91,8 @@ public:
 	static bool IsNullOrEmpty(const HutaoString& str);
 	static HutaoString Join(const hutao::Array<HutaoString>& values, PCWSTR separator);
 
+	static HutaoString Empty;
+
 private:
 	hutao::Array<wchar_t> m_buffer;  // 使用自定义Array，不使用HutaoString
 	

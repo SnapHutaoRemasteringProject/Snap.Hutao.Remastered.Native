@@ -89,6 +89,8 @@ public:
 	static bool IsNullOrEmpty(const HutaoAString& str);
 	static HutaoAString Join(const hutao::Array<HutaoAString>& values, PCSTR separator);
 
+	static HutaoAString Empty;
+
 private:
 	hutao::Array<char> m_buffer;  // 使用自定义Array，不使用std::string
 	
