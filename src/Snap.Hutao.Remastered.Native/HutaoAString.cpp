@@ -6,6 +6,8 @@
 #include <cstdarg>
 #include <cstring>
 
+HutaoAString HutaoAString::Empty;
+
 HutaoAString::HutaoAString() : m_buffer()
 {
     m_buffer.Add('\0');
@@ -44,17 +46,17 @@ HutaoAString::HutaoAString(const char* initialValue, size_t length) : m_buffer()
 
 HutaoAString::HutaoAString(const HutaoAString& other) : m_buffer(other.m_buffer)
 {
-    // Array的拷贝构造函数已经处理了拷贝
+
 }
 
 HutaoAString::HutaoAString(HutaoAString&& other) noexcept : m_buffer(std::move(other.m_buffer))
 {
-    // Array的移动构造函数已经处理了移动
+
 }
 
 HutaoAString::~HutaoAString()
 {
-    // Array的析构函数会自动清理
+
 }
 
 HRESULT __stdcall HutaoAString::GetBuffer(LPCSTR* buffer) noexcept
