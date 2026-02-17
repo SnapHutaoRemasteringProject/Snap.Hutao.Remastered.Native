@@ -6,7 +6,7 @@
 #include <cstdarg>
 #include <cstring>
 
-HutaoAString HutaoAString::Empty;
+const HutaoAString HutaoAString::Empty;
 
 HutaoAString::HutaoAString() : m_buffer()
 {

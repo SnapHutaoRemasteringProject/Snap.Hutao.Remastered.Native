@@ -30,22 +30,18 @@ public:
 	const char* Data() const noexcept;
 	char* Data() noexcept;
 	
-	// 基本操作
 	void Clear();
 	void Append(PCSTR value);
 	void Append(const HutaoAString& value);
 	
-	// 比较操作
 	int CompareTo(const HutaoAString& other) const;
 	bool Equals(const HutaoAString& other) const;
 	
-	// 转换操作
 	HutaoAString ToUpper() const;
 	HutaoAString ToLower() const;
 	HutaoAString Substring(size_t start, size_t length) const;
 	HutaoAString Substring(size_t start) const;
 	
-	// C#风格字符串方法
 	bool Contains(PCSTR value) const;
 	bool Contains(const HutaoAString& value) const;
 	int IndexOf(char ch) const;
@@ -62,7 +58,6 @@ public:
 	bool StartsWith(PCSTR value) const;
 	bool EndsWith(PCSTR value) const;
 	
-	// 运算符重载
 	HutaoAString& operator=(const HutaoAString& other);
 	HutaoAString& operator=(HutaoAString&& other) noexcept;
 	HutaoAString& operator=(PCSTR other);
@@ -81,20 +76,17 @@ public:
 	char operator[](size_t index) const;
 	char& operator[](size_t index);
 	
-	// 转换运算符
 	operator LPCSTR() const noexcept;
 	
-	// 静态方法
 	static HutaoAString Format(PCSTR format, ...);
 	static bool IsNullOrEmpty(const HutaoAString& str);
 	static HutaoAString Join(const hutao::Array<HutaoAString>& values, PCSTR separator);
 
-	static HutaoAString Empty;
+	static const HutaoAString Empty;
 
 private:
-	hutao::Array<char> m_buffer;  // 使用自定义Array，不使用std::string
+	hutao::Array<char> m_buffer;
 	
-	// 辅助方法
 	void EnsureCapacity(size_t newCapacity);
 	void UpdateNullTerminator();
 	static size_t CalculateLength(PCSTR str);
