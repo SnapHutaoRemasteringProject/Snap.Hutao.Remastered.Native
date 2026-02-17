@@ -296,7 +296,7 @@ HRESULT __stdcall HutaoNativeFileSystem::PickFile(HWND hwnd, PCWSTR title, PCWST
     AssertNonNullAndReturn(path);
     
     *picked = FALSE;
-    *path = &HutaoString::Empty;
+    *path = new HutaoString();
     
     // Prepare OPENFILENAMEW structure
     OPENFILENAMEW ofn = { 0 };
@@ -372,7 +372,7 @@ HRESULT __stdcall HutaoNativeFileSystem::SaveFile(HWND hwnd, PCWSTR title, PCWST
     AssertNonNullAndReturn(path);
     
     *picked = FALSE;
-    *path = &HutaoString::Empty;
+    *path = new HutaoString();
     
     // Prepare OPENFILENAMEW structure
     OPENFILENAMEW ofn = { 0 };
@@ -448,7 +448,7 @@ HRESULT __stdcall HutaoNativeFileSystem::PickFolder(HWND hwnd, PCWSTR title, BOO
     AssertNonNullAndReturn(path);
 
     *picked = FALSE;
-    *path = &HutaoString::Empty;
+    *path = new HutaoString();
 
     IFileOpenDialog* pFileDialog = nullptr;
     HRESULT hr = CoCreateInstance(CLSID_FileOpenDialog, nullptr, CLSCTX_ALL,
