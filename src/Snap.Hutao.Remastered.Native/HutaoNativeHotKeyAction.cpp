@@ -7,7 +7,7 @@
 
 const wchar_t* WINDOW_CLASS_NAME = L"HutaoNativeHotKeyActionWindowClass";
 
-UINT HutaoNativeHotKeyAction::s_nextHotKeyId = 0x4000; // 从0x4000开始，避免与系统热键冲突
+UINT HutaoNativeHotKeyAction::s_nextHotKeyId = 0x4000;
 
 HutaoNativeHotKeyAction::HutaoNativeHotKeyAction(HutaoNativeHotKeyActionKind kind, HutaoNativeHotKeyActionCallback callback, GCHandle userData)
     : m_kind(kind)
@@ -83,7 +83,7 @@ LRESULT CALLBACK HutaoNativeHotKeyAction::WndProc(HWND hWnd, UINT message, WPARA
     HutaoNativeHotKeyAction* pThis = reinterpret_cast<HutaoNativeHotKeyAction*>(GetWindowLongPtrW(hWnd, GWLP_USERDATA));
     if (pThis != nullptr)
     {
-        if (message == WM_HOTKEY)
+        if (message == WM_HOTKEY && pThis->m_vk != 255)
         {
             if (static_cast<int>(wParam) == pThis->motKeyId)
             {
@@ -103,7 +103,6 @@ LRESULT CALLBACK HutaoNativeHotKeyAction::WndProc(HWND hWnd, UINT message, WPARA
                     pThis->ExecuteAction();
                 }
                 
-                // 调用回调函数通知状态变化
                 if (pThis->m_callback.has_value())
                 {
                     pThis->m_callback.value()(!wasRunning ? TRUE : FALSE, pThis->m_userData);
@@ -139,12 +138,11 @@ void HutaoNativeHotKeyAction::ExecuteAction()
 {
     if (m_isRunning.load())
     {
-        return; // 已经在运行
+        return;
     }
     
     m_isRunning.store(true);
     
-    // 启动新线程执行动作
     m_actionThread = std::thread([this]() {
         while (m_isRunning.load())
         {
@@ -157,7 +155,6 @@ void HutaoNativeHotKeyAction::ExecuteAction()
                 SimulateKeyPress();
             }
             
-            // 延迟一段时间（例如50ms，即每秒20次）
             std::this_thread::sleep_for(std::chrono::milliseconds(50));
         }
     });
@@ -175,14 +172,11 @@ void HutaoNativeHotKeyAction::StopAction()
 
 void HutaoNativeHotKeyAction::SimulateMouseClick()
 {
-    // 模拟鼠标左键点击
     INPUT inputs[2] = {0};
     
-    // 按下左键
     inputs[0].type = INPUT_MOUSE;
     inputs[0].mi.dwFlags = MOUSEEVENTF_LEFTDOWN;
     
-    // 释放左键
     inputs[1].type = INPUT_MOUSE;
     inputs[1].mi.dwFlags = MOUSEEVENTF_LEFTUP;
     
@@ -191,15 +185,12 @@ void HutaoNativeHotKeyAction::SimulateMouseClick()
 
 void HutaoNativeHotKeyAction::SimulateKeyPress()
 {
-    // 模拟F键按下（VK_F为0x46）
     INPUT inputs[2] = {0};
     
-    // 按下F键
     inputs[0].type = INPUT_KEYBOARD;
-    inputs[0].ki.wVk = 0x46; // VK_F
+    inputs[0].ki.wVk = 0x46;
     inputs[0].ki.dwFlags = 0;
     
-    // 释放F键
     inputs[1].type = INPUT_KEYBOARD;
     inputs[1].ki.wVk = 0x46; // VK_F
     inputs[1].ki.dwFlags = KEYEVENTF_KEYUP;
@@ -241,12 +232,11 @@ HRESULT __stdcall HutaoNativeHotKeyAction::SetIsEnabled(BOOL isEnabled)
 
     if (newEnabled == m_enabled)
     {
-        return S_OK; // 状态没有变化
+        return S_OK;
     }
 
     if (newEnabled)
     {
-        // 启用热键
         if (m_hWnd == nullptr)
         {
             m_hWnd = CreateMessageWindow();
@@ -265,7 +255,6 @@ HRESULT __stdcall HutaoNativeHotKeyAction::SetIsEnabled(BOOL isEnabled)
     }
     else
     {
-        // 禁用热键
         UnregisterHotKey();
         StopAction();
     }
