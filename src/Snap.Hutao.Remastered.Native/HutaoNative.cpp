@@ -163,7 +163,7 @@ HRESULT __stdcall HutaoNative::IsCurrentWindowsVersionSupported(BOOL* isSupporte
     HutaoPrivateWindowsVersion winver;
 	GetWindowsVersion(&winver);
 
-	if (winver.major >= 10 && winver.minor >= 0 && winver.build >= 19045 && winver.revision >= 5371)
+	if (winver.major > 10 || winver.minor > 0 || winver.build > 19045 || winver.revision >= 5371)
     {
          *isSupported = TRUE;
          return S_OK;
