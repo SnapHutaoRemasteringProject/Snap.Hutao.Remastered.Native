@@ -326,13 +326,13 @@ HRESULT __stdcall HutaoNativeFileSystem::PickFile(HWND hwnd, PCWSTR title, PCWST
         filterStr.Append(L"\0", 1);
         filterStr.Append(fileFilterType);
         filterStr.Append(L"\0", 1);
+        ofn.lpstrFilter = filterStr.Data();
     }
     else
     {
-        filterStr = L"All Files\0*.*\0";
+        ofn.lpstrFilter = L"All Files\0*.*\0";
     }
     
-    ofn.lpstrFilter = filterStr.Data();
     ofn.nFilterIndex = 1;
     ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_NOCHANGEDIR;
     
@@ -402,10 +402,11 @@ HRESULT __stdcall HutaoNativeFileSystem::SaveFile(HWND hwnd, PCWSTR title, PCWST
         filterStr.Append(L"\0", 1);
         filterStr.Append(fileFilterType);
         filterStr.Append(L"\0", 1);
+        ofn.lpstrFilter = filterStr.Data();
     }
     else
     {
-        filterStr = L"All Files\0*.*\0";
+        ofn.lpstrFilter = L"All Files\0*.*\0";
     }
     
     ofn.lpstrFilter = filterStr.Data();
