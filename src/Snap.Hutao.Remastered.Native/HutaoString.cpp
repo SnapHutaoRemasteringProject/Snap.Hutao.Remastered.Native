@@ -6,6 +6,8 @@
 #include <cstdarg>
 #include <cwchar>
 
+const HutaoString HutaoString::Empty;
+
 // 构造函数
 HutaoString::HutaoString() : m_buffer()
 {
