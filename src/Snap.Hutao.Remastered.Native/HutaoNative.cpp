@@ -161,15 +161,25 @@ HRESULT __stdcall HutaoNative::IsCurrentWindowsVersionSupported(BOOL* isSupporte
     AssertNonNullAndReturn(isSupported);
 
     HutaoPrivateWindowsVersion winver;
-	GetWindowsVersion(&winver);
+    GetWindowsVersion(&winver);
 
-	if (winver.major > 10 || winver.minor > 0 || winver.build > 19045 || winver.revision >= 5371)
+    const DWORD targetMajor = 10;
+    const DWORD targetMinor = 0;
+    const DWORD targetBuild = 19045;
+    const DWORD targetRevision = 5371;
+
+    if (winver.major > targetMajor ||
+        (winver.major == targetMajor && winver.minor > targetMinor) ||
+        (winver.major == targetMajor && winver.minor == targetMinor && winver.build > targetBuild) ||
+        (winver.major == targetMajor && winver.minor == targetMinor && winver.build == targetBuild && winver.revision >= targetRevision))
     {
-         *isSupported = TRUE;
-         return S_OK;
+        *isSupported = TRUE;
+    }
+    else
+    {
+        *isSupported = FALSE;
     }
 
-    *isSupported = FALSE;
     return S_OK;
 }
 
