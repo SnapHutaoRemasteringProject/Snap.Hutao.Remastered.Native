@@ -187,8 +187,7 @@ HRESULT __stdcall HutaoNative::GetWindowsVersion(HutaoPrivateWindowsVersion* pv)
 {
     AssertNonNullAndReturn(pv);
 
-    // Use RtlGetVersion to get accurate Windows version information
-    typedef LONG (WINAPI* RtlGetVersionPtr)(PRTL_OSVERSIONINFOW);
+    typedef LONG(WINAPI* RtlGetVersionPtr)(PRTL_OSVERSIONINFOW);
     HMODULE hNtdll = GetModuleHandleW(L"ntdll.dll");
     if (hNtdll == nullptr)
     {
@@ -199,7 +198,6 @@ HRESULT __stdcall HutaoNative::GetWindowsVersion(HutaoPrivateWindowsVersion* pv)
 
     RtlGetVersionPtr pRtlGetVersion = reinterpret_cast<RtlGetVersionPtr>(
         GetProcAddress(hNtdll, "RtlGetVersion"));
-    
     if (pRtlGetVersion == nullptr)
     {
         HRESULT hr = HRESULT_FROM_WIN32(GetLastError());
@@ -209,20 +207,37 @@ HRESULT __stdcall HutaoNative::GetWindowsVersion(HutaoPrivateWindowsVersion* pv)
 
     RTL_OSVERSIONINFOW versionInfo = { 0 };
     versionInfo.dwOSVersionInfoSize = sizeof(versionInfo);
-    
+
     LONG status = pRtlGetVersion(&versionInfo);
-    if (status != 0) // STATUS_SUCCESS is 0
+    if (status != 0) // STATUS_SUCCESS Ϊ 0
     {
         HRESULT hr = HRESULT_FROM_NT(status);
         ThrowForHR(hr, "RtlGetVersion failed");
         return hr;
     }
 
-    // Fill the structure
     pv->major = versionInfo.dwMajorVersion;
     pv->minor = versionInfo.dwMinorVersion;
     pv->build = versionInfo.dwBuildNumber;
-    pv->revision = 0; // RTL_OSVERSIONINFOW doesn't have revision field, set to 0
+
+    pv->revision = 0;
+    HKEY hKey = nullptr;
+    LONG result = RegOpenKeyExW(HKEY_LOCAL_MACHINE,
+        L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion",
+        0, KEY_READ, &hKey);
+    if (result == ERROR_SUCCESS)
+    {
+        DWORD ubr = 0;
+        DWORD dataSize = sizeof(ubr);
+        DWORD type = 0;
+        result = RegQueryValueExW(hKey, L"UBR", nullptr, &type,
+            reinterpret_cast<LPBYTE>(&ubr), &dataSize);
+        if (result == ERROR_SUCCESS && type == REG_DWORD)
+        {
+            pv->revision = ubr;
+        }
+        RegCloseKey(hKey);
+    }
 
     return S_OK;
 }
