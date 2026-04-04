@@ -6,18 +6,6 @@
     <ClCompile Include="SimpleTestFramework.cpp" />
     <ClCompile Include="TestBase.cpp" />
     <ClCompile Include="TestHutaoString.cpp" />
-    <ClCompile Include="..\Snap.Hutao.Remastered.Native\HutaoString.cpp">
-      <Filter>imports</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Snap.Hutao.Remastered.Native\HutaoAString.cpp">
-      <Filter>imports</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Snap.Hutao.Remastered.Native\Error.cpp">
-      <Filter>imports</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Snap.Hutao.Remastered.Native\WilCallbacksManager.cpp">
-      <Filter>imports</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />

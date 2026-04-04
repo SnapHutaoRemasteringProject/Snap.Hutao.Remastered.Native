@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "IHutaoNative.h"
 #include "IHutaoNativeLoopbackSupport.h"
@@ -24,6 +24,7 @@ class HutaoNative : public hutao::CustomImplements<
     IHutaoNative,
     IHutaoNativePrivate,
     IHutaoPrivate2,
+    IHutaoPrivate3,
     IHutaoNative2,
     IHutaoNative3,
     IHutaoNative4,
@@ -68,4 +69,11 @@ public:
     
     // IHutaoPrivate2 methods
     virtual HRESULT __stdcall ExchangeGameUidForIdentifier1820(PCWSTR gameUid, byte* identifier) override;
+
+    // IHutaoPrivate3 methods
+    virtual HRESULT __stdcall IsAutoStartTaskActiveForThisUser(BOOL* isActive) override;
+    virtual HRESULT __stdcall CreateAutoStartTaskForThisUser(BOOL runElevated) override;
+    virtual HRESULT __stdcall DeleteAutoStartTaskForThisUser() override;
+    virtual HRESULT __stdcall IsAutoStartTaskRunElevatedForThisUser(BOOL* isRunElevated) override;
+    virtual HRESULT __stdcall GetAutoStartTaskExecutablePathForThisUser(_Out_writes_z_(cchBuffer) WCHAR* buffer, DWORD cchBuffer) override;
 };
