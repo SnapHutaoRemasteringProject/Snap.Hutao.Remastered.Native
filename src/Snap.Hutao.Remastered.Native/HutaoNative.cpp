@@ -55,7 +55,7 @@ namespace
 			return hr;
 		}
 
-		taskName = L"SHRP autostart for ";
+		taskName = L"Autorun for ";
 		taskName += username;
 		return S_OK;
 	}
