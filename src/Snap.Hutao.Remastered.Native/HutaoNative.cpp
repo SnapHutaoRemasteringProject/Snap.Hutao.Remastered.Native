@@ -20,6 +20,7 @@
 #include <Lmcons.h>
 #include <comdef.h>
 #include <taskschd.h>
+#include <appmodel.h>
 #include <strsafe.h>
 #include <string>
 
@@ -124,6 +125,8 @@ namespace
 		WCHAR usernameDomain[USERNAME_DOMAIN_LEN] = {};
 		WCHAR username[USERNAME_LEN] = {};
 		std::wstring taskName;
+		std::wstring actionPath;
+		std::wstring actionArguments;
 
 		hr = GetCurrentUserAndTaskName(usernameDomain, username, taskName);
 		if (FAILED(hr))
@@ -131,10 +134,35 @@ namespace
 			return hr;
 		}
 
-		WCHAR executablePath[MAX_PATH] = {};
-		if (!GetModuleFileNameW(nullptr, executablePath, MAX_PATH))
+		UINT32 packageFamilyNameLength = 0;
+		LONG packageResult = GetCurrentPackageFamilyName(&packageFamilyNameLength, nullptr);
+		if (packageResult == ERROR_INSUFFICIENT_BUFFER && packageFamilyNameLength > 0)
 		{
-			return HRESULT_FROM_WIN32(GetLastError());
+			std::wstring packageFamilyName(packageFamilyNameLength, L'\0');
+			packageResult = GetCurrentPackageFamilyName(&packageFamilyNameLength, packageFamilyName.data());
+			if (packageResult == ERROR_SUCCESS)
+			{
+				if (!packageFamilyName.empty() && packageFamilyName.back() == L'\0')
+				{
+					packageFamilyName.pop_back();
+				}
+
+				actionPath = L"explorer.exe";
+				actionArguments = L"shell:appsFolder\\";
+				actionArguments += packageFamilyName;
+				actionArguments += L"!App";
+			}
+		}
+
+		if (actionPath.empty())
+		{
+			WCHAR executablePath[MAX_PATH] = {};
+			if (!GetModuleFileNameW(nullptr, executablePath, MAX_PATH))
+			{
+				return HRESULT_FROM_WIN32(GetLastError());
+			}
+
+			actionPath = executablePath;
 		}
 
 		ITaskService* pService = nullptr;
@@ -283,7 +311,11 @@ namespace
 				goto LExit;
 			}
 
-			hr = pExecAction->put_Path(_bstr_t(executablePath));
+			hr = pExecAction->put_Path(_bstr_t(actionPath.c_str()));
+			if (SUCCEEDED(hr) && !actionArguments.empty())
+			{
+				hr = pExecAction->put_Arguments(_bstr_t(actionArguments.c_str()));
+			}
 			pExecAction->Release();
 			if (FAILED(hr))
 			{
@@ -608,6 +640,7 @@ namespace
 		IAction* pAction = nullptr;
 		IExecAction* pExecAction = nullptr;
 		BSTR bstrPath = nullptr;
+		BSTR bstrArguments = nullptr;
 
 		hr = ConnectTaskService(&pService);
 		if (FAILED(hr))
@@ -663,9 +696,28 @@ namespace
 			goto LExit;
 		}
 
-		hr = StringCchCopyW(buffer, cchBuffer, bstrPath);
+		if (_wcsicmp(bstrPath, L"explorer.exe") == 0)
+		{
+			hr = pExecAction->get_Arguments(&bstrArguments);
+			if (SUCCEEDED(hr) && bstrArguments != nullptr && bstrArguments[0] != L'\0')
+			{
+				hr = StringCchCopyW(buffer, cchBuffer, bstrArguments);
+			}
+			else
+			{
+				hr = StringCchCopyW(buffer, cchBuffer, bstrPath);
+			}
+		}
+		else
+		{
+			hr = StringCchCopyW(buffer, cchBuffer, bstrPath);
+		}
 
 	LExit:
+		if (bstrArguments)
+		{
+			SysFreeString(bstrArguments);
+		}
 		if (bstrPath)
 		{
 			SysFreeString(bstrPath);
