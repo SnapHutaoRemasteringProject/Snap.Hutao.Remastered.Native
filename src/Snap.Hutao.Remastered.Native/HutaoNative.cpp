@@ -134,23 +134,24 @@ namespace
 			return hr;
 		}
 
-		UINT32 packageFamilyNameLength = 0;
-		LONG packageResult = GetCurrentPackageFamilyName(&packageFamilyNameLength, nullptr);
-		if (packageResult == ERROR_INSUFFICIENT_BUFFER && packageFamilyNameLength > 0)
+		if (!runElevated)
 		{
-			std::wstring packageFamilyName(packageFamilyNameLength, L'\0');
-			packageResult = GetCurrentPackageFamilyName(&packageFamilyNameLength, packageFamilyName.data());
-			if (packageResult == ERROR_SUCCESS)
+			UINT32 packageFamilyNameLength = 0;
+			LONG packageResult = GetCurrentPackageFamilyName(&packageFamilyNameLength, nullptr);
+			if (packageResult == ERROR_INSUFFICIENT_BUFFER && packageFamilyNameLength > 0)
 			{
-				if (!packageFamilyName.empty() && packageFamilyName.back() == L'\0')
+				std::wstring packageFamilyName(packageFamilyNameLength, L'\0');
+				packageResult = GetCurrentPackageFamilyName(&packageFamilyNameLength, packageFamilyName.data());
+				if (packageResult == ERROR_SUCCESS)
 				{
-					packageFamilyName.pop_back();
-				}
+					if (!packageFamilyName.empty() && packageFamilyName.back() == L'\0')
+					{
+						packageFamilyName.pop_back();
+					}
 
-				actionPath = L"explorer.exe";
-				actionArguments = L"shell:appsFolder\\";
-				actionArguments += packageFamilyName;
-				actionArguments += L"!App";
+					actionPath = L"explorer.exe";
+					actionArguments = L"shell:appsFolder\\" + packageFamilyName + L"!App";
+				}
 			}
 		}
 
@@ -270,10 +271,6 @@ namespace
 			}
 
 			hr = pLogonTrigger->put_Id(_bstr_t(L"Trigger1"));
-			if (SUCCEEDED(hr))
-			{
-				hr = pLogonTrigger->put_Delay(_bstr_t(L"PT03S"));
-			}
 			if (SUCCEEDED(hr))
 			{
 				hr = pLogonTrigger->put_UserId(_bstr_t(usernameDomain));
@@ -640,7 +637,6 @@ namespace
 		IAction* pAction = nullptr;
 		IExecAction* pExecAction = nullptr;
 		BSTR bstrPath = nullptr;
-		BSTR bstrArguments = nullptr;
 
 		hr = ConnectTaskService(&pService);
 		if (FAILED(hr))
@@ -696,28 +692,9 @@ namespace
 			goto LExit;
 		}
 
-		if (_wcsicmp(bstrPath, L"explorer.exe") == 0)
-		{
-			hr = pExecAction->get_Arguments(&bstrArguments);
-			if (SUCCEEDED(hr) && bstrArguments != nullptr && bstrArguments[0] != L'\0')
-			{
-				hr = StringCchCopyW(buffer, cchBuffer, bstrArguments);
-			}
-			else
-			{
-				hr = StringCchCopyW(buffer, cchBuffer, bstrPath);
-			}
-		}
-		else
-		{
-			hr = StringCchCopyW(buffer, cchBuffer, bstrPath);
-		}
+		hr = StringCchCopyW(buffer, cchBuffer, bstrPath);
 
 	LExit:
-		if (bstrArguments)
-		{
-			SysFreeString(bstrArguments);
-		}
 		if (bstrPath)
 		{
 			SysFreeString(bstrPath);
