@@ -17,6 +17,740 @@
 #include "HutaoNativeHotKeyAction.h"
 #include "HutaoNativeProcess.h"
 #include "HutaoNativeWindowNonRude.h"
+#include <Lmcons.h>
+#include <comdef.h>
+#include <taskschd.h>
+#include <appmodel.h>
+#include <strsafe.h>
+#include <string>
+
+#pragma comment(lib, "Taskschd.lib")
+#pragma comment(lib, "Ole32.lib")
+
+namespace
+{
+	constexpr DWORD USERNAME_DOMAIN_LEN = DNLEN + UNLEN + 2;
+	constexpr DWORD USERNAME_LEN = UNLEN + 1;
+
+	HRESULT GetCurrentUserAndTaskName(_Out_writes_z_(USERNAME_DOMAIN_LEN) WCHAR* usernameDomain, _Out_writes_z_(USERNAME_LEN) WCHAR* username, std::wstring& taskName)
+	{
+		if (!GetEnvironmentVariableW(L"USERNAME", username, USERNAME_LEN))
+		{
+			return HRESULT_FROM_WIN32(GetLastError());
+		}
+
+		if (!GetEnvironmentVariableW(L"USERDOMAIN", usernameDomain, USERNAME_DOMAIN_LEN))
+		{
+			return HRESULT_FROM_WIN32(GetLastError());
+		}
+
+		HRESULT hr = StringCchCatW(usernameDomain, USERNAME_DOMAIN_LEN, L"\\");
+		if (FAILED(hr))
+		{
+			return hr;
+		}
+
+		hr = StringCchCatW(usernameDomain, USERNAME_DOMAIN_LEN, username);
+		if (FAILED(hr))
+		{
+			return hr;
+		}
+
+		taskName = L"Autorun for ";
+		taskName += username;
+		return S_OK;
+	}
+
+	HRESULT ConnectTaskService(ITaskService** ppService)
+	{
+		AssertNonNullAndReturn(ppService);
+		*ppService = nullptr;
+
+		HRESULT hr = CoCreateInstance(
+			CLSID_TaskScheduler,
+			nullptr,
+			CLSCTX_INPROC_SERVER,
+			IID_ITaskService,
+			reinterpret_cast<void**>(ppService));
+		if (FAILED(hr))
+		{
+			return hr;
+		}
+
+		hr = (*ppService)->Connect(_variant_t(), _variant_t(), _variant_t(), _variant_t());
+		if (FAILED(hr))
+		{
+			(*ppService)->Release();
+			*ppService = nullptr;
+		}
+
+		return hr;
+	}
+
+	HRESULT GetOrCreateHutaoFolder(ITaskService* pService, ITaskFolder** ppTaskFolder)
+	{
+		AssertNonNullAndReturn(pService);
+		AssertNonNullAndReturn(ppTaskFolder);
+		*ppTaskFolder = nullptr;
+
+		HRESULT hr = pService->GetFolder(_bstr_t(L"\\Hutao"), ppTaskFolder);
+		if (SUCCEEDED(hr))
+		{
+			return S_OK;
+		}
+
+		ITaskFolder* pRootFolder = nullptr;
+		hr = pService->GetFolder(_bstr_t(L"\\"), &pRootFolder);
+		if (FAILED(hr))
+		{
+			return hr;
+		}
+
+		hr = pRootFolder->CreateFolder(_bstr_t(L"\\Hutao"), _variant_t(L""), ppTaskFolder);
+		pRootFolder->Release();
+		return hr;
+	}
+
+	HRESULT GetHutaoFolder(ITaskService* pService, ITaskFolder** ppTaskFolder)
+	{
+		AssertNonNullAndReturn(pService);
+		AssertNonNullAndReturn(ppTaskFolder);
+		*ppTaskFolder = nullptr;
+		return pService->GetFolder(_bstr_t(L"\\Hutao"), ppTaskFolder);
+	}
+
+	HRESULT InternalCreateAutoStartTaskForThisUser(bool runElevated)
+	{
+		HRESULT hr = S_OK;
+		WCHAR usernameDomain[USERNAME_DOMAIN_LEN] = {};
+		WCHAR username[USERNAME_LEN] = {};
+		std::wstring taskName;
+		std::wstring actionPath;
+		std::wstring actionArguments;
+
+		hr = GetCurrentUserAndTaskName(usernameDomain, username, taskName);
+		if (FAILED(hr))
+		{
+			return hr;
+		}
+
+		if (!runElevated)
+		{
+			UINT32 packageFamilyNameLength = 0;
+			LONG packageResult = GetCurrentPackageFamilyName(&packageFamilyNameLength, nullptr);
+			if (packageResult == ERROR_INSUFFICIENT_BUFFER && packageFamilyNameLength > 0)
+			{
+				std::wstring packageFamilyName(packageFamilyNameLength, L'\0');
+				packageResult = GetCurrentPackageFamilyName(&packageFamilyNameLength, packageFamilyName.data());
+				if (packageResult == ERROR_SUCCESS)
+				{
+					if (!packageFamilyName.empty() && packageFamilyName.back() == L'\0')
+					{
+						packageFamilyName.pop_back();
+					}
+
+					actionPath = L"explorer.exe";
+					actionArguments = L"shell:appsFolder\\" + packageFamilyName + L"!App";
+				}
+			}
+		}
+
+		if (actionPath.empty())
+		{
+			WCHAR executablePath[MAX_PATH] = {};
+			if (!GetModuleFileNameW(nullptr, executablePath, MAX_PATH))
+			{
+				return HRESULT_FROM_WIN32(GetLastError());
+			}
+
+			actionPath = executablePath;
+		}
+
+		ITaskService* pService = nullptr;
+		ITaskFolder* pTaskFolder = nullptr;
+		ITaskDefinition* pTask = nullptr;
+		IRegistrationInfo* pRegInfo = nullptr;
+		ITaskSettings* pSettings = nullptr;
+		ITriggerCollection* pTriggerCollection = nullptr;
+		IRegisteredTask* pRegisteredTask = nullptr;
+
+		hr = ConnectTaskService(&pService);
+		if (FAILED(hr))
+		{
+			goto LExit;
+		}
+
+		hr = GetOrCreateHutaoFolder(pService, &pTaskFolder);
+		if (FAILED(hr))
+		{
+			goto LExit;
+		}
+
+		{
+			IRegisteredTask* pExistingRegisteredTask = nullptr;
+			hr = pTaskFolder->GetTask(_bstr_t(taskName.c_str()), &pExistingRegisteredTask);
+			if (SUCCEEDED(hr) && pExistingRegisteredTask)
+			{
+				hr = pExistingRegisteredTask->put_Enabled(VARIANT_TRUE);
+				pExistingRegisteredTask->Release();
+				goto LExit;
+			}
+		}
+
+		hr = pService->NewTask(0, &pTask);
+		if (FAILED(hr))
+		{
+			goto LExit;
+		}
+
+		hr = pTask->get_RegistrationInfo(&pRegInfo);
+		if (FAILED(hr))
+		{
+			goto LExit;
+		}
+
+		hr = pRegInfo->put_Author(_bstr_t(usernameDomain));
+		if (FAILED(hr))
+		{
+			goto LExit;
+		}
+
+		hr = pTask->get_Settings(&pSettings);
+		if (FAILED(hr))
+		{
+			goto LExit;
+		}
+
+		hr = pSettings->put_StartWhenAvailable(VARIANT_FALSE);
+		if (FAILED(hr))
+		{
+			goto LExit;
+		}
+		hr = pSettings->put_StopIfGoingOnBatteries(VARIANT_FALSE);
+		if (FAILED(hr))
+		{
+			goto LExit;
+		}
+		hr = pSettings->put_ExecutionTimeLimit(_bstr_t(L"PT0S"));
+		if (FAILED(hr))
+		{
+			goto LExit;
+		}
+		hr = pSettings->put_DisallowStartIfOnBatteries(VARIANT_FALSE);
+		if (FAILED(hr))
+		{
+			goto LExit;
+		}
+		hr = pSettings->put_Priority(4);
+		if (FAILED(hr))
+		{
+			goto LExit;
+		}
+
+		hr = pTask->get_Triggers(&pTriggerCollection);
+		if (FAILED(hr))
+		{
+			goto LExit;
+		}
+
+		{
+			ITrigger* pTrigger = nullptr;
+			ILogonTrigger* pLogonTrigger = nullptr;
+
+			hr = pTriggerCollection->Create(TASK_TRIGGER_LOGON, &pTrigger);
+			if (FAILED(hr))
+			{
+				goto LExit;
+			}
+
+			hr = pTrigger->QueryInterface(IID_ILogonTrigger, reinterpret_cast<void**>(&pLogonTrigger));
+			pTrigger->Release();
+			if (FAILED(hr))
+			{
+				goto LExit;
+			}
+
+			hr = pLogonTrigger->put_Id(_bstr_t(L"Trigger1"));
+			if (SUCCEEDED(hr))
+			{
+				hr = pLogonTrigger->put_UserId(_bstr_t(usernameDomain));
+			}
+
+			pLogonTrigger->Release();
+			if (FAILED(hr))
+			{
+				goto LExit;
+			}
+		}
+
+		{
+			IActionCollection* pActionCollection = nullptr;
+			IAction* pAction = nullptr;
+			IExecAction* pExecAction = nullptr;
+
+			hr = pTask->get_Actions(&pActionCollection);
+			if (FAILED(hr))
+			{
+				goto LExit;
+			}
+
+			hr = pActionCollection->Create(TASK_ACTION_EXEC, &pAction);
+			pActionCollection->Release();
+			if (FAILED(hr))
+			{
+				goto LExit;
+			}
+
+			hr = pAction->QueryInterface(IID_IExecAction, reinterpret_cast<void**>(&pExecAction));
+			pAction->Release();
+			if (FAILED(hr))
+			{
+				goto LExit;
+			}
+
+			hr = pExecAction->put_Path(_bstr_t(actionPath.c_str()));
+			if (SUCCEEDED(hr) && !actionArguments.empty())
+			{
+				hr = pExecAction->put_Arguments(_bstr_t(actionArguments.c_str()));
+			}
+			pExecAction->Release();
+			if (FAILED(hr))
+			{
+				goto LExit;
+			}
+		}
+
+		{
+			IPrincipal* pPrincipal = nullptr;
+			hr = pTask->get_Principal(&pPrincipal);
+			if (FAILED(hr))
+			{
+				goto LExit;
+			}
+
+			hr = pPrincipal->put_Id(_bstr_t(L"Principal1"));
+			if (SUCCEEDED(hr))
+			{
+				hr = pPrincipal->put_UserId(_bstr_t(usernameDomain));
+			}
+			if (SUCCEEDED(hr))
+			{
+				hr = pPrincipal->put_LogonType(TASK_LOGON_INTERACTIVE_TOKEN);
+			}
+			if (SUCCEEDED(hr))
+			{
+				hr = pPrincipal->put_RunLevel(runElevated ? TASK_RUNLEVEL_HIGHEST : TASK_RUNLEVEL_LUA);
+			}
+
+			pPrincipal->Release();
+			if (FAILED(hr))
+			{
+				goto LExit;
+			}
+		}
+
+		{
+			_variant_t fullAccessForEveryone = L"D:(A;;FA;;;WD)";
+			hr = pTaskFolder->RegisterTaskDefinition(
+				_bstr_t(taskName.c_str()),
+				pTask,
+				TASK_CREATE_OR_UPDATE,
+				_variant_t(usernameDomain),
+				_variant_t(),
+				TASK_LOGON_INTERACTIVE_TOKEN,
+				fullAccessForEveryone,
+				&pRegisteredTask);
+		}
+
+	LExit:
+		if (pService)
+		{
+			pService->Release();
+		}
+		if (pTaskFolder)
+		{
+			pTaskFolder->Release();
+		}
+		if (pTask)
+		{
+			pTask->Release();
+		}
+		if (pRegInfo)
+		{
+			pRegInfo->Release();
+		}
+		if (pSettings)
+		{
+			pSettings->Release();
+		}
+		if (pTriggerCollection)
+		{
+			pTriggerCollection->Release();
+		}
+		if (pRegisteredTask)
+		{
+			pRegisteredTask->Release();
+		}
+
+		return hr;
+	}
+
+	HRESULT InternalDeleteAutoStartTaskForThisUser()
+	{
+		HRESULT hr = S_OK;
+		WCHAR usernameDomain[USERNAME_DOMAIN_LEN] = {};
+		WCHAR username[USERNAME_LEN] = {};
+		std::wstring taskName;
+
+		hr = GetCurrentUserAndTaskName(usernameDomain, username, taskName);
+		if (FAILED(hr))
+		{
+			return hr;
+		}
+
+		ITaskService* pService = nullptr;
+		ITaskFolder* pTaskFolder = nullptr;
+
+		hr = ConnectTaskService(&pService);
+		if (FAILED(hr))
+		{
+			goto LExit;
+		}
+
+		hr = GetHutaoFolder(pService, &pTaskFolder);
+		if (FAILED(hr))
+		{
+			if (hr == HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND) || hr == HRESULT_FROM_WIN32(ERROR_PATH_NOT_FOUND))
+			{
+				hr = S_OK;
+			}
+			goto LExit;
+		}
+
+		hr = pTaskFolder->DeleteTask(_bstr_t(taskName.c_str()), 0);
+		if (hr == HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND) || hr == HRESULT_FROM_WIN32(ERROR_PATH_NOT_FOUND))
+		{
+			hr = S_OK;
+		}
+
+	LExit:
+		if (pService)
+		{
+			pService->Release();
+		}
+		if (pTaskFolder)
+		{
+			pTaskFolder->Release();
+		}
+
+		return hr;
+	}
+
+	HRESULT InternalIsAutoStartTaskActiveForThisUser(BOOL* isActive)
+	{
+		AssertNonNullAndReturn(isActive);
+		*isActive = FALSE;
+
+		HRESULT hr = S_OK;
+		WCHAR usernameDomain[USERNAME_DOMAIN_LEN] = {};
+		WCHAR username[USERNAME_LEN] = {};
+		std::wstring taskName;
+		VARIANT_BOOL isEnabled = VARIANT_FALSE;
+
+		hr = GetCurrentUserAndTaskName(usernameDomain, username, taskName);
+		if (FAILED(hr))
+		{
+			return hr;
+		}
+
+		ITaskService* pService = nullptr;
+		ITaskFolder* pTaskFolder = nullptr;
+		IRegisteredTask* pExistingRegisteredTask = nullptr;
+
+		hr = ConnectTaskService(&pService);
+		if (FAILED(hr))
+		{
+			goto LExit;
+		}
+
+		hr = GetHutaoFolder(pService, &pTaskFolder);
+		if (FAILED(hr))
+		{
+			if (hr == HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND) || hr == HRESULT_FROM_WIN32(ERROR_PATH_NOT_FOUND))
+			{
+				hr = S_OK;
+			}
+			goto LExit;
+		}
+
+		hr = pTaskFolder->GetTask(_bstr_t(taskName.c_str()), &pExistingRegisteredTask);
+		if (FAILED(hr))
+		{
+			if (hr == HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND) || hr == HRESULT_FROM_WIN32(ERROR_PATH_NOT_FOUND))
+			{
+				hr = S_OK;
+			}
+			goto LExit;
+		}
+
+		hr = pExistingRegisteredTask->get_Enabled(&isEnabled);
+		if (SUCCEEDED(hr))
+		{
+			*isActive = isEnabled == VARIANT_TRUE ? TRUE : FALSE;
+		}
+
+	LExit:
+		if (pService)
+		{
+			pService->Release();
+		}
+		if (pTaskFolder)
+		{
+			pTaskFolder->Release();
+		}
+		if (pExistingRegisteredTask)
+		{
+			pExistingRegisteredTask->Release();
+		}
+
+		return hr;
+	}
+
+	HRESULT InternalIsAutoStartTaskRunElevatedForThisUser(BOOL* isRunElevated)
+	{
+		AssertNonNullAndReturn(isRunElevated);
+		*isRunElevated = FALSE;
+
+		HRESULT hr = S_OK;
+		WCHAR usernameDomain[USERNAME_DOMAIN_LEN] = {};
+		WCHAR username[USERNAME_LEN] = {};
+		std::wstring taskName;
+		TASK_RUNLEVEL_TYPE runLevel = TASK_RUNLEVEL_LUA;
+
+		hr = GetCurrentUserAndTaskName(usernameDomain, username, taskName);
+		if (FAILED(hr))
+		{
+			return hr;
+		}
+
+		ITaskService* pService = nullptr;
+		ITaskFolder* pTaskFolder = nullptr;
+		IRegisteredTask* pExistingRegisteredTask = nullptr;
+		ITaskDefinition* pDef = nullptr;
+		IPrincipal* pPrincipal = nullptr;
+
+		hr = ConnectTaskService(&pService);
+		if (FAILED(hr))
+		{
+			goto LExit;
+		}
+
+		hr = GetHutaoFolder(pService, &pTaskFolder);
+		if (FAILED(hr))
+		{
+			if (hr == HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND) || hr == HRESULT_FROM_WIN32(ERROR_PATH_NOT_FOUND))
+			{
+				hr = S_OK;
+			}
+			goto LExit;
+		}
+
+		hr = pTaskFolder->GetTask(_bstr_t(taskName.c_str()), &pExistingRegisteredTask);
+		if (FAILED(hr))
+		{
+			if (hr == HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND) || hr == HRESULT_FROM_WIN32(ERROR_PATH_NOT_FOUND))
+			{
+				hr = S_OK;
+			}
+			goto LExit;
+		}
+
+		hr = pExistingRegisteredTask->get_Definition(&pDef);
+		if (FAILED(hr))
+		{
+			goto LExit;
+		}
+
+		hr = pDef->get_Principal(&pPrincipal);
+		if (FAILED(hr))
+		{
+			goto LExit;
+		}
+
+		hr = pPrincipal->get_RunLevel(&runLevel);
+		if (SUCCEEDED(hr))
+		{
+			*isRunElevated = runLevel == TASK_RUNLEVEL_HIGHEST ? TRUE : FALSE;
+		}
+
+	LExit:
+		if (pService)
+		{
+			pService->Release();
+		}
+		if (pTaskFolder)
+		{
+			pTaskFolder->Release();
+		}
+		if (pExistingRegisteredTask)
+		{
+			pExistingRegisteredTask->Release();
+		}
+		if (pDef)
+		{
+			pDef->Release();
+		}
+		if (pPrincipal)
+		{
+			pPrincipal->Release();
+		}
+
+		return hr;
+	}
+
+	HRESULT InternalGetAutoStartTaskExecutablePathForThisUser(_Out_writes_z_(cchBuffer) WCHAR* buffer, DWORD cchBuffer)
+	{
+		AssertNonNullAndReturn(buffer);
+		if (cchBuffer == 0)
+		{
+			return E_INVALIDARG;
+		}
+
+		buffer[0] = L'\0';
+
+		HRESULT hr = S_OK;
+		WCHAR usernameDomain[USERNAME_DOMAIN_LEN] = {};
+		WCHAR username[USERNAME_LEN] = {};
+		std::wstring taskName;
+
+		hr = GetCurrentUserAndTaskName(usernameDomain, username, taskName);
+		if (FAILED(hr))
+		{
+			return hr;
+		}
+
+		ITaskService* pService = nullptr;
+		ITaskFolder* pTaskFolder = nullptr;
+		IRegisteredTask* pExistingRegisteredTask = nullptr;
+		ITaskDefinition* pDef = nullptr;
+		IActionCollection* pActions = nullptr;
+		IAction* pAction = nullptr;
+		IExecAction* pExecAction = nullptr;
+		BSTR bstrPath = nullptr;
+
+		hr = ConnectTaskService(&pService);
+		if (FAILED(hr))
+		{
+			goto LExit;
+		}
+
+		hr = GetHutaoFolder(pService, &pTaskFolder);
+		if (FAILED(hr))
+		{
+			goto LExit;
+		}
+
+		hr = pTaskFolder->GetTask(_bstr_t(taskName.c_str()), &pExistingRegisteredTask);
+		if (FAILED(hr))
+		{
+			goto LExit;
+		}
+
+		hr = pExistingRegisteredTask->get_Definition(&pDef);
+		if (FAILED(hr))
+		{
+			goto LExit;
+		}
+
+		hr = pDef->get_Actions(&pActions);
+		if (FAILED(hr))
+		{
+			goto LExit;
+		}
+
+		hr = pActions->get_Item(1, &pAction);
+		if (FAILED(hr))
+		{
+			goto LExit;
+		}
+
+		hr = pAction->QueryInterface(IID_IExecAction, reinterpret_cast<void**>(&pExecAction));
+		if (FAILED(hr))
+		{
+			goto LExit;
+		}
+
+		hr = pExecAction->get_Path(&bstrPath);
+		if (FAILED(hr))
+		{
+			goto LExit;
+		}
+
+		if (!bstrPath)
+		{
+			hr = E_NOT_FOUND;
+			goto LExit;
+		}
+
+		hr = StringCchCopyW(buffer, cchBuffer, bstrPath);
+
+	LExit:
+		if (bstrPath)
+		{
+			SysFreeString(bstrPath);
+		}
+		if (pService)
+		{
+			pService->Release();
+		}
+		if (pTaskFolder)
+		{
+			pTaskFolder->Release();
+		}
+		if (pExistingRegisteredTask)
+		{
+			pExistingRegisteredTask->Release();
+		}
+		if (pDef)
+		{
+			pDef->Release();
+		}
+		if (pActions)
+		{
+			pActions->Release();
+		}
+		if (pAction)
+		{
+			pAction->Release();
+		}
+		if (pExecAction)
+		{
+			pExecAction->Release();
+		}
+
+		return hr;
+	}
+}
+
+HRESULT EnsureTaskSchedulerComInitialized(bool* shouldUninitialize)
+{
+	AssertNonNullAndReturn(shouldUninitialize);
+	*shouldUninitialize = false;
+
+	HRESULT hrInit = CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED);
+	if (hrInit == RPC_E_CHANGED_MODE)
+	{
+		return S_OK;
+	}
+
+	if (FAILED(hrInit))
+	{
+		return hrInit;
+	}
+
+	*shouldUninitialize = true;
+	return S_OK;
+}
 
 HRESULT __stdcall HutaoNative::MakeLoopbackSupport(IHutaoNativeLoopbackSupport** ppv)
 {
@@ -289,4 +1023,105 @@ HRESULT __stdcall HutaoNative::ExchangeGameUidForIdentifier1820(PCWSTR gameUid, 
 	memcpy(identifier, gameUid, byteCount);
 
 	return S_OK;
+}
+
+// IHutaoPrivate3 methods
+HRESULT __stdcall HutaoNative::IsAutoStartTaskActiveForThisUser(BOOL* isActive)
+{
+	AssertNonNullAndReturn(isActive);
+
+	bool shouldUninitialize = false;
+	HRESULT hr = EnsureTaskSchedulerComInitialized(&shouldUninitialize);
+	if (FAILED(hr))
+	{
+		return hr;
+	}
+
+	hr = InternalIsAutoStartTaskActiveForThisUser(isActive);
+	if (shouldUninitialize)
+	{
+		CoUninitialize();
+	}
+
+	return hr;
+}
+
+HRESULT __stdcall HutaoNative::CreateAutoStartTaskForThisUser(BOOL runElevated)
+{
+	bool shouldUninitialize = false;
+	HRESULT hr = EnsureTaskSchedulerComInitialized(&shouldUninitialize);
+	if (FAILED(hr))
+	{
+		return hr;
+	}
+
+	hr = InternalCreateAutoStartTaskForThisUser(runElevated == TRUE);
+	if (shouldUninitialize)
+	{
+		CoUninitialize();
+	}
+
+	return hr;
+}
+
+HRESULT __stdcall HutaoNative::DeleteAutoStartTaskForThisUser()
+{
+	bool shouldUninitialize = false;
+	HRESULT hr = EnsureTaskSchedulerComInitialized(&shouldUninitialize);
+	if (FAILED(hr))
+	{
+		return hr;
+	}
+
+	hr = InternalDeleteAutoStartTaskForThisUser();
+	if (shouldUninitialize)
+	{
+		CoUninitialize();
+	}
+
+	return hr;
+}
+
+HRESULT __stdcall HutaoNative::IsAutoStartTaskRunElevatedForThisUser(BOOL* isRunElevated)
+{
+	AssertNonNullAndReturn(isRunElevated);
+
+	bool shouldUninitialize = false;
+	HRESULT hr = EnsureTaskSchedulerComInitialized(&shouldUninitialize);
+	if (FAILED(hr))
+	{
+		return hr;
+	}
+
+	hr = InternalIsAutoStartTaskRunElevatedForThisUser(isRunElevated);
+	if (shouldUninitialize)
+	{
+		CoUninitialize();
+	}
+
+	return hr;
+}
+
+HRESULT __stdcall HutaoNative::GetAutoStartTaskExecutablePathForThisUser(WCHAR* buffer, DWORD cchBuffer)
+{
+	AssertNonNullAndReturn(buffer);
+	if (cchBuffer == 0)
+	{
+		return E_INVALIDARG;
+	}
+
+	bool shouldUninitialize = false;
+	HRESULT hr = EnsureTaskSchedulerComInitialized(&shouldUninitialize);
+	if (FAILED(hr))
+	{
+		return hr;
+	}
+
+	hr = InternalGetAutoStartTaskExecutablePathForThisUser(buffer, cchBuffer);
+	if (shouldUninitialize)
+	{
+		CoUninitialize();
+	}
+
+	return hr;
 }

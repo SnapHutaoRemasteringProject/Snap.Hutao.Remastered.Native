@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <Windows.h>
 #include <unknwn.h>
@@ -33,6 +33,17 @@ class __declspec(uuid("4E5D37CF-5F38-4FF2-9059-DF39CA696365")) IHutaoPrivate2 : 
 {
 public:
     virtual HRESULT __stdcall ExchangeGameUidForIdentifier1820(PCWSTR gameUid, byte* identifier) = 0;
+};
+
+// {6A38A46E-DAE6-4C37-BE63-30F37E40A35E}
+class __declspec(uuid("6A38A46E-DAE6-4C37-BE63-30F37E40A35E")) IHutaoPrivate3 : public IUnknown
+{
+public:
+    virtual HRESULT __stdcall IsAutoStartTaskActiveForThisUser(BOOL* isActive) = 0;
+    virtual HRESULT __stdcall CreateAutoStartTaskForThisUser(BOOL runElevated) = 0;
+    virtual HRESULT __stdcall DeleteAutoStartTaskForThisUser() = 0;
+    virtual HRESULT __stdcall IsAutoStartTaskRunElevatedForThisUser(BOOL* isRunElevated) = 0;
+    virtual HRESULT __stdcall GetAutoStartTaskExecutablePathForThisUser(_Out_writes_z_(cchBuffer) WCHAR* buffer, DWORD cchBuffer) = 0;
 };
 
 // {D00F73FF-A1C7-4091-8CB6-D90991DD40CB}

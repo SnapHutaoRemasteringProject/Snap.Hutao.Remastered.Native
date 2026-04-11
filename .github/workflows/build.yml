@@ -1,4 +1,4 @@
-name: Build
+﻿name: Build
 
 on:
   push:
@@ -9,14 +9,14 @@ on:
 
 env:
   DOTNET_VERSION: '10.0.x'
-  MSBUILD_VERSION: '17.0'
+  MSBUILD_VERSION: '18.0'
   SOLUTION_PATH: 'src/Snap.Hutao.Remastered.Native.slnx'
   BUILD_CONFIGURATION: 'Release'
   BUILD_PLATFORM: 'x64'
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: windows-2025-vs2026
     
     steps:
     - name: Checkout repository
@@ -43,7 +43,6 @@ jobs:
         msbuild "src/Snap.Hutao.Remastered.Native/Snap.Hutao.Remastered.Native.vcxproj" `
           -p:Configuration=${{ env.BUILD_CONFIGURATION }} `
           -p:Platform=${{ env.BUILD_PLATFORM }} `
-          -p:WindowsTargetPlatformVersion=10.0
 
     - name: Build Packaging project
       run: |
