@@ -72,7 +72,7 @@ public:
 
     // IHutaoPrivate3 methods
     virtual HRESULT __stdcall IsAutoStartTaskActiveForThisUser(BOOL* isActive) override;
-    virtual HRESULT __stdcall CreateAutoStartTaskForThisUser(BOOL runElevated) override;
+    virtual HRESULT __stdcall CreateAutoStartTaskForThisUser(BOOL runElevated, BOOL isDEBUG) override;
     virtual HRESULT __stdcall DeleteAutoStartTaskForThisUser() override;
     virtual HRESULT __stdcall IsAutoStartTaskRunElevatedForThisUser(BOOL* isRunElevated) override;
     virtual HRESULT __stdcall GetAutoStartTaskExecutablePathForThisUser(_Out_writes_z_(cchBuffer) WCHAR* buffer, DWORD cchBuffer) override;

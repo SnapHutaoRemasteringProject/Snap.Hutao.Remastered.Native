@@ -1,4 +1,4 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "HutaoNativeRegistryNotification.h"
 #include "HutaoNativeRegistryNotificationCallBack.h"
 #include <algorithm>

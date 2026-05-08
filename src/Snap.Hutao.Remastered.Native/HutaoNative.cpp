@@ -21,6 +21,7 @@
 #include <comdef.h>
 #include <taskschd.h>
 #include <appmodel.h>
+#include <filesystem>
 #include <strsafe.h>
 #include <string>
 
@@ -31,6 +32,29 @@ namespace
 {
 	constexpr DWORD USERNAME_DOMAIN_LEN = DNLEN + UNLEN + 2;
 	constexpr DWORD USERNAME_LEN = UNLEN + 1;
+
+	std::wstring GetWindowsAppsAliasPath(const std::wstring& exeName)
+	{
+		wchar_t localAppData[MAX_PATH]{};
+
+		DWORD len = GetEnvironmentVariableW(
+			L"LOCALAPPDATA",
+			localAppData,
+			MAX_PATH);
+
+		if (len == 0 || len >= MAX_PATH)
+		{
+			return L"";
+		}
+
+		std::filesystem::path p(localAppData);
+
+		p /= L"Microsoft";
+		p /= L"WindowsApps";
+		p /= exeName;
+
+		return p.wstring();
+	}
 
 	HRESULT GetCurrentUserAndTaskName(_Out_writes_z_(USERNAME_DOMAIN_LEN) WCHAR* usernameDomain, _Out_writes_z_(USERNAME_LEN) WCHAR* username, std::wstring& taskName)
 	{
@@ -119,7 +143,7 @@ namespace
 		return pService->GetFolder(_bstr_t(L"\\Hutao"), ppTaskFolder);
 	}
 
-	HRESULT InternalCreateAutoStartTaskForThisUser(bool runElevated)
+	HRESULT InternalCreateAutoStartTaskForThisUser(bool runElevated, bool isDEBUG)
 	{
 		HRESULT hr = S_OK;
 		WCHAR usernameDomain[USERNAME_DOMAIN_LEN] = {};
@@ -157,13 +181,14 @@ namespace
 
 		if (actionPath.empty())
 		{
-			WCHAR executablePath[MAX_PATH] = {};
-			if (!GetModuleFileNameW(nullptr, executablePath, MAX_PATH))
+			if (isDEBUG)
 			{
-				return HRESULT_FROM_WIN32(GetLastError());
+				actionPath = GetWindowsAppsAliasPath(L"shdev.exe");
 			}
-
-			actionPath = executablePath;
+			else
+			{
+				actionPath = GetWindowsAppsAliasPath(L"sh.exe");
+			}
 		}
 
 		ITaskService* pService = nullptr;
@@ -1046,7 +1071,7 @@ HRESULT __stdcall HutaoNative::IsAutoStartTaskActiveForThisUser(BOOL* isActive)
 	return hr;
 }
 
-HRESULT __stdcall HutaoNative::CreateAutoStartTaskForThisUser(BOOL runElevated)
+HRESULT __stdcall HutaoNative::CreateAutoStartTaskForThisUser(BOOL runElevated, BOOL isDEBUG)
 {
 	bool shouldUninitialize = false;
 	HRESULT hr = EnsureTaskSchedulerComInitialized(&shouldUninitialize);
@@ -1055,7 +1080,7 @@ HRESULT __stdcall HutaoNative::CreateAutoStartTaskForThisUser(BOOL runElevated)
 		return hr;
 	}
 
-	hr = InternalCreateAutoStartTaskForThisUser(runElevated == TRUE);
+	hr = InternalCreateAutoStartTaskForThisUser(runElevated == TRUE, isDEBUG == TRUE);
 	if (shouldUninitialize)
 	{
 		CoUninitialize();

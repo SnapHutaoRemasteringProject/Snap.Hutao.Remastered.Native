@@ -40,7 +40,7 @@ class __declspec(uuid("6A38A46E-DAE6-4C37-BE63-30F37E40A35E")) IHutaoPrivate3 : 
 {
 public:
     virtual HRESULT __stdcall IsAutoStartTaskActiveForThisUser(BOOL* isActive) = 0;
-    virtual HRESULT __stdcall CreateAutoStartTaskForThisUser(BOOL runElevated) = 0;
+    virtual HRESULT __stdcall CreateAutoStartTaskForThisUser(BOOL runElevated, BOOL isDEBUG) = 0;
     virtual HRESULT __stdcall DeleteAutoStartTaskForThisUser() = 0;
     virtual HRESULT __stdcall IsAutoStartTaskRunElevatedForThisUser(BOOL* isRunElevated) = 0;
     virtual HRESULT __stdcall GetAutoStartTaskExecutablePathForThisUser(_Out_writes_z_(cchBuffer) WCHAR* buffer, DWORD cchBuffer) = 0;
