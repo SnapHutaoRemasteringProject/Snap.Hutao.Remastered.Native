@@ -20,17 +20,17 @@ jobs:
     
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
       with:
         fetch-depth: 0
 
     - name: Setup .NET
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@v5
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
 
     - name: Setup MSBuild
-      uses: microsoft/setup-msbuild@v2
+      uses: microsoft/setup-msbuild@v3
       with:
         msbuild-version: ${{ env.MSBUILD_VERSION }}
 
@@ -63,7 +63,7 @@ jobs:
           -p:NoBuild=false
 
     - name: Upload NuGet artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: nuget-package
         path: ${{ github.workspace }}/nuget/*.nupkg
@@ -71,7 +71,7 @@ jobs:
         if-no-files-found: error
 
     - name: Upload Native DLLs artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: native-dlls
         path: src/Snap.Hutao.Remastered.Native/x64/${{ env.BUILD_CONFIGURATION }}/*.dll
