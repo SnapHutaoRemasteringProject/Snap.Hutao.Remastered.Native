@@ -72,9 +72,6 @@
     <ClCompile Include="HutaoString.cpp">
       <Filter>源文件\core\impl</Filter>
     </ClCompile>
-    <ClCompile Include="FirewallRuleManager.cpp">
-      <Filter>源文件\core\internal</Filter>
-    </ClCompile>
     <ClCompile Include="IHutaoNativeLoopbackSupport.cpp">
       <Filter>源文件\core\interfaces</Filter>
     </ClCompile>
@@ -181,9 +178,6 @@
     </ClInclude>
     <ClInclude Include="HutaoString.h">
       <Filter>头文件\core\impl</Filter>
-    </ClInclude>
-    <ClInclude Include="FirewallRuleManager.h">
-      <Filter>头文件\core\internal</Filter>
     </ClInclude>
     <ClInclude Include="HutaoNativeLoopbackSupport.h">
       <Filter>头文件\core\impl</Filter>

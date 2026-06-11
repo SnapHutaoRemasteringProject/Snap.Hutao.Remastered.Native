@@ -163,7 +163,7 @@
     <ClCompile Include="DllInjectionUtils.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="Error.cpp" />
-    <ClCompile Include="FirewallRuleManager.cpp" />
+
     <ClCompile Include="FrameworkTheming.cpp" />
     <ClCompile Include="HookUtils.cpp" />
     <ClCompile Include="HutaoNative.cpp" />
@@ -205,7 +205,7 @@
     <ClInclude Include="DllInjectionUtils.h" />
     <ClInclude Include="dllmain.h" />
     <ClInclude Include="FailureInfo.h" />
-    <ClInclude Include="FirewallRuleManager.h" />
+
     <ClInclude Include="FrameworkTheming.h" />
     <ClInclude Include="HookUtils.h" />
     <ClInclude Include="HutaoNative.h" />
