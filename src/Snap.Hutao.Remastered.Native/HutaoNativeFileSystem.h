@@ -3,6 +3,7 @@
 #include "IHutaoNativeFileSystem2.h"
 #include "IHutaoNativeFileSystem3.h"
 #include "IHutaoNativeFileSystem4.h"
+#include "IHutaoNativeFileSystem5.h"
 #include "IHutaoString.h"
 #include "CustomImplements.h"
 #include <Windows.h>
@@ -10,11 +11,12 @@
 #include <shellapi.h>
 #include <string>
 
-class HutaoNativeFileSystem : public hutao::CustomImplements<HutaoNativeFileSystem, 
-    IHutaoNativeFileSystem, 
-    IHutaoNativeFileSystem2, 
-    IHutaoNativeFileSystem3, 
-    IHutaoNativeFileSystem4>
+class HutaoNativeFileSystem : public hutao::CustomImplements<HutaoNativeFileSystem,
+    IHutaoNativeFileSystem,
+    IHutaoNativeFileSystem2,
+    IHutaoNativeFileSystem3,
+    IHutaoNativeFileSystem4,
+    IHutaoNativeFileSystem5>
 {
 public:
     HutaoNativeFileSystem() = default;
@@ -44,6 +46,9 @@ public:
 
     // IHutaoNativeFileSystem4 methods
     HRESULT __stdcall CopyFileAllowDecryptedDestination(PCWSTR existingFileName, PCWSTR newFileName, BOOL overwrite) noexcept override;
+
+    // IHutaoNativeFileSystem5 methods
+    HRESULT __stdcall ResolveLink(PCWSTR lnkPath, IHutaoString** targetPath) noexcept override;
 
 private:
     static HRESULT PerformFileOperation(UINT operation, PCWSTR source, PCWSTR destination, long flags);

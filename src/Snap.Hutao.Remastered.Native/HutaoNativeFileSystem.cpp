@@ -526,3 +526,49 @@ HRESULT __stdcall HutaoNativeFileSystem::CopyFileAllowDecryptedDestination(PCWST
 
 	return S_OK;
 }
+
+// IHutaoNativeFileSystem5 methods
+HRESULT __stdcall HutaoNativeFileSystem::ResolveLink(PCWSTR lnkPath, IHutaoString** targetPath) noexcept
+{
+	AssertNonNullAndReturn(lnkPath);
+	AssertNonNullAndReturn(targetPath);
+
+	*targetPath = nullptr;
+
+	IShellLinkW* pShellLink = nullptr;
+	HRESULT hr = CoCreateInstance(CLSID_ShellLink, nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&pShellLink));
+	hutao::com_ptr<IShellLinkW> shellLink(pShellLink);
+	if (FAILED(hr))
+	{
+		return S_OK;
+	}
+
+	IPersistFile* pPersistFile = nullptr;
+	hr = shellLink->QueryInterface(IID_PPV_ARGS(&pPersistFile));
+	if (FAILED(hr))
+	{
+		return S_OK;
+	}
+	hutao::com_ptr<IPersistFile> persistFile(pPersistFile);
+
+	hr = persistFile->Load(lnkPath, 0);
+	if (FAILED(hr))
+	{
+		return S_OK;
+	}
+
+	hr = shellLink->Resolve(nullptr, SLR_NO_UI);
+	if (FAILED(hr))
+	{
+		return S_OK;
+	}
+
+	wchar_t buffer[MAX_PATH] = { 0 };
+	hr = shellLink->GetPath(buffer, MAX_PATH, nullptr, SLGP_RAWPATH);
+	if (SUCCEEDED(hr) && buffer[0] != L'\0')
+	{
+		hr = CreateHutaoStringFromWideString(buffer, targetPath);
+	}
+
+	return S_OK;
+}
