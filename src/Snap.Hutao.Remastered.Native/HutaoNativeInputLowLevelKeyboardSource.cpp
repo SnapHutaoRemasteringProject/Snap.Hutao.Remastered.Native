@@ -57,11 +57,6 @@ HRESULT __stdcall HutaoNativeInputLowLevelKeyboardSource::Attach(intptr_t callba
 
 HRESULT __stdcall HutaoNativeInputLowLevelKeyboardSource::Detach(intptr_t callback) noexcept
 {
-    if (reinterpret_cast<void*>(callback) != g_callback)
-    {
-        return E_INVALIDARG;
-    }
-    
     if (g_keyboardHook != nullptr)
     {
         UnhookWindowsHookEx(g_keyboardHook);
