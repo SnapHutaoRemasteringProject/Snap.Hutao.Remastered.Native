@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "IHutaoNativeHotKeyAction.h"
 #include "Types.h"
@@ -13,7 +13,7 @@ class HutaoNativeHotKeyAction : public hutao::CustomImplements<
     IHutaoNativeHotKeyAction>
 {
 public:
-	HutaoNativeHotKeyAction(HutaoNativeHotKeyActionKind kind, HutaoNativeHotKeyActionCallback callback, GCHandle userData);
+    HutaoNativeHotKeyAction(HutaoNativeHotKeyActionKind kind, HutaoNativeHotKeyActionCallback callback, GCHandle userData);
     ~HutaoNativeHotKeyAction();
 
     // IHutaoNativeHotKeyAction methods

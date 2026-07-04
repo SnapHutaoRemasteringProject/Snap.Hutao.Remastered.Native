@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "types.h"
 #include <Windows.h>
 #include <unknwn.h>

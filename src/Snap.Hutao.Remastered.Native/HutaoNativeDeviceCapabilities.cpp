@@ -1,4 +1,4 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "HutaoNativeDeviceCapabilities.h"
 
 HRESULT __stdcall HutaoNativeDeviceCapabilities::GetPrimaryScreenVerticalRefreshRate(int* refreshRate) noexcept

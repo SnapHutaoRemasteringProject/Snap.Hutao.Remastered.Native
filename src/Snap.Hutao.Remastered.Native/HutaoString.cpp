@@ -1,4 +1,4 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "HutaoString.h"
 #include "Error.h"
 #include <Windows.h>
@@ -261,7 +261,7 @@ HutaoString HutaoString::Substring(size_t start, size_t length) const
     const wchar_t* thisData = this->Data();
 
     if (result.m_buffer.Length() > 0) {
-        result.m_buffer.RemoveAt(m_buffer.Length() - 1);
+        result.m_buffer.RemoveAt(result.m_buffer.Length() - 1);
     }
 
     result.m_buffer.Reserve(actualLength + 1);

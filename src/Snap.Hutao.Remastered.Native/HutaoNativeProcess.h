@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "IHutaoNativeProcess.h"
 #include "Types.h"

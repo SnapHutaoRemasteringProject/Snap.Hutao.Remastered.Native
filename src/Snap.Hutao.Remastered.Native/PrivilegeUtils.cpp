@@ -1,4 +1,4 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "PrivilegeUtils.h"
 
 // 启用调试权限（SeDebugPrivilege）

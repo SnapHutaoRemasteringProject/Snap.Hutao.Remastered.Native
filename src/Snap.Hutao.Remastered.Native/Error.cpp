@@ -1,4 +1,4 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "Error.h"
 #include "WilCallbacksManager.h"
 #include "FailureInfo.h"

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "IHutaoNativeDeviceCapabilities.h"
 #include "CustomImplements.h"

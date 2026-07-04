@@ -1,4 +1,4 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "dllmain.h"
 #include "HutaoNativeExports.h"
 #include "WilCallbacksManager.h"
@@ -36,14 +36,14 @@ DLL_EXPORT HRESULT __stdcall HutaoStringCreateInstance(
 
 DLL_EXPORT HRESULT HutaoInitializeWilCallbacks(HutaoNativeLoggingCallback loggingCallback, HutaoNativeMessageCallback messageCallback)
 {
-	g_wilCallbacksManager.Initialize(loggingCallback, messageCallback);
+    g_wilCallbacksManager.Initialize(loggingCallback, messageCallback);
     return S_OK;
 }
 
 DLL_EXPORT void HutaoTestWilCallbacks()
 {
-	LogForHR(S_OK);
-	LogMessage("This is a test message from HutaoTestWilCallbacks.");
+    LogForHR(S_OK);
+    LogMessage("This is a test message from HutaoTestWilCallbacks.");
 }
 
 DLL_EXPORT BOOL HutaoHResultIsWin32(HRESULT hr, WIN32_ERROR error)
@@ -53,6 +53,6 @@ DLL_EXPORT BOOL HutaoHResultIsWin32(HRESULT hr, WIN32_ERROR error)
 
 DLL_EXPORT HRESULT HutaoNativeHotKeyInitializeBeforeSwitchCallback(HutaoNativeHotKeyBeforeSwitchCallback callback)
 {
-	hotKeyCallbackManager.Initialize(callback);
+    hotKeyCallbackManager.Initialize(callback);
     return S_OK;
 }

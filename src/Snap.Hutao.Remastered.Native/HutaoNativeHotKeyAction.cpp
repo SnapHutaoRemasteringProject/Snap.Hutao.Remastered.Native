@@ -1,4 +1,4 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "HutaoNativeHotKeyAction.h"
 #include "HutaoNativeHotKeyActionCallback.h"
 #include "HotKeyCallbackManager.h"

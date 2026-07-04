@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "IHutaoNativeWindowNonRude.h"
 #include "CustomImplements.h"

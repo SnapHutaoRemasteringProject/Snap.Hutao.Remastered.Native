@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "types.h"
 
 using HutaoNativeRegistryNotificationProc = void (*)(GCHandle userData);

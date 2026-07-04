@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "IHutaoNativeWindowSubclass.h"
 #include "HutaoNativeWindowSubclassCallback.h"
@@ -42,7 +42,7 @@ private:
         WPARAM wParam,
         LPARAM lParam,
         UINT_PTR uIdSubclass,
-		DWORD_PTR dwRefData);
+        DWORD_PTR dwRefData);
 };
 
 class HutaoNativeWindowSubclass2 :

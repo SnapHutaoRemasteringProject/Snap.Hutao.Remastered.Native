@@ -1,4 +1,4 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "StringUtils.h"
 #include <malloc.h>
 

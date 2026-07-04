@@ -1,4 +1,4 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "HutaoNativeWindowNonRude.h"
 
 HutaoNativeWindowNonRude::HutaoNativeWindowNonRude(HWND hWnd)

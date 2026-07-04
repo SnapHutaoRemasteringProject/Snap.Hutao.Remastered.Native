@@ -1,4 +1,4 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "HutaoNativeInputLowLevelKeyboardSource.h"
 
 static HHOOK g_keyboardHook = nullptr;

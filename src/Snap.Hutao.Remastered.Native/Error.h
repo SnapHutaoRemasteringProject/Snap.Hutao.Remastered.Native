@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <Windows.h>
 #include <intrin.h>
@@ -11,7 +11,7 @@
     { \
         ThrowForHRCore(_ReturnAddress(), __LINE__, __FUNCTION__, __FILE__, hr, L##message); \
         return hr; \
-	}
+    }
 #define LogForHR(hr) \
     LogForHRCore(_ReturnAddress(), __LINE__, __FUNCTION__, __FILE__, hr)
 #define LogMessageForHR(hr, message) \

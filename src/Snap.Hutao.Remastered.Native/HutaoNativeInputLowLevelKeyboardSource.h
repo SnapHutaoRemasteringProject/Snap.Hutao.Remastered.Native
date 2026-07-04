@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "IHutaoNativeInputLowLevelKeyboardSource.h"
 #include "CustomImplements.h"

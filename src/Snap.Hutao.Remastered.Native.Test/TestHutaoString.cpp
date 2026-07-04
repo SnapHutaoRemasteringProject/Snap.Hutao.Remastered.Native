@@ -1,4 +1,4 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "TestBase.h"
 #include "../Snap.Hutao.Remastered.Native/HutaoString.h"
 #include "../Snap.Hutao.Remastered.Native/HutaoAString.h"

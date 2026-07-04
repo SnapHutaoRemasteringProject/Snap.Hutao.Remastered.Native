@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "IHutaoNativeFileSystem.h"
 #include "IHutaoNativeFileSystem2.h"
 #include "IHutaoNativeFileSystem3.h"

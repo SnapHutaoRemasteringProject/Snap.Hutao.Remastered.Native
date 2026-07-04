@@ -1,4 +1,4 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "HutaoNativeLogicalDrive.h"
 
 HRESULT __stdcall HutaoNativeLogicalDrive::GetDiskFreeSpace(PCWSTR path, long* bytes) noexcept

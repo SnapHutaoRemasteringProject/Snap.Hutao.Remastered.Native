@@ -1,4 +1,4 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "HotKeyCallbackManager.h"
 #include "HutaoNativeHotKeyBeforeSwitchCallback.h"
 
@@ -12,26 +12,26 @@ HotKeyCallbackManager::~HotKeyCallbackManager()
 
 void HotKeyCallbackManager::Initialize(HutaoNativeHotKeyBeforeSwitchCallback callback)
 {
-	callback_ = callback;
+    callback_ = callback;
 }
 
 HutaoNativeHotKeyBeforeSwitchCallback HotKeyCallbackManager::GetCallback()
 {
-	return callback_;
+    return callback_;
 }
 
 BOOL HotKeyCallbackManager::InvokeCallback()
 {
-	if (callback_.has_value())
-	{
-		return callback_.value()();
-	}
-	return TRUE; // 如果没有回调，默认允许切换
+    if (callback_.has_value())
+    {
+        return callback_.value()();
+    }
+    return TRUE; // 如果没有回调，默认允许切换
 }
 
 void HotKeyCallbackManager::ClearCallback()
 {
-	callback_ = {};
+    callback_ = {};
 }
 
 HotKeyCallbackManager hotKeyCallbackManager = HotKeyCallbackManager();

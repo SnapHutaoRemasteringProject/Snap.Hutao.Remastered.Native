@@ -1,4 +1,4 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "DllInjectionUtils.h"
 #include "ProcessUtils.h"
 #include "PrivilegeUtils.h"
@@ -14,7 +14,7 @@ DLL_EXPORT HRESULT __stdcall DllInjectionUtilitiesInjectUsingWindowsHook(
     int processId)
 {
     AssertNonNullAndReturn(dllPath);
-	AssertNonNullAndReturn(functionName);
+    AssertNonNullAndReturn(functionName);
     ThrowIfAndReturn(processId <= 0, "Invaild processid", E_INVALIDARG);
 
     if (GetFileAttributesW(dllPath) == INVALID_FILE_ATTRIBUTES) {
@@ -65,8 +65,8 @@ DLL_EXPORT HRESULT __stdcall DllInjectionUtilitiesInjectUsingRemoteThread(
     LPCWSTR dllPath,
     int processId)
 {
-	AssertNonNullAndReturn(dllPath);
-	ThrowIfAndReturn(processId <= 0, "Invaild processid", E_INVALIDARG);
+    AssertNonNullAndReturn(dllPath);
+    ThrowIfAndReturn(processId <= 0, "Invaild processid", E_INVALIDARG);
     ThrowIfAndReturn(GetFileAttributesW(dllPath) == INVALID_FILE_ATTRIBUTES, "Dll not found", HRESULT_FROM_WIN32(ERROR_FILE_NOT_FOUND));
 
     EnableDebugPrivilege();
@@ -77,7 +77,7 @@ DLL_EXPORT HRESULT __stdcall DllInjectionUtilitiesInjectUsingRemoteThread(
         PROCESS_VM_OPERATION | PROCESS_VM_WRITE | PROCESS_VM_READ,
         FALSE, processId);
 
-	ThrowIfAndReturn(!hProcess, "Failed to open target process", HRESULT_FROM_WIN32(GetLastError()));
+    ThrowIfAndReturn(!hProcess, "Failed to open target process", HRESULT_FROM_WIN32(GetLastError()));
 
     // 在目标进程中分配内存并写入DLL路径
     LPVOID pRemoteMemory = NULL;
@@ -93,7 +93,7 @@ DLL_EXPORT HRESULT __stdcall DllInjectionUtilitiesInjectUsingRemoteThread(
     if (!pLoadLibrary) {
         VirtualFreeEx(hProcess, pRemoteMemory, 0, MEM_RELEASE);
         CloseHandle(hProcess);
-		ThrowForHR(HRESULT_FROM_WIN32(ERROR_PROC_NOT_FOUND), "Failed to get LoadLibraryW address");
+        ThrowForHR(HRESULT_FROM_WIN32(ERROR_PROC_NOT_FOUND), "Failed to get LoadLibraryW address");
         return HRESULT_FROM_WIN32(ERROR_PROC_NOT_FOUND);
     }
 
@@ -105,7 +105,7 @@ DLL_EXPORT HRESULT __stdcall DllInjectionUtilitiesInjectUsingRemoteThread(
         DWORD lastError = GetLastError();
         VirtualFreeEx(hProcess, pRemoteMemory, 0, MEM_RELEASE);
         CloseHandle(hProcess);
-		ThrowForHR(HRESULT_FROM_WIN32(lastError), "Failed to create remote thread");
+        ThrowForHR(HRESULT_FROM_WIN32(lastError), "Failed to create remote thread");
         return HRESULT_FROM_WIN32(lastError);
     }
 
@@ -156,7 +156,7 @@ HRESULT __stdcall InjectUsingRemoteThreadWithFunctionCore(
     if (!WriteProcessStringW(hProcess, dllPath, &pRemoteDllPath)) {
         hr = HRESULT_FROM_WIN32(GetLastError());
         CloseHandle(hProcess);
-		ThrowForHR(hr, "Failed to write DLL path to remote process");
+        ThrowForHR(hr, "Failed to write DLL path to remote process");
         return hr;
     }
 
@@ -166,7 +166,7 @@ HRESULT __stdcall InjectUsingRemoteThreadWithFunctionCore(
 
     if (!pLoadLibraryW) {
         hr = HRESULT_FROM_WIN32(ERROR_PROC_NOT_FOUND);
-		ThrowForHR(hr, "Failed to get LoadLibraryW address");
+        ThrowForHR(hr, "Failed to get LoadLibraryW address");
         goto cleanup;
     }
 
@@ -176,7 +176,7 @@ HRESULT __stdcall InjectUsingRemoteThreadWithFunctionCore(
 
     if (!hRemoteThread) {
         hr = HRESULT_FROM_WIN32(GetLastError());
-		ThrowForHR(hr, "Failed to create remote thread for LoadLibraryW");
+        ThrowForHR(hr, "Failed to create remote thread for LoadLibraryW");
         goto cleanup;
     }
 
@@ -189,7 +189,7 @@ HRESULT __stdcall InjectUsingRemoteThreadWithFunctionCore(
 
     if (exitCode == 0) {
         hr = E_FAIL;
-		ThrowForHR(hr, "Remote LoadLibraryW failed");
+        ThrowForHR(hr, "Remote LoadLibraryW failed");
         goto cleanup;
     }
 
@@ -244,21 +244,21 @@ HRESULT __stdcall InjectUsingRemoteThreadWithFunctionCore(
     hLocalModule = LoadLibraryW(dllPath);
     if (!hLocalModule) {
         hr = HRESULT_FROM_WIN32(GetLastError());
-		ThrowForHR(hr, "Failed to load local DLL");
+        ThrowForHR(hr, "Failed to load local DLL");
         goto cleanup;
     }
 
     ansiFunctionName = GetAnsiFunctionName(functionName);
     if (!ansiFunctionName) {
         hr = E_OUTOFMEMORY;
-		ThrowForHR(hr, "Failed to convert function name to ANSI");
+        ThrowForHR(hr, "Failed to convert function name to ANSI");
         goto cleanup;
     }
 
     pLocalFunction = GetProcAddress(hLocalModule, ansiFunctionName);
     if (!pLocalFunction) {
         hr = HRESULT_FROM_WIN32(ERROR_PROC_NOT_FOUND);
-		ThrowForHR(hr, "Failed to get target function address in local DLL");
+        ThrowForHR(hr, "Failed to get target function address in local DLL");
         goto cleanup;
     }
 
@@ -275,7 +275,7 @@ HRESULT __stdcall InjectUsingRemoteThreadWithFunctionCore(
 
     if (!hRemoteThread) {
         hr = HRESULT_FROM_WIN32(GetLastError());
-		ThrowForHR(hr, "Failed to create remote thread for target function");
+        ThrowForHR(hr, "Failed to create remote thread for target function");
         goto cleanup;
     }
 
@@ -333,10 +333,10 @@ DLL_EXPORT HRESULT __stdcall DllInjectionUtilitiesInjectUsingRemoteThreadWithFun
         FALSE, processId);
 
     if (!hProcess) {
-		ThrowForHR(HRESULT_FROM_WIN32(GetLastError()), "Failed to open target process");
+        ThrowForHR(HRESULT_FROM_WIN32(GetLastError()), "Failed to open target process");
         return HRESULT_FROM_WIN32(GetLastError());
     }
 
     return InjectUsingRemoteThreadWithFunctionCore(
-		dllPath, functionName, processId, hProcess);
+        dllPath, functionName, processId, hProcess);
 }

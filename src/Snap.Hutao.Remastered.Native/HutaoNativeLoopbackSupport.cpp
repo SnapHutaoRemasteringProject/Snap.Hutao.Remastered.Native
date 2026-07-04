@@ -1,4 +1,4 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "HutaoNativeLoopbackSupport.h"
 #include "HutaoString.h"
 #include "Array.h"

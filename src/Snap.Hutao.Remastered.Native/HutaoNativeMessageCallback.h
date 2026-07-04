@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "FailureInfo.h"
 #include <Windows.h>

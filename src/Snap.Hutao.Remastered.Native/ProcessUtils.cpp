@@ -1,4 +1,4 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "ProcessUtils.h"
 #include <TlHelp32.h>
 #include <wchar.h>

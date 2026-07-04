@@ -1,4 +1,4 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "WindowUtils.h"
 #include <ShellScalingApi.h>
 #pragma comment(lib, "Shcore.lib")

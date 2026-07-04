@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <Windows.h>
 #include "../Snap.Hutao.Remastered.Native/IHutaoNative.h"

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "IHutaoNativeLogicalDrive.h"
 #include "CustomImplements.h"

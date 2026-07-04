@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 // Windows SDK headers
 #include <Windows.h>
