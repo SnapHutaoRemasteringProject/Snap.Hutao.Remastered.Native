@@ -252,6 +252,8 @@
     <ClInclude Include="IHutaoNativeFileSystem2.h" />
     <ClInclude Include="IHutaoNativeFileSystem3.h" />
     <ClInclude Include="IHutaoNativeFileSystem4.h" />
+    <ClInclude Include="IHutaoNativeFileSystem5.h" />
+    <ClInclude Include="IHutaoNativeFileSystem6.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

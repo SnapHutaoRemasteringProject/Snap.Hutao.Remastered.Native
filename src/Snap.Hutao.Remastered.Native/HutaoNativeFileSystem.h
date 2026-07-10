@@ -4,6 +4,7 @@
 #include "IHutaoNativeFileSystem3.h"
 #include "IHutaoNativeFileSystem4.h"
 #include "IHutaoNativeFileSystem5.h"
+#include "IHutaoNativeFileSystem6.h"
 #include "IHutaoString.h"
 #include "CustomImplements.h"
 #include <Windows.h>
@@ -16,7 +17,8 @@ class HutaoNativeFileSystem : public hutao::CustomImplements<HutaoNativeFileSyst
     IHutaoNativeFileSystem2,
     IHutaoNativeFileSystem3,
     IHutaoNativeFileSystem4,
-    IHutaoNativeFileSystem5>
+    IHutaoNativeFileSystem5,
+    IHutaoNativeFileSystem6>
 {
 public:
     HutaoNativeFileSystem() = default;
@@ -49,6 +51,9 @@ public:
 
     // IHutaoNativeFileSystem5 methods
     HRESULT __stdcall ResolveLink(PCWSTR lnkPath, IHutaoString** targetPath) noexcept override;
+
+    // IHutaoNativeFileSystem6 methods
+    HRESULT __stdcall CreateLinkWithAppUserModelId(PCWSTR fileLocation, PCWSTR arguments, PCWSTR iconLocation, PCWSTR fileName, PCWSTR appUserModelId) noexcept override;
 
 private:
     static HRESULT PerformFileOperation(UINT operation, PCWSTR source, PCWSTR destination, long flags);

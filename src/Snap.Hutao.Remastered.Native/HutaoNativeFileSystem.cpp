@@ -5,6 +5,12 @@
 #include <ShlObj.h>
 #include <shellapi.h>
 #include <comdef.h>
+#include <propvarutil.h>
+#include <propsys.h>
+
+// PKEY_AppUserModel_ID: {9F4C2855-9F79-4B39-A8D0-E1D42DE1D5F3}, 5
+static const PROPERTYKEY PKEY_AppUserModel_ID_Hutao =
+    {{0x9F4C2855, 0x9F79, 0x4B39, {0xA8, 0xD0, 0xE1, 0xD4, 0x2D, 0xE1, 0xD5, 0xF3}}, 5};
 
 HRESULT HutaoNativeFileSystem::PerformFileOperation(UINT operation, PCWSTR source, PCWSTR destination, long flags)
 {
@@ -586,4 +592,104 @@ HRESULT __stdcall HutaoNativeFileSystem::ResolveLink(PCWSTR lnkPath, IHutaoStrin
     }
 
     return S_OK;
+}
+
+// IHutaoNativeFileSystem6 methods
+HRESULT __stdcall HutaoNativeFileSystem::CreateLinkWithAppUserModelId(PCWSTR fileLocation, PCWSTR arguments, PCWSTR iconLocation, PCWSTR fileName, PCWSTR appUserModelId) noexcept
+{
+	AssertNonNullAndReturn(fileLocation);
+	AssertNonNullAndReturn(fileName);
+	AssertNonNullAndReturn(appUserModelId);
+
+	// Create IShellLink object
+	IShellLinkW* pShellLink = nullptr;
+	HRESULT hr = CoCreateInstance(CLSID_ShellLink, nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&pShellLink));
+	hutao::com_ptr<IShellLinkW> shellLink(pShellLink);
+	if (FAILED(hr))
+	{
+		ThrowForHR(hr, "CoCreateInstance for IShellLink failed");
+		return hr;
+	}
+
+	// Set path
+	hr = shellLink->SetPath(fileLocation);
+	if (FAILED(hr))
+	{
+		ThrowForHR(hr, "IShellLink::SetPath failed");
+		return hr;
+	}
+
+	// Set arguments if provided
+	if (arguments != nullptr && wcslen(arguments) > 0)
+	{
+		hr = shellLink->SetArguments(arguments);
+		if (FAILED(hr))
+		{
+			ThrowForHR(hr, "IShellLink::SetArguments failed");
+			return hr;
+		}
+	}
+
+	// Set icon location if provided
+	if (iconLocation != nullptr && wcslen(iconLocation) > 0)
+	{
+		hr = shellLink->SetIconLocation(iconLocation, 0);
+		if (FAILED(hr))
+		{
+			ThrowForHR(hr, "IShellLink::SetIconLocation failed");
+			return hr;
+		}
+	}
+
+	// Set AppUserModelID via IPropertyStore
+	IPropertyStore* pPropertyStore = nullptr;
+	hr = shellLink->QueryInterface(IID_PPV_ARGS(&pPropertyStore));
+	if (FAILED(hr))
+	{
+		ThrowForHR(hr, "QueryInterface for IPropertyStore failed");
+		return hr;
+	}
+	hutao::com_ptr<IPropertyStore> propertyStore(pPropertyStore);
+
+	PROPVARIANT propVar;
+	hr = InitPropVariantFromString(appUserModelId, &propVar);
+	if (FAILED(hr))
+	{
+		ThrowForHR(hr, "InitPropVariantFromString failed");
+		return hr;
+	}
+
+	hr = propertyStore->SetValue(PKEY_AppUserModel_ID_Hutao, propVar);
+	PropVariantClear(&propVar);
+	if (FAILED(hr))
+	{
+		ThrowForHR(hr, "IPropertyStore::SetValue failed");
+		return hr;
+	}
+
+	hr = propertyStore->Commit();
+	if (FAILED(hr))
+	{
+		ThrowForHR(hr, "IPropertyStore::Commit failed");
+		return hr;
+	}
+
+	// Get IPersistFile interface and save
+	IPersistFile* pPersistFile = nullptr;
+	hr = shellLink->QueryInterface(IID_PPV_ARGS(&pPersistFile));
+	if (FAILED(hr))
+	{
+		ThrowForHR(hr, "QueryInterface for IPersistFile failed");
+		return hr;
+	}
+	hutao::com_ptr<IPersistFile> persistFile(pPersistFile);
+
+	hr = persistFile->Save(fileName, TRUE);
+	if (FAILED(hr))
+	{
+		ThrowForHR(hr, "IPersistFile::Save failed");
+		return hr;
+	}
+
+	return S_OK;
 }

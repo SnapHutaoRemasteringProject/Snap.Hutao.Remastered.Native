@@ -317,5 +317,11 @@
     <ClInclude Include="HutaoAString.h">
       <Filter>头文件\core\impl</Filter>
     </ClInclude>
+    <ClInclude Include="IHutaoNativeFileSystem6.h">
+      <Filter>头文件\core\interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="IHutaoNativeFileSystem5.h">
+      <Filter>头文件\core\interfaces</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
