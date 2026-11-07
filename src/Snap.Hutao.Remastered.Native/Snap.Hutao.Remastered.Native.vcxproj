@@ -94,7 +94,6 @@
     <ClCompile Include="DllInjectionUtils.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="Error.cpp" />
-    <ClCompile Include="FrameworkTheming.cpp" />
     <ClCompile Include="HookUtils.cpp" />
     <ClCompile Include="HutaoNative.cpp" />
     <ClCompile Include="HutaoNativeDeviceCapabilities.cpp" />
@@ -135,7 +134,6 @@
     <ClInclude Include="DllInjectionUtils.h" />
     <ClInclude Include="dllmain.h" />
     <ClInclude Include="FailureInfo.h" />
-    <ClInclude Include="FrameworkTheming.h" />
     <ClInclude Include="HookUtils.h" />
     <ClInclude Include="HutaoNative.h" />
     <ClInclude Include="HutaoNativeDeviceCapabilities.h" />
@@ -174,7 +172,6 @@
     <ClInclude Include="PrivilegeUtils.h" />
     <ClInclude Include="ProcessUtils.h" />
     <ClInclude Include="StringUtils.h" />
-    <ClInclude Include="Theme.h" />
     <ClInclude Include="Types.h" />
     <ClInclude Include="WilCallbacksManager.h" />
     <ClInclude Include="HutaoNativeInputLowLevelKeyboardSource.h" />

@@ -129,9 +129,6 @@
     <ClCompile Include="HotKeyCallbackManager.cpp">
       <Filter>源文件\core\internal</Filter>
     </ClCompile>
-    <ClCompile Include="FrameworkTheming.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="HutaoNativeExports.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -146,9 +143,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Theme.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="dllmain.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -286,9 +280,6 @@
     </ClInclude>
     <ClInclude Include="HutaoNativeNotifyIconCallback.h">
       <Filter>头文件\core\struct</Filter>
-    </ClInclude>
-    <ClInclude Include="FrameworkTheming.h">
-      <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="HutaoNativeExports.h">
       <Filter>头文件</Filter>
