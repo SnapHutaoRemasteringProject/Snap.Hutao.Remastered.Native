@@ -48,7 +48,7 @@ jobs:
       run: |
         msbuild "src/Snap.Hutao.Remastered.Native.Packaging/Snap.Hutao.Remastered.Native.Packaging.csproj" `
           -p:Configuration=${{ env.BUILD_CONFIGURATION }} `
-          -p:Platform=AnyCPU `
+          -p:Platform=${{ env.BUILD_PLATFORM }} `
           -p:RestorePackages=false
 
     - name: Create NuGet package
@@ -57,6 +57,7 @@ jobs:
           -t:Pack `
           -p:Configuration=${{ env.BUILD_CONFIGURATION }} `
           -p:PackageOutputPath="${{ github.workspace }}/nuget/" `
+          -p:Platform=${{ env.BUILD_PLATFORM }} `
           -p:RestorePackages=false `
           -p:IncludeSymbols=false `
           -p:IncludeSource=false `

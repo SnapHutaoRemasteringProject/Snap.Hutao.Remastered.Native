@@ -24,9 +24,6 @@
 	</ItemGroup>
 
 	<Target Name="CollectNativeOutputs" AfterTargets="Build">
-		<MSBuild Projects="..\Snap.Hutao.Remastered.Native\Snap.Hutao.Remastered.Native.vcxproj" Targets="GetTargetPath" SkipNonexistentTargets="true" ContinueOnError="true">
-			<Output TaskParameter="TargetOutputs" ItemName="NativeTargetOutputs" />
-		</MSBuild>
 		<ItemGroup>
 			<NativeOutputFiles Include="..\Snap.Hutao.Remastered.Native\x64\**\*.dll" />
 			<NativeOutputFiles Include="..\Snap.Hutao.Remastered.Native\obj\x64\**\*.dll" />
